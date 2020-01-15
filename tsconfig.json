@@ -6,8 +6,11 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "*": ["node_modules/*"]
-    }
+      "*": ["node_modules/*"],
+      "renderer/*": ["src/renderer/*"]
+    },
+    "jsx": "react",
+    "esModuleInterop": true
   },
   "include": [
     "src/**/*"
