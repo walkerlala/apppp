@@ -1,5 +1,8 @@
 import { app, BrowserWindow } from "electron";
+import { getAppDateFolder } from './utils';
 import * as path from "path";
+import * as sqlite3 from 'sqlite3';
+import * as fs from 'fs';
 
 let mainWindow: Electron.BrowserWindow;
 
@@ -18,6 +21,15 @@ function createWindow() {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
+
+  const appDataFolder = getAppDateFolder();
+  // fs.mkdirSync(appDataFolder);
+  const databasePath = path.join(appDataFolder, 'database.sqlite');
+  const db = new sqlite3.Database(databasePath);
+
+  db.serialize(() => {
+    db.run('CREATE TABLE global_kv (key TEXT PRIMARY KEY, value TEXT)')
+  });
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {

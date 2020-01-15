@@ -1,5 +1,5 @@
 
-const { series, dest, src } = require('gulp');
+const { dest, src, parallel } = require('gulp');
 const ts = require('gulp-typescript');
 const tsProject = ts.createProject('tsconfig.json');
  
@@ -49,4 +49,4 @@ function buildRendererPage() {
 exports.buildMainPage = buildMainPage;
 exports.buildRendererPage = buildRendererPage;
 exports.tsToJs = tsToJs;
-exports.build = series(buildMainPage, buildRendererPage);
+exports.build = parallel(buildMainPage, buildRendererPage);
