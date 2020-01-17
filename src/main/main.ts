@@ -23,13 +23,11 @@ function createWindow() {
   mainWindow.webContents.openDevTools();
 
   const appDataFolder = getAppDateFolder();
-  // fs.mkdirSync(appDataFolder);
+  if (!fs.existsSync(appDataFolder)) {
+    fs.mkdirSync(appDataFolder);
+  }
   const databasePath = path.join(appDataFolder, 'database.sqlite');
   const db = new sqlite3.Database(databasePath);
-
-  db.serialize(() => {
-    db.run('CREATE TABLE global_kv (key TEXT PRIMARY KEY, value TEXT)')
-  });
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
@@ -38,6 +36,12 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  db.serialize(() => {
+    db.run('CREATE TABLE IF NOT EXISTS global_kv (key TEXT PRIMARY KEY, value TEXT)');
+    db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "1")');
+  });
+
 }
 
 // This method will be called when Electron has finished
