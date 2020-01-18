@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, Menu, MenuItem } from "electron";
 import { getAppDateFolder } from './utils';
 import * as path from "path";
 import * as sqlite3 from 'sqlite3';
@@ -37,11 +37,21 @@ function createWindow() {
     mainWindow = null;
   });
 
+  showMenu();
+  
   db.serialize(() => {
     db.run('CREATE TABLE IF NOT EXISTS global_kv (key TEXT PRIMARY KEY, value TEXT)');
     db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "1")');
   });
 
+}
+
+function showMenu() {
+  const menu = new Menu();
+  menu.append(new MenuItem({ label: 'MenuItem1', click() { console.log('item 1 clicked') } }))
+  menu.append(new MenuItem({ type: 'separator' }))
+  menu.append(new MenuItem({ label: 'MenuItem2', type: 'checkbox', checked: true }))
+  // Menu.setApplicationMenu(menu);
 }
 
 // This method will be called when Electron has finished

@@ -5,7 +5,7 @@ class SidebarItem extends Component {
   render() {
     const { children } = this.props;
     return (
-      <div>
+      <div className="ani-sidebar-item">
         {children}
       </div>
     );
@@ -17,7 +17,7 @@ class Sidebar extends Component {
 
   render() {
     return (
-      <div id="sidebar-container">
+      <div className="ani-sidebar-container">
         Sidebar
         <div>
           <SidebarItem>My Photos</SidebarItem>

@@ -1,7 +1,8 @@
 
-const { dest, src, parallel } = require('gulp');
+const { dest, src, parallel, watch } = require('gulp');
 const ts = require('gulp-typescript');
 const tsProject = ts.createProject('tsconfig.json');
+const sass = require('gulp-sass');
  
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
@@ -46,7 +47,19 @@ function buildRendererPage() {
     .pipe(dest('dist/renderer'));
 }
 
+function scss() {
+    return src('./src/css/**/*.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(dest('./dist/css'));
+}
+
+function buildWatch() {
+    return watch('./src/**/*', parallel(scss, buildRendererPage));
+}
+
+exports.watch = buildWatch;
 exports.buildMainPage = buildMainPage;
 exports.buildRendererPage = buildRendererPage;
 exports.tsToJs = tsToJs;
-exports.build = parallel(buildMainPage, buildRendererPage);
+exports.scss = scss;
+exports.build = parallel(scss, buildMainPage, buildRendererPage);
