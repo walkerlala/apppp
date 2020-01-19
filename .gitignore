@@ -4,3 +4,8 @@ dist
 *log
 
 .DS_Store
+
+cmake-build-debug
+
+.idea
+
