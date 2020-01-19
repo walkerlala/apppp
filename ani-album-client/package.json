@@ -37,6 +37,7 @@
     "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
+    "eventemitter3": "^4.0.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "sqlite3": "^4.1.1"

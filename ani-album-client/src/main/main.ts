@@ -1,5 +1,8 @@
-import { app, BrowserWindow, Menu, MenuItem } from "electron";
+import { app, BrowserWindow, Menu  } from "electron";
+import { eventBus, MainProcessEvents } from './events';
 import { getAppDateFolder } from './utils';
+import { importPhotos } from './photos';
+import * as dal from './dal';
 import * as path from "path";
 import * as sqlite3 from 'sqlite3';
 import * as fs from 'fs';
@@ -38,20 +41,119 @@ function createWindow() {
   });
 
   showMenu();
-  
-  db.serialize(() => {
-    db.run('CREATE TABLE IF NOT EXISTS global_kv (key TEXT PRIMARY KEY, value TEXT)');
-    db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "1")');
-  });
 
+  eventBus.addListener(MainProcessEvents.ImportPhotos, importPhotos);
+  
+  dal.initData(db);
 }
 
 function showMenu() {
-  const menu = new Menu();
-  menu.append(new MenuItem({ label: 'MenuItem1', click() { console.log('item 1 clicked') } }))
-  menu.append(new MenuItem({ type: 'separator' }))
-  menu.append(new MenuItem({ label: 'MenuItem2', type: 'checkbox', checked: true }))
-  // Menu.setApplicationMenu(menu);
+  const isMac = process.platform === 'darwin';
+
+  const template: any = [
+    // { role: 'appMenu' }
+    ...(isMac ? [{
+      label: 'AniAlbum',
+      submenu: [
+        { role: 'about' },
+        { type: 'separator' },
+        { role: 'services' },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideothers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit' }
+      ]
+    }] : []),
+    // { role: 'fileMenu' }
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Import',
+          click: () => eventBus.emit(MainProcessEvents.ImportPhotos),
+        },
+        { type: 'separator' },
+        isMac ? { role: 'close' } : { role: 'quit' }
+      ]
+    },
+    // { role: 'editMenu' }
+    {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        ...(isMac ? [
+          { role: 'pasteAndMatchStyle' },
+          { role: 'delete' },
+          { role: 'selectAll' },
+          { type: 'separator' },
+          {
+            label: 'Speech',
+            submenu: [
+              { role: 'startspeaking' },
+              { role: 'stopspeaking' }
+            ]
+          }
+        ] : [
+          { role: 'delete' },
+          { type: 'separator' },
+          { role: 'selectAll' }
+        ])
+      ]
+    },
+    // { role: 'viewMenu' }
+    {
+      label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forcereload' },
+        { role: 'toggledevtools' },
+        { type: 'separator' },
+        { role: 'resetzoom' },
+        { role: 'zoomin' },
+        { role: 'zoomout' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' }
+      ]
+    },
+    // { role: 'windowMenu' }
+    {
+      label: 'Window',
+      submenu: [
+        { role: 'minimize' },
+        { role: 'zoom' },
+        ...(isMac ? [
+          { type: 'separator' },
+          { role: 'front' },
+          { type: 'separator' },
+          { role: 'window' }
+        ] : [
+          { role: 'close' }
+        ])
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'Learn More',
+          click: async () => {
+            const { shell } = require('electron')
+            await shell.openExternal('https://electronjs.org')
+          }
+        }
+      ]
+    }
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 }
 
 // This method will be called when Electron has finished
