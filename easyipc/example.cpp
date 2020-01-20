@@ -29,15 +29,18 @@ int client_main(int argc, char* argv[]) {
     auto client = std::make_unique<IpcClient>();
 
     if (!client->Connect("test-ipc")) {
+		std::cout << "connect error" << std::endl;
         return 1;
     }
 
-    std::string resp;
-    if (!client->Send(0, "haha 222", resp)) {
-        return 1;
+    for (int i = 0; i < 10; i++) {
+        std::string resp;
+        if (!client->Send(0, "haha 222", resp)) {
+            std::cout << "send error" << std::endl;
+            return 1;
+        }
+        std::cout << "client receive: " << resp << std::endl;
     }
-
-    std::cout << "client receive：" << resp << std::endl;
 
     return 0;
 }

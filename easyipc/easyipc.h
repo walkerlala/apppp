@@ -5,7 +5,11 @@
 #include <string>
 #include <functional>
 
-#include "ThreadPool.h"
+#include "./ThreadPool.h"
+
+#ifdef WIN32
+#include <Windows.h>
+#endif
 
 namespace EasyIpc {
 
@@ -37,15 +41,22 @@ namespace EasyIpc {
     private:
         bool AcceptRequest();
 
-        void HandleRequestStandalone(int socket);
-        void ReadBody(int socket, std::size_t size, Message& message);
-        static void WriteData(int socket, const Message& msg, const std::string& resp_content);
-
         ThreadPool workers_;
 
         std::atomic<bool> is_running_;
         std::string ipc_token;
+#ifdef WIN32
+        void HandleRequestStandalone(HANDLE hPipe);
+		bool ReadBody(HANDLE hPipe, std::size_t size, Message& message);
+		static bool WriteData(HANDLE hPipe, const Message& msg, const std::string& resp_content);
+
+#else
+        void HandleRequestStandalone(int socket);
+        void ReadBody(int socket, std::size_t size, Message& message);
+        static void WriteData(int socket, const Message& msg, const std::string& resp_content);
+
         int fd = -1;
+#endif
 
     };
 
@@ -70,7 +81,12 @@ namespace EasyIpc {
 
         std::string ipc_token;
         std::int64_t req_id_counter = 0;
+
+#ifdef WIN32
+		HANDLE handle_;
+#else
         int fd = -1;
+#endif
 
     };
 

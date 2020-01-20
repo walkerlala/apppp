@@ -8,4 +8,5 @@ dist
 cmake-build-debug
 
 .idea
+.vs
 
