@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+enum MessageType {
+  Ping = 0;
+  
+  GenerateThumbnails = 1;
+
+}
+
+message GenerateThumbnailsRequest {
+    string path = 1;
+}
