@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Menu  } from "electron";
 import { eventBus, MainProcessEvents } from './events';
-import { getAppDateFolder } from './utils';
+import { getAppDateFolder, setDb } from './utils';
 import { importPhotos } from './photos';
 import * as dal from './dal';
 import * as path from "path";
@@ -31,6 +31,7 @@ function createWindow() {
   }
   const databasePath = path.join(appDataFolder, 'database.sqlite');
   const db = new sqlite3.Database(databasePath);
+  setDb(db);
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {

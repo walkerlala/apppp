@@ -1,4 +1,7 @@
 import { dialog } from 'electron';
+import { logger } from './logger';
+import { insertImageEntity } from './dal';
+import { getDb } from './utils';
 import * as fs from 'fs';
 
 export async function importPhotos() {
@@ -13,7 +16,7 @@ export async function importPhotos() {
       await importPhotosByPath(path);
     }
   } catch (err) {
-    console.error(err);
+    logger.error(err);
   }
 }
 
@@ -22,7 +25,14 @@ async function importPhotosByPath(path: string) {
     if (stat.isDirectory()) {
         return await traverseDirToImport(path);
     } else if (stat.isFile()) {
-
+      try {
+        insertImageEntity(getDb(), {
+          path,
+          datetime: new Date(),
+        });
+      } catch (err) {
+        logger.error('insert photo failed: ', err, 'path: ', path);
+      }
     }
 }
 
