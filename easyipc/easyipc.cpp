@@ -369,6 +369,7 @@ namespace EasyIpc {
 
     void IpcServer::Shutdown() {
         is_running_ = false;
+        ::close(fd);
     }
 
     bool IpcClient::Connect(const std::string &token) {

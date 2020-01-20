@@ -24,7 +24,7 @@ namespace EasyIpc {
 
     class IpcServer {
     public:
-        IpcServer(const std::string& token, int threads_num = 2);
+        explicit IpcServer(const std::string& token, int threads_num = 2);
         IpcServer(const IpcServer&) = delete;
         explicit IpcServer(IpcServer&&) = delete;
 
@@ -75,9 +75,7 @@ namespace EasyIpc {
 
         bool Send(std::int32_t message_type, const std::string& content, std::string& resp);
 
-
     private:
-        bool ReadResp(std::size_t req_id, std::string& resp);
 
         std::string ipc_token;
         std::int64_t req_id_counter = 0;
