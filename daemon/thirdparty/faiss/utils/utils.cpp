@@ -30,7 +30,7 @@
 
 
 #ifndef FINTEGER
-#define FINTEGER long
+#define FINTEGER int64_t
 #endif
 
 
@@ -86,18 +86,18 @@ uint64_t get_cycles () {
 
 #ifdef __linux__
 
-size_t get_mem_usage_kb ()
+int64_t get_mem_usage_kb ()
 {
     int pid = getpid ();
     char fname[256];
     snprintf (fname, 256, "/proc/%d/status", pid);
     FILE * f = fopen (fname, "r");
     FAISS_THROW_IF_NOT_MSG (f, "cannot open proc status file");
-    size_t sz = 0;
+    int64_t sz = 0;
     for (;;) {
         char buf [256];
         if (!fgets (buf, 256, f)) break;
-        if (sscanf (buf, "VmRSS: %ld kB", &sz) == 1) break;
+        if (sscanf (buf, "VmRSS:  %" PRId64 " kB", &sz) == 1) break;
     }
     fclose (f);
     return sz;
@@ -105,7 +105,7 @@ size_t get_mem_usage_kb ()
 
 #elif __APPLE__
 
-size_t get_mem_usage_kb ()
+int64_t get_mem_usage_kb ()
 {
     fprintf(stderr, "WARN: get_mem_usage_kb not implemented on the mac\n");
     return 0;
@@ -119,9 +119,9 @@ size_t get_mem_usage_kb ()
 
 void reflection (const float * __restrict u,
                  float * __restrict x,
-                 size_t n, size_t d, size_t nu)
+                 int64_t n, int64_t d, int64_t nu)
 {
-    size_t i, j, l;
+    int64_t i, j, l;
     for (i = 0; i < n; i++) {
         const float * up = u;
         for (l = 0; l < nu; l++) {
@@ -143,9 +143,9 @@ void reflection (const float * __restrict u,
 
 
 /* Reference implementation (slower) */
-void reflection_ref (const float * u, float * x, size_t n, size_t d, size_t nu)
+void reflection_ref (const float * u, float * x, int64_t n, int64_t d, int64_t nu)
 {
-    size_t i, j, l;
+    int64_t i, j, l;
     for (i = 0; i < n; i++) {
         const float * up = u;
         for (l = 0; l < nu; l++) {
@@ -180,13 +180,13 @@ void reflection_ref (const float * u, float * x, size_t n, size_t d, size_t nu)
 void inner_product_to_L2sqr (float * __restrict dis,
                              const float * nr1,
                              const float * nr2,
-                             size_t n1, size_t n2)
+                             int64_t n1, int64_t n2)
 {
 
 #pragma omp parallel for
-    for (size_t j = 0 ; j < n1 ; j++) {
+    for (int64_t j = 0 ; j < n1 ; j++) {
         float * disj = dis + j * n2;
-        for (size_t i = 0 ; i < n2 ; i++)
+        for (int64_t i = 0 ; i < n2 ; i++)
             disj[i] = nr1[j] + nr2[i] - 2 * disj[i];
     }
 }
@@ -202,7 +202,7 @@ void matrix_qr (int m, int n, float *a)
 
     sgeqrf_ (&mi, &ni, a, &mi, tau.data(),
              &work_size, &lwork, &info);
-    lwork = size_t(work_size);
+    lwork = int64_t(work_size);
     std::vector<float> work (lwork);
 
     sgeqrf_ (&mi, &ni, a, &mi,
@@ -226,13 +226,13 @@ void matrix_qr (int m, int n, float *a)
 int km_update_centroids (const float * x,
                          float * centroids,
                          int64_t * assign,
-                         size_t d, size_t k, size_t n,
-                         size_t k_frozen)
+                         int64_t d, int64_t k, int64_t n,
+                         int64_t k_frozen)
 {
     k -= k_frozen;
     centroids += k_frozen * d;
 
-    std::vector<size_t> hassign(k);
+    std::vector<int64_t> hassign(k);
     memset (centroids, 0, sizeof(*centroids) * d * k);
 
 #pragma omp parallel
@@ -240,19 +240,19 @@ int km_update_centroids (const float * x,
         int nt = omp_get_num_threads();
         int rank = omp_get_thread_num();
         // this thread is taking care of centroids c0:c1
-        size_t c0 = (k * rank) / nt;
-        size_t c1 = (k * (rank + 1)) / nt;
+        int64_t c0 = (k * rank) / nt;
+        int64_t c1 = (k * (rank + 1)) / nt;
         const float *xi = x;
-        size_t nacc = 0;
+        int64_t nacc = 0;
 
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             int64_t ci = assign[i];
             assert (ci >= 0 && ci < k + k_frozen);
             ci -= k_frozen;
             if (ci >= c0 && ci < c1)  {
                 float * c = centroids + ci * d;
                 hassign[ci]++;
-                for (size_t j = 0; j < d; j++)
+                for (int64_t j = 0; j < d; j++)
                     c[j] += xi[j];
                 nacc++;
             }
@@ -262,21 +262,21 @@ int km_update_centroids (const float * x,
     }
 
 #pragma omp parallel for
-    for (size_t ci = 0; ci < k; ci++) {
+    for (int64_t ci = 0; ci < k; ci++) {
         float * c = centroids + ci * d;
         float ni = (float) hassign[ci];
         if (ni != 0) {
-            for (size_t j = 0; j < d; j++)
+            for (int64_t j = 0; j < d; j++)
                 c[j] /= ni;
         }
     }
 
     /* Take care of void clusters */
-    size_t nsplit = 0;
+    int64_t nsplit = 0;
     RandomGenerator rng (1234);
-    for (size_t ci = 0; ci < k; ci++) {
+    for (int64_t ci = 0; ci < k; ci++) {
         if (hassign[ci] == 0) { /* need to redefine a centroid */
-            size_t cj;
+            int64_t cj;
             for (cj = 0; 1; cj = (cj + 1) % k) {
                 /* probability to pick this cluster for split */
                 float p = (hassign[cj] - 1.0) / (float) (n - k);
@@ -288,7 +288,7 @@ int km_update_centroids (const float * x,
             memcpy (centroids+ci*d, centroids+cj*d, sizeof(*centroids) * d);
 
             /* small symmetric pertubation. Much better than  */
-            for (size_t j = 0; j < d; j++) {
+            for (int64_t j = 0; j < d; j++) {
                 if (j % 2 == 0) {
                     centroids[ci * d + j] *= 1 + EPS;
                     centroids[cj * d + j] *= 1 - EPS;
@@ -333,13 +333,13 @@ void ranklist_handle_ties (int k, int64_t *idx, const float *dis)
     }
 }
 
-size_t merge_result_table_with (size_t n, size_t k,
+int64_t merge_result_table_with (int64_t n, int64_t k,
                                 int64_t *I0, float *D0,
                                 const int64_t *I1, const float *D1,
                                 bool keep_min,
                                 int64_t translation)
 {
-    size_t n1 = 0;
+    int64_t n1 = 0;
 
 #pragma omp parallel reduction(+:n1)
     {
@@ -347,16 +347,16 @@ size_t merge_result_table_with (size_t n, size_t k,
         std::vector<float> tmpD (k);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             int64_t *lI0 = I0 + i * k;
             float *lD0 = D0 + i * k;
             const int64_t *lI1 = I1 + i * k;
             const float *lD1 = D1 + i * k;
-            size_t r0 = 0;
-            size_t r1 = 0;
+            int64_t r0 = 0;
+            int64_t r1 = 0;
 
             if (keep_min) {
-                for (size_t j = 0; j < k; j++) {
+                for (int64_t j = 0; j < k; j++) {
 
                     if (lI0[r0] >= 0 && lD0[r0] < lD1[r1]) {
                         tmpD[j] = lD0[r0];
@@ -372,7 +372,7 @@ size_t merge_result_table_with (size_t n, size_t k,
                     }
                 }
             } else {
-                for (size_t j = 0; j < k; j++) {
+                for (int64_t j = 0; j < k; j++) {
                     if (lI0[r0] >= 0 && lD0[r0] > lD1[r1]) {
                         tmpD[j] = lD0[r0];
                         tmpI[j] = lI0[r0];
@@ -398,8 +398,8 @@ size_t merge_result_table_with (size_t n, size_t k,
 
 
 
-size_t ranklist_intersection_size (size_t k1, const int64_t *v1,
-                                   size_t k2, const int64_t *v2_in)
+int64_t ranklist_intersection_size (int64_t k1, const int64_t *v1,
+                                   int64_t k2, const int64_t *v2_in)
 {
     if (k2 > k1) return ranklist_intersection_size (k2, v2_in, k1, v1);
     int64_t *v2 = new int64_t [k2];
@@ -407,8 +407,8 @@ size_t ranklist_intersection_size (size_t k1, const int64_t *v1,
     std::sort (v2, v2 + k2);
     { // de-dup v2
         int64_t prev = -1;
-        size_t wp = 0;
-        for (size_t i = 0; i < k2; i++) {
+        int64_t wp = 0;
+        for (int64_t i = 0; i < k2; i++) {
             if (v2 [i] != prev) {
                 v2[wp++] = prev = v2 [i];
             }
@@ -416,12 +416,12 @@ size_t ranklist_intersection_size (size_t k1, const int64_t *v1,
         k2 = wp;
     }
     const int64_t seen_flag = 1L << 60;
-    size_t count = 0;
-    for (size_t i = 0; i < k1; i++) {
+    int64_t count = 0;
+    for (int64_t i = 0; i < k1; i++) {
         int64_t q = v1 [i];
-        size_t i0 = 0, i1 = k2;
+        int64_t i0 = 0, i1 = k2;
         while (i0 + 1 < i1) {
-            size_t imed = (i1 + i0) / 2;
+            int64_t imed = (i1 + i0) / 2;
             int64_t piv = v2 [imed] & ~seen_flag;
             if (piv <= q) i0 = imed;
             else          i1 = imed;
@@ -460,7 +460,7 @@ double imbalance_factor (int n, int k, const int64_t *assign) {
 
 
 
-int ivec_hist (size_t n, const int * v, int vmax, int *hist) {
+int ivec_hist (int64_t n, const int * v, int vmax, int *hist) {
     memset (hist, 0, sizeof(hist[0]) * vmax);
     int nout = 0;
     while (n--) {
@@ -471,13 +471,13 @@ int ivec_hist (size_t n, const int * v, int vmax, int *hist) {
 }
 
 
-void bincode_hist(size_t n, size_t nbits, const uint8_t *codes, int *hist)
+void bincode_hist(int64_t n, int64_t nbits, const uint8_t *codes, int *hist)
 {
     FAISS_THROW_IF_NOT (nbits % 8 == 0);
-    size_t d = nbits / 8;
+    int64_t d = nbits / 8;
     std::vector<int> accu(d * 256);
     const uint8_t *c = codes;
-    for (size_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++)
         for(int j = 0; j < d; j++)
             accu[j * 256 + *c++]++;
     memset (hist, 0, sizeof(*hist) * nbits);
@@ -494,9 +494,9 @@ void bincode_hist(size_t n, size_t nbits, const uint8_t *codes, int *hist)
 
 
 
-size_t ivec_checksum (size_t n, const int *a)
+int64_t ivec_checksum (int64_t n, const int *a)
 {
-    size_t cs = 112909;
+    int64_t cs = 112909;
     while (n--) cs = cs * 65713 + a[n] * 1686049;
     return cs;
 }
@@ -505,15 +505,15 @@ size_t ivec_checksum (size_t n, const int *a)
 namespace {
     struct ArgsortComparator {
         const float *vals;
-        bool operator() (const size_t a, const size_t b) const {
+        bool operator() (const int64_t a, const int64_t b) const {
             return vals[a] < vals[b];
         }
     };
 
     struct SegmentS {
-        size_t i0; // begin pointer in the permutation array
-        size_t i1; // end
-        size_t len() const {
+        int64_t i0; // begin pointer in the permutation array
+        int64_t i1; // end
+        int64_t len() const {
             return i1 - i0;
         }
     };
@@ -544,9 +544,9 @@ namespace {
 
             if (t + 1 < nt) {
                 T pivot = src[s1s[t].i1];
-                size_t i0 = s2.i0, i1 = s2.i1;
+                int64_t i0 = s2.i0, i1 = s2.i1;
                 while (i0 + 1 < i1) {
-                    size_t imed = (i1 + i0) / 2;
+                    int64_t imed = (i1 + i0) / 2;
                     if (comp (pivot, src[imed])) {i1 = imed; }
                     else                         {i0 = imed; }
                 }
@@ -595,20 +595,20 @@ namespace {
 
 };
 
-void fvec_argsort (size_t n, const float *vals,
-                    size_t *perm)
+void fvec_argsort (int64_t n, const float *vals,
+                    int64_t *perm)
 {
-    for (size_t i = 0; i < n; i++) perm[i] = i;
+    for (int64_t i = 0; i < n; i++) perm[i] = i;
     ArgsortComparator comp = {vals};
     std::sort (perm, perm + n, comp);
 }
 
-void fvec_argsort_parallel (size_t n, const float *vals,
-                            size_t *perm)
+void fvec_argsort_parallel (int64_t n, const float *vals,
+                            int64_t *perm)
 {
-    size_t * perm2 = new size_t[n];
+    int64_t * perm2 = new int64_t[n];
     // 2 result tables, during merging, flip between them
-    size_t *permB = perm2, *permA = perm;
+    int64_t *permB = perm2, *permA = perm;
 
     int nt = omp_get_max_threads();
     { // prepare correct permutation so that the result ends in perm
@@ -621,7 +621,7 @@ void fvec_argsort_parallel (size_t n, const float *vals,
     }
 
 #pragma omp parallel
-    for (size_t i = 0; i < n; i++) permA[i] = i;
+    for (int64_t i = 0; i < n; i++) permA[i] = i;
 
     ArgsortComparator comp = {vals};
 
@@ -630,8 +630,8 @@ void fvec_argsort_parallel (size_t n, const float *vals,
     // independent sorts
 #pragma omp parallel for
     for (int t = 0; t < nt; t++) {
-        size_t i0 = t * n / nt;
-        size_t i1 = (t + 1) * n / nt;
+        int64_t i0 = t * n / nt;
+        int64_t i1 = (t + 1) * n / nt;
         SegmentS seg = {i0, i1};
         std::sort (permA + seg.i0, permA + seg.i1, comp);
         segs[t] = seg;
@@ -649,7 +649,7 @@ void fvec_argsort_parallel (size_t n, const float *vals,
         for (int s = 0; s < nseg; s += 2) {
             if (s + 1 == nseg) { // otherwise isolated segment
                 memcpy(permB + segs[s].i0, permA + segs[s].i0,
-                       segs[s].len() * sizeof(size_t));
+                       segs[s].len() * sizeof(int64_t));
             } else {
                 int t0 = s * sub_nt / sub_nseg1;
                 int t1 = (s + 1) * sub_nt / sub_nseg1;
@@ -686,37 +686,37 @@ void fvec_argsort_parallel (size_t n, const float *vals,
 
 
 const float *fvecs_maybe_subsample (
-          size_t d, size_t *n, size_t nmax, const float *x,
+          int64_t d, int64_t *n, int64_t nmax, const float *x,
           bool verbose, int64_t seed)
 {
 
     if (*n <= nmax) return x; // nothing to do
 
-    size_t n2 = nmax;
+    int64_t n2 = nmax;
     if (verbose) {
-        printf ("  Input training set too big (max size is %ld), sampling "
-                "%ld / %ld vectors\n", nmax, n2, *n);
+        printf ("  Input training set too big (max size is  %" PRId64 "), sampling "
+                " %" PRId64 " /  %" PRId64 " vectors\n", nmax, n2, *n);
     }
     std::vector<int> subset (*n);
     rand_perm (subset.data (), *n, seed);
     float *x_subset = new float[n2 * d];
     for (int64_t i = 0; i < n2; i++)
         memcpy (&x_subset[i * d],
-                &x[subset[i] * size_t(d)],
+                &x[subset[i] * int64_t(d)],
                 sizeof (x[0]) * d);
     *n = n2;
     return x_subset;
 }
 
 
-void binary_to_real(size_t d, const uint8_t *x_in, float *x_out) {
-    for (size_t i = 0; i < d; ++i) {
+void binary_to_real(int64_t d, const uint8_t *x_in, float *x_out) {
+    for (int64_t i = 0; i < d; ++i) {
         x_out[i] = 2 * ((x_in[i >> 3] >> (i & 7)) & 1) - 1;
     }
 }
 
-void real_to_binary(size_t d, const float *x_in, uint8_t *x_out) {
-  for (size_t i = 0; i < d / 8; ++i) {
+void real_to_binary(int64_t d, const float *x_in, uint8_t *x_out) {
+  for (int64_t i = 0; i < d / 8; ++i) {
     uint8_t b = 0;
     for (int j = 0; j < 8; ++j) {
       if (x_in[8 * i + j] > 0) {
@@ -749,7 +749,7 @@ bool check_openmp() {
     }
 
     std::vector<int> nt_per_thread(10);
-    size_t sum = 0;
+    int64_t sum = 0;
     bool in_parallel = true;
 #pragma omp parallel reduction(+: sum)
     {

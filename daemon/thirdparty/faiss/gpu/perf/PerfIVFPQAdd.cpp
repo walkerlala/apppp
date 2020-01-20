@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
   if (FLAGS_time_gpu) {
     gpuIndex.train(numTrain, trainVecs.data());
     if (FLAGS_reserve_memory) {
-      size_t numVecs = (size_t) FLAGS_batches * (size_t) FLAGS_batch_size;
+      int64_t numVecs = (int64_t) FLAGS_batches * (int64_t) FLAGS_batch_size;
       gpuIndex.reserveMemory(numVecs);
     }
   }

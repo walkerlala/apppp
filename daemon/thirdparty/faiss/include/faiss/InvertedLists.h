@@ -15,6 +15,7 @@
  * the interface.
  */
 
+#include <cinttypes>
 #include <vector>
 #include <faiss/Index.h>
 
@@ -31,72 +32,72 @@ namespace faiss {
 struct InvertedLists {
     typedef Index::idx_t idx_t;
 
-    size_t nlist;             ///< number of possible key values
-    size_t code_size;         ///< code size per vector in bytes
+    int64_t nlist;             ///< number of possible key values
+    int64_t code_size;         ///< code size per vector in bytes
 
-    InvertedLists (size_t nlist, size_t code_size);
+    InvertedLists (int64_t nlist, int64_t code_size);
 
     /*************************
      *  Read only functions */
 
     /// get the size of a list
-    virtual size_t list_size(size_t list_no) const = 0;
+    virtual int64_t list_size(int64_t list_no) const = 0;
 
     /** get the codes for an inverted list
      * must be released by release_codes
      *
      * @return codes    size list_size * code_size
      */
-    virtual const uint8_t * get_codes (size_t list_no) const = 0;
+    virtual const uint8_t * get_codes (int64_t list_no) const = 0;
 
     /** get the ids for an inverted list
      * must be released by release_ids
      *
      * @return ids      size list_size
      */
-    virtual const idx_t * get_ids (size_t list_no) const = 0;
+    virtual const idx_t * get_ids (int64_t list_no) const = 0;
 
     /// release codes returned by get_codes (default implementation is nop
-    virtual void release_codes (size_t list_no, const uint8_t *codes) const;
+    virtual void release_codes (int64_t list_no, const uint8_t *codes) const;
 
     /// release ids returned by get_ids
-    virtual void release_ids (size_t list_no, const idx_t *ids) const;
+    virtual void release_ids (int64_t list_no, const idx_t *ids) const;
 
     /// @return a single id in an inverted list
-    virtual idx_t get_single_id (size_t list_no, size_t offset) const;
+    virtual idx_t get_single_id (int64_t list_no, int64_t offset) const;
 
     /// @return a single code in an inverted list
     /// (should be deallocated with release_codes)
     virtual const uint8_t * get_single_code (
-                size_t list_no, size_t offset) const;
+                int64_t list_no, int64_t offset) const;
 
     /// prepare the following lists (default does nothing)
-    /// a list can be -1 hence the signed long
+    /// a list can be -1 hence the signed int64_t
     virtual void prefetch_lists (const idx_t *list_nos, int nlist) const;
 
     /*************************
      * writing functions     */
 
     /// add one entry to an inverted list
-    virtual size_t add_entry (size_t list_no, idx_t theid,
+    virtual int64_t add_entry (int64_t list_no, idx_t theid,
                               const uint8_t *code);
 
-    virtual size_t add_entries (
-           size_t list_no, size_t n_entry,
+    virtual int64_t add_entries (
+           int64_t list_no, int64_t n_entry,
            const idx_t* ids, const uint8_t *code) = 0;
 
-    virtual void update_entry (size_t list_no, size_t offset,
+    virtual void update_entry (int64_t list_no, int64_t offset,
                                idx_t id, const uint8_t *code);
 
-    virtual void update_entries (size_t list_no, size_t offset, size_t n_entry,
+    virtual void update_entries (int64_t list_no, int64_t offset, int64_t n_entry,
                                  const idx_t *ids, const uint8_t *code) = 0;
 
-    virtual void resize (size_t list_no, size_t new_size) = 0;
+    virtual void resize (int64_t list_no, int64_t new_size) = 0;
 
     virtual void reset ();
 
     /// move all entries from oivf (empty on output)
-    void merge_from (InvertedLists *oivf, size_t add_id);
+    void merge_from (InvertedLists *oivf, int64_t add_id);
 
     virtual ~InvertedLists ();
 
@@ -110,7 +111,7 @@ struct InvertedLists {
     void print_stats () const;
 
     /// sum up list sizes
-    size_t compute_ntotal () const;
+    int64_t compute_ntotal () const;
 
     /**************************************
      * Scoped inverted lists (for automatic deallocation)
@@ -136,15 +137,15 @@ struct InvertedLists {
     struct ScopedIds {
         const InvertedLists *il;
         const idx_t *ids;
-        size_t list_no;
+        int64_t list_no;
 
-        ScopedIds (const InvertedLists *il, size_t list_no):
+        ScopedIds (const InvertedLists *il, int64_t list_no):
         il (il), ids (il->get_ids (list_no)), list_no (list_no)
         {}
 
         const idx_t *get() {return ids; }
 
-        idx_t operator [] (size_t i) const {
+        idx_t operator [] (int64_t i) const {
             return ids[i];
         }
 
@@ -156,13 +157,13 @@ struct InvertedLists {
     struct ScopedCodes {
         const InvertedLists *il;
         const uint8_t *codes;
-        size_t list_no;
+        int64_t list_no;
 
-        ScopedCodes (const InvertedLists *il, size_t list_no):
+        ScopedCodes (const InvertedLists *il, int64_t list_no):
             il (il), codes (il->get_codes (list_no)), list_no (list_no)
         {}
 
-        ScopedCodes (const InvertedLists *il, size_t list_no, size_t offset):
+        ScopedCodes (const InvertedLists *il, int64_t list_no, int64_t offset):
             il (il), codes (il->get_single_code (list_no, offset)),
             list_no (list_no)
         {}
@@ -183,20 +184,20 @@ struct ArrayInvertedLists: InvertedLists {
     std::vector < std::vector<uint8_t> > codes; // binary codes, size nlist
     std::vector < std::vector<idx_t> > ids;  ///< Inverted lists for indexes
 
-    ArrayInvertedLists (size_t nlist, size_t code_size);
+    ArrayInvertedLists (int64_t nlist, int64_t code_size);
 
-    size_t list_size(size_t list_no) const override;
-    const uint8_t * get_codes (size_t list_no) const override;
-    const idx_t * get_ids (size_t list_no) const override;
+    int64_t list_size(int64_t list_no) const override;
+    const uint8_t * get_codes (int64_t list_no) const override;
+    const idx_t * get_ids (int64_t list_no) const override;
 
-    size_t add_entries (
-           size_t list_no, size_t n_entry,
+    int64_t add_entries (
+           int64_t list_no, int64_t n_entry,
            const idx_t* ids, const uint8_t *code) override;
 
-    void update_entries (size_t list_no, size_t offset, size_t n_entry,
+    void update_entries (int64_t list_no, int64_t offset, int64_t n_entry,
                          const idx_t *ids, const uint8_t *code) override;
 
-    void resize (size_t list_no, size_t new_size) override;
+    void resize (int64_t list_no, int64_t new_size) override;
 
     virtual ~ArrayInvertedLists ();
 };
@@ -210,17 +211,17 @@ struct ArrayInvertedLists: InvertedLists {
 
 struct ReadOnlyInvertedLists: InvertedLists {
 
-    ReadOnlyInvertedLists (size_t nlist, size_t code_size):
+    ReadOnlyInvertedLists (int64_t nlist, int64_t code_size):
     InvertedLists (nlist, code_size) {}
 
-    size_t add_entries (
-           size_t list_no, size_t n_entry,
+    int64_t add_entries (
+           int64_t list_no, int64_t n_entry,
            const idx_t* ids, const uint8_t *code) override;
 
-    void update_entries (size_t list_no, size_t offset, size_t n_entry,
+    void update_entries (int64_t list_no, int64_t offset, int64_t n_entry,
                          const idx_t *ids, const uint8_t *code) override;
 
-    void resize (size_t list_no, size_t new_size) override;
+    void resize (int64_t list_no, int64_t new_size) override;
 
 };
 
@@ -233,19 +234,19 @@ struct HStackInvertedLists: ReadOnlyInvertedLists {
     /// build InvertedLists by concatenating nil of them
     HStackInvertedLists (int nil, const InvertedLists **ils);
 
-    size_t list_size(size_t list_no) const override;
-    const uint8_t * get_codes (size_t list_no) const override;
-    const idx_t * get_ids (size_t list_no) const override;
+    int64_t list_size(int64_t list_no) const override;
+    const uint8_t * get_codes (int64_t list_no) const override;
+    const idx_t * get_ids (int64_t list_no) const override;
 
     void prefetch_lists (const idx_t *list_nos, int nlist) const override;
 
-    void release_codes (size_t list_no, const uint8_t *codes) const override;
-    void release_ids (size_t list_no, const idx_t *ids) const override;
+    void release_codes (int64_t list_no, const uint8_t *codes) const override;
+    void release_ids (int64_t list_no, const idx_t *ids) const override;
 
-    idx_t get_single_id (size_t list_no, size_t offset) const override;
+    idx_t get_single_id (int64_t list_no, int64_t offset) const override;
 
     const uint8_t * get_single_code (
-           size_t list_no, size_t offset) const override;
+           int64_t list_no, int64_t offset) const override;
 
 };
 
@@ -259,17 +260,17 @@ struct SliceInvertedLists: ReadOnlyInvertedLists {
 
     SliceInvertedLists(const InvertedLists *il, idx_t i0, idx_t i1);
 
-    size_t list_size(size_t list_no) const override;
-    const uint8_t * get_codes (size_t list_no) const override;
-    const idx_t * get_ids (size_t list_no) const override;
+    int64_t list_size(int64_t list_no) const override;
+    const uint8_t * get_codes (int64_t list_no) const override;
+    const idx_t * get_ids (int64_t list_no) const override;
 
-    void release_codes (size_t list_no, const uint8_t *codes) const override;
-    void release_ids (size_t list_no, const idx_t *ids) const override;
+    void release_codes (int64_t list_no, const uint8_t *codes) const override;
+    void release_ids (int64_t list_no, const idx_t *ids) const override;
 
-    idx_t get_single_id (size_t list_no, size_t offset) const override;
+    idx_t get_single_id (int64_t list_no, int64_t offset) const override;
 
     const uint8_t * get_single_code (
-           size_t list_no, size_t offset) const override;
+           int64_t list_no, int64_t offset) const override;
 
     void prefetch_lists (const idx_t *list_nos, int nlist) const override;
 };
@@ -282,17 +283,17 @@ struct VStackInvertedLists: ReadOnlyInvertedLists {
     /// build InvertedLists by concatenating nil of them
     VStackInvertedLists (int nil, const InvertedLists **ils);
 
-    size_t list_size(size_t list_no) const override;
-    const uint8_t * get_codes (size_t list_no) const override;
-    const idx_t * get_ids (size_t list_no) const override;
+    int64_t list_size(int64_t list_no) const override;
+    const uint8_t * get_codes (int64_t list_no) const override;
+    const idx_t * get_ids (int64_t list_no) const override;
 
-    void release_codes (size_t list_no, const uint8_t *codes) const override;
-    void release_ids (size_t list_no, const idx_t *ids) const override;
+    void release_codes (int64_t list_no, const uint8_t *codes) const override;
+    void release_ids (int64_t list_no, const idx_t *ids) const override;
 
-    idx_t get_single_id (size_t list_no, size_t offset) const override;
+    idx_t get_single_id (int64_t list_no, int64_t offset) const override;
 
     const uint8_t * get_single_code (
-           size_t list_no, size_t offset) const override;
+           int64_t list_no, int64_t offset) const override;
 
     void prefetch_lists (const idx_t *list_nos, int nlist) const override;
 
@@ -301,7 +302,7 @@ struct VStackInvertedLists: ReadOnlyInvertedLists {
 
 /** use the first inverted lists if they are non-empty otherwise use the second
  *
- * This is useful if il1 has a few inverted lists that are too long,
+ * This is useful if il1 has a few inverted lists that are too int64_t,
  * and that il0 has replacement lists for those, with empty lists for
  * the others. */
 struct MaskedInvertedLists: ReadOnlyInvertedLists {
@@ -312,17 +313,17 @@ struct MaskedInvertedLists: ReadOnlyInvertedLists {
     MaskedInvertedLists (const InvertedLists *il0,
                          const InvertedLists *il1);
 
-    size_t list_size(size_t list_no) const override;
-    const uint8_t * get_codes (size_t list_no) const override;
-    const idx_t * get_ids (size_t list_no) const override;
+    int64_t list_size(int64_t list_no) const override;
+    const uint8_t * get_codes (int64_t list_no) const override;
+    const idx_t * get_ids (int64_t list_no) const override;
 
-    void release_codes (size_t list_no, const uint8_t *codes) const override;
-    void release_ids (size_t list_no, const idx_t *ids) const override;
+    void release_codes (int64_t list_no, const uint8_t *codes) const override;
+    void release_ids (int64_t list_no, const idx_t *ids) const override;
 
-    idx_t get_single_id (size_t list_no, size_t offset) const override;
+    idx_t get_single_id (int64_t list_no, int64_t offset) const override;
 
     const uint8_t * get_single_code (
-           size_t list_no, size_t offset) const override;
+           int64_t list_no, int64_t offset) const override;
 
     void prefetch_lists (const idx_t *list_nos, int nlist) const override;
 

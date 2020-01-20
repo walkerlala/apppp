@@ -58,12 +58,12 @@ int main() {
 
     printf("is_trained = %s\n", gpu_index->is_trained ? "true" : "false");
     gpu_index->add(nb, xb);  // add vectors to the index
-    printf("ntotal = %ld\n", gpu_index->ntotal);
+    printf("ntotal =  %" PRId64 "\n", gpu_index->ntotal);
 
     int k = 4;
 
     {       // search xq
-        long *I = new long[k * nq];
+        int64_t *I = new int64_t[k * nq];
         float *D = new float[k * nq];
 
         gpu_index->search(nq, xq, k, D, I);

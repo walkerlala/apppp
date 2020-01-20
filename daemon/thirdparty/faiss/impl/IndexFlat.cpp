@@ -46,15 +46,15 @@ void IndexFlat::search (idx_t n, const float *x, idx_t k,
 
     if (metric_type == METRIC_INNER_PRODUCT) {
         float_minheap_array_t res = {
-            size_t(n), size_t(k), labels, distances};
+            int64_t(n), int64_t(k), labels, distances};
         knn_inner_product (x, xb.data(), d, n, ntotal, &res);
     } else if (metric_type == METRIC_L2) {
         float_maxheap_array_t res = {
-            size_t(n), size_t(k), labels, distances};
+            int64_t(n), int64_t(k), labels, distances};
         knn_L2sqr (x, xb.data(), d, n, ntotal, &res);
     } else {
         float_maxheap_array_t res = {
-            size_t(n), size_t(k), labels, distances};
+            int64_t(n), int64_t(k), labels, distances};
         knn_extra_metrics (x, xb.data(), d, n, ntotal,
                            metric_type, metric_arg,
                            &res);
@@ -102,7 +102,7 @@ void IndexFlat::compute_distance_subset (
 
 }
 
-size_t IndexFlat::remove_ids (const IDSelector & sel)
+int64_t IndexFlat::remove_ids (const IDSelector & sel)
 {
     idx_t j = 0;
     for (idx_t i = 0; i < ntotal; i++) {
@@ -115,7 +115,7 @@ size_t IndexFlat::remove_ids (const IDSelector & sel)
             j++;
         }
     }
-    size_t nremove = ntotal - j;
+    int64_t nremove = ntotal - j;
     if (nremove > 0) {
         ntotal = j;
         xb.resize (ntotal * d);
@@ -128,11 +128,11 @@ namespace {
 
 
 struct FlatL2Dis : DistanceComputer {
-    size_t d;
+    int64_t d;
     Index::idx_t nb;
     const float *q;
     const float *b;
-    size_t ndis;
+    int64_t ndis;
 
     float operator () (idx_t i) override {
         ndis++;
@@ -156,11 +156,11 @@ struct FlatL2Dis : DistanceComputer {
 };
 
 struct FlatIPDis : DistanceComputer {
-    size_t d;
+    int64_t d;
     Index::idx_t nb;
     const float *q;
     const float *b;
-    size_t ndis;
+    int64_t ndis;
 
     float operator () (idx_t i) override {
         ndis++;
@@ -208,7 +208,7 @@ void IndexFlat::reconstruct (idx_t key, float * recons) const
 
 
 /* The standalone codec interface */
-size_t IndexFlat::sa_code_size () const
+int64_t IndexFlat::sa_code_size () const
 {
     return sizeof(float) * d;
 }
@@ -230,7 +230,7 @@ void IndexFlat::sa_decode (idx_t n, const uint8_t *bytes, float *x) const
  * IndexFlatL2BaseShift
  ***************************************************/
 
-IndexFlatL2BaseShift::IndexFlatL2BaseShift (idx_t d, size_t nshift, const float *shift):
+IndexFlatL2BaseShift::IndexFlatL2BaseShift (idx_t d, int64_t nshift, const float *shift):
     IndexFlatL2 (d), shift (nshift)
 {
     memcpy (this->shift.data(), shift, sizeof(float) * nshift);
@@ -246,7 +246,7 @@ void IndexFlatL2BaseShift::search (
     FAISS_THROW_IF_NOT (shift.size() == ntotal);
 
     float_maxheap_array_t res = {
-        size_t(n), size_t(k), labels, distances};
+        int64_t(n), int64_t(k), labels, distances};
     knn_L2sqr_base_shift (x, xb.data(), d, n, ntotal, &res, shift.data());
 }
 
@@ -393,9 +393,9 @@ void IndexFlat1D::update_permutation ()
 {
     perm.resize (ntotal);
     if (ntotal < 1000000) {
-        fvec_argsort (ntotal, xb.data(), (size_t*)perm.data());
+        fvec_argsort (ntotal, xb.data(), (int64_t*)perm.data());
     } else {
-        fvec_argsort_parallel (ntotal, xb.data(), (size_t*)perm.data());
+        fvec_argsort_parallel (ntotal, xb.data(), (int64_t*)perm.data());
     }
 }
 

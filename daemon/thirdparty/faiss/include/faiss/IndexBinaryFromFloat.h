@@ -10,6 +10,7 @@
 #ifndef FAISS_INDEX_BINARY_FROM_FLOAT_H
 #define FAISS_INDEX_BINARY_FROM_FLOAT_H
 
+#include <cinttypes>
 #include <faiss/IndexBinary.h>
 
 

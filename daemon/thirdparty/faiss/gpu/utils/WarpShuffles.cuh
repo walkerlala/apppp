@@ -27,8 +27,8 @@ inline __device__ T shfl(const T val,
 template <typename T>
 inline __device__ T* shfl(T* const val,
                          int srcLane, int width = kWarpSize) {
-  static_assert(sizeof(T*) == sizeof(long long), "pointer size");
-  long long v = (long long) val;
+  static_assert(sizeof(T*) == sizeof(int64_t), "pointer size");
+  int64_t v = (int64_t) val;
 
   return (T*) shfl(v, srcLane, width);
 }
@@ -47,8 +47,8 @@ inline __device__ T shfl_up(const T val,
 template <typename T>
 inline __device__ T* shfl_up(T* const val,
                              unsigned int delta, int width = kWarpSize) {
-  static_assert(sizeof(T*) == sizeof(long long), "pointer size");
-  long long v = (long long) val;
+  static_assert(sizeof(T*) == sizeof(int64_t), "pointer size");
+  int64_t v = (int64_t) val;
 
   return (T*) shfl_up(v, delta, width);
 }
@@ -67,8 +67,8 @@ inline __device__ T shfl_down(const T val,
 template <typename T>
 inline __device__ T* shfl_down(T* const val,
                               unsigned int delta, int width = kWarpSize) {
-  static_assert(sizeof(T*) == sizeof(long long), "pointer size");
-  long long v = (long long) val;
+  static_assert(sizeof(T*) == sizeof(int64_t), "pointer size");
+  int64_t v = (int64_t) val;
   return (T*) shfl_down(v, delta, width);
 }
 
@@ -86,8 +86,8 @@ inline __device__ T shfl_xor(const T val,
 template <typename T>
 inline __device__ T* shfl_xor(T* const val,
                               int laneMask, int width = kWarpSize) {
-  static_assert(sizeof(T*) == sizeof(long long), "pointer size");
-  long long v = (long long) val;
+  static_assert(sizeof(T*) == sizeof(int64_t), "pointer size");
+  int64_t v = (int64_t) val;
   return (T*) shfl_xor(v, laneMask, width);
 }
 

@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <cinttypes>
 #include <faiss/IndexIVF.h>
 #include <faiss/AuxIndexStructures.h>
 
@@ -51,21 +52,21 @@ struct ScalarQuantizer {
     float rangestat_arg;
 
     /// dimension of input vectors
-    size_t d;
+    int64_t d;
 
     /// bytes per vector
-    size_t code_size;
+    int64_t code_size;
 
     /// trained values (including the range)
     std::vector<float> trained;
 
-    ScalarQuantizer (size_t d, QuantizerType qtype);
+    ScalarQuantizer (int64_t d, QuantizerType qtype);
     ScalarQuantizer ();
 
-    void train (size_t n, const float *x);
+    void train (int64_t n, const float *x);
 
     /// Used by an IVF index to train based on the residuals
-    void train_residual (size_t n,
+    void train_residual (int64_t n,
                          const float *x,
                          Index *quantizer,
                          bool by_residual,
@@ -74,10 +75,10 @@ struct ScalarQuantizer {
     /// same as compute_code for several vectors
     void compute_codes (const float * x,
                         uint8_t * codes,
-                        size_t n) const ;
+                        int64_t n) const ;
 
     /// decode a vector from a given code (or n vectors if third argument)
-    void decode (const uint8_t *code, float *x, size_t n) const;
+    void decode (const uint8_t *code, float *x, int64_t n) const;
 
 
     /*****************************************************
@@ -99,7 +100,7 @@ struct ScalarQuantizer {
 
         const float *q;
         const uint8_t *codes;
-        size_t code_size;
+        int64_t code_size;
 
         SQDistanceComputer (): q(nullptr), codes (nullptr), code_size (0)
         {}

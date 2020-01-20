@@ -59,9 +59,9 @@ namespace faiss {
 
 float fvec_L2sqr_ref (const float * x,
                      const float * y,
-                     size_t d)
+                     int64_t d)
 {
-    size_t i;
+    int64_t i;
     float res = 0;
     for (i = 0; i < d; i++) {
         const float tmp = x[i] - y[i];
@@ -72,9 +72,9 @@ float fvec_L2sqr_ref (const float * x,
 
 float fvec_L1_ref (const float * x,
                    const float * y,
-                   size_t d)
+                   int64_t d)
 {
-    size_t i;
+    int64_t i;
     float res = 0;
     for (i = 0; i < d; i++) {
         const float tmp = x[i] - y[i];
@@ -85,9 +85,9 @@ float fvec_L1_ref (const float * x,
 
 float fvec_Linf_ref (const float * x,
                      const float * y,
-                     size_t d)
+                     int64_t d)
 {
-    size_t i;
+    int64_t i;
     float res = 0;
     for (i = 0; i < d; i++) {
       res = fmax(res, fabs(x[i] - y[i]));
@@ -97,18 +97,18 @@ float fvec_Linf_ref (const float * x,
 
 float fvec_inner_product_ref (const float * x,
                              const float * y,
-                             size_t d)
+                             int64_t d)
 {
-    size_t i;
+    int64_t i;
     float res = 0;
     for (i = 0; i < d; i++)
        res += x[i] * y[i];
     return res;
 }
 
-float fvec_norm_L2sqr_ref (const float *x, size_t d)
+float fvec_norm_L2sqr_ref (const float *x, int64_t d)
 {
-    size_t i;
+    int64_t i;
     double res = 0;
     for (i = 0; i < d; i++)
        res += x[i] * x[i];
@@ -119,9 +119,9 @@ float fvec_norm_L2sqr_ref (const float *x, size_t d)
 void fvec_L2sqr_ny_ref (float * dis,
                     const float * x,
                     const float * y,
-                    size_t d, size_t ny)
+                    int64_t d, int64_t ny)
 {
-    for (size_t i = 0; i < ny; i++) {
+    for (int64_t i = 0; i < ny; i++) {
         dis[i] = fvec_L2sqr (x, y, d);
         y += d;
     }
@@ -154,7 +154,7 @@ static inline __m128 masked_read (int d, const float *x)
 }
 
 float fvec_norm_L2sqr (const float *  x,
-                      size_t d)
+                      int64_t d)
 {
     __m128 mx;
     __m128 msum1 = _mm_setzero_ps();
@@ -181,12 +181,12 @@ float sqr (float x) {
 
 
 void fvec_L2sqr_ny_D1 (float * dis, const float * x,
-                       const float * y, size_t ny)
+                       const float * y, int64_t ny)
 {
     float x0s = x[0];
     __m128 x0 = _mm_set_ps (x0s, x0s, x0s, x0s);
 
-    size_t i;
+    int64_t i;
     for (i = 0; i + 3 < ny; i += 4) {
         __m128 tmp, accu;
         tmp = x0 - _mm_loadu_ps (y); y += 4;
@@ -206,11 +206,11 @@ void fvec_L2sqr_ny_D1 (float * dis, const float * x,
 
 
 void fvec_L2sqr_ny_D2 (float * dis, const float * x,
-                       const float * y, size_t ny)
+                       const float * y, int64_t ny)
 {
     __m128 x0 = _mm_set_ps (x[1], x[0], x[1], x[0]);
 
-    size_t i;
+    int64_t i;
     for (i = 0; i + 1 < ny; i += 2) {
         __m128 tmp, accu;
         tmp = x0 - _mm_loadu_ps (y); y += 4;
@@ -228,11 +228,11 @@ void fvec_L2sqr_ny_D2 (float * dis, const float * x,
 
 
 void fvec_L2sqr_ny_D4 (float * dis, const float * x,
-                        const float * y, size_t ny)
+                        const float * y, int64_t ny)
 {
     __m128 x0 = _mm_loadu_ps(x);
 
-    for (size_t i = 0; i < ny; i++) {
+    for (int64_t i = 0; i < ny; i++) {
         __m128 tmp, accu;
         tmp = x0 - _mm_loadu_ps (y); y += 4;
         accu = tmp * tmp;
@@ -244,12 +244,12 @@ void fvec_L2sqr_ny_D4 (float * dis, const float * x,
 
 
 void fvec_L2sqr_ny_D8 (float * dis, const float * x,
-                        const float * y, size_t ny)
+                        const float * y, int64_t ny)
 {
     __m128 x0 = _mm_loadu_ps(x);
     __m128 x1 = _mm_loadu_ps(x + 4);
 
-    for (size_t i = 0; i < ny; i++) {
+    for (int64_t i = 0; i < ny; i++) {
         __m128 tmp, accu;
         tmp = x0 - _mm_loadu_ps (y); y += 4;
         accu = tmp * tmp;
@@ -263,13 +263,13 @@ void fvec_L2sqr_ny_D8 (float * dis, const float * x,
 
 
 void fvec_L2sqr_ny_D12 (float * dis, const float * x,
-                        const float * y, size_t ny)
+                        const float * y, int64_t ny)
 {
     __m128 x0 = _mm_loadu_ps(x);
     __m128 x1 = _mm_loadu_ps(x + 4);
     __m128 x2 = _mm_loadu_ps(x + 8);
 
-    for (size_t i = 0; i < ny; i++) {
+    for (int64_t i = 0; i < ny; i++) {
         __m128 tmp, accu;
         tmp = x0 - _mm_loadu_ps (y); y += 4;
         accu = tmp * tmp;
@@ -287,7 +287,7 @@ void fvec_L2sqr_ny_D12 (float * dis, const float * x,
 } // anonymous namespace
 
 void fvec_L2sqr_ny (float * dis, const float * x,
-                        const float * y, size_t d, size_t ny) {
+                        const float * y, int64_t d, int64_t ny) {
     // optimized for a few special cases
     switch(d) {
     case 1:
@@ -335,7 +335,7 @@ static inline __m256 masked_read_8 (int d, const float *x)
 
 float fvec_inner_product (const float * x,
                           const float * y,
-                          size_t d)
+                          int64_t d)
 {
     __m256 msum1 = _mm256_setzero_ps();
 
@@ -369,7 +369,7 @@ float fvec_inner_product (const float * x,
 
 float fvec_L2sqr (const float * x,
                  const float * y,
-                 size_t d)
+                 int64_t d)
 {
     __m256 msum1 = _mm256_setzero_ps();
 
@@ -404,7 +404,7 @@ float fvec_L2sqr (const float * x,
     return  _mm_cvtss_f32 (msum2);
 }
 
-float fvec_L1 (const float * x, const float * y, size_t d)
+float fvec_L1 (const float * x, const float * y, int64_t d)
 {
     __m256 msum1 = _mm256_setzero_ps();
     __m256 signmask = __m256(_mm256_set1_epi32 (0x7fffffffUL));
@@ -441,7 +441,7 @@ float fvec_L1 (const float * x, const float * y, size_t d)
     return  _mm_cvtss_f32 (msum2);
 }
 
-float fvec_Linf (const float * x, const float * y, size_t d)
+float fvec_Linf (const float * x, const float * y, int64_t d)
 {
     __m256 msum1 = _mm256_setzero_ps();
     __m256 signmask = __m256(_mm256_set1_epi32 (0x7fffffffUL));
@@ -480,12 +480,12 @@ float fvec_Linf (const float * x, const float * y, size_t d)
 
 #elif defined(__SSE__) // But not AVX
 
-float fvec_L1 (const float * x, const float * y, size_t d)
+float fvec_L1 (const float * x, const float * y, int64_t d)
 {
     return fvec_L1_ref (x, y, d);
 }
 
-float fvec_Linf (const float * x, const float * y, size_t d)
+float fvec_Linf (const float * x, const float * y, int64_t d)
 {
     return fvec_Linf_ref (x, y, d);
 }
@@ -493,7 +493,7 @@ float fvec_Linf (const float * x, const float * y, size_t d)
 
 float fvec_L2sqr (const float * x,
                  const float * y,
-                 size_t d)
+                 int64_t d)
 {
     __m128 msum1 = _mm_setzero_ps();
 
@@ -521,7 +521,7 @@ float fvec_L2sqr (const float * x,
 
 float fvec_inner_product (const float * x,
                          const float * y,
-                         size_t d)
+                         int64_t d)
 {
     __m128 mx, my;
     __m128 msum1 = _mm_setzero_ps();
@@ -550,11 +550,11 @@ float fvec_inner_product (const float * x,
 
 float fvec_L2sqr (const float * x,
                   const float * y,
-                  size_t d)
+                  int64_t d)
 {
     if (d & 3) return fvec_L2sqr_ref (x, y, d);
     float32x4_t accu = vdupq_n_f32 (0);
-    for (size_t i = 0; i < d; i += 4) {
+    for (int64_t i = 0; i < d; i += 4) {
         float32x4_t xi = vld1q_f32 (x + i);
         float32x4_t yi = vld1q_f32 (y + i);
         float32x4_t sq = vsubq_f32 (xi, yi);
@@ -566,11 +566,11 @@ float fvec_L2sqr (const float * x,
 
 float fvec_inner_product (const float * x,
                           const float * y,
-                          size_t d)
+                          int64_t d)
 {
     if (d & 3) return fvec_inner_product_ref (x, y, d);
     float32x4_t accu = vdupq_n_f32 (0);
-    for (size_t i = 0; i < d; i += 4) {
+    for (int64_t i = 0; i < d; i += 4) {
         float32x4_t xi = vld1q_f32 (x + i);
         float32x4_t yi = vld1q_f32 (y + i);
         accu = vfmaq_f32 (accu, xi, yi);
@@ -579,11 +579,11 @@ float fvec_inner_product (const float * x,
     return vdups_laneq_f32 (a2, 0) + vdups_laneq_f32 (a2, 1);
 }
 
-float fvec_norm_L2sqr (const float *x, size_t d)
+float fvec_norm_L2sqr (const float *x, int64_t d)
 {
     if (d & 3) return fvec_norm_L2sqr_ref (x, d);
     float32x4_t accu = vdupq_n_f32 (0);
-    for (size_t i = 0; i < d; i += 4) {
+    for (int64_t i = 0; i < d; i += 4) {
         float32x4_t xi = vld1q_f32 (x + i);
         accu = vfmaq_f32 (accu, xi, xi);
     }
@@ -593,16 +593,16 @@ float fvec_norm_L2sqr (const float *x, size_t d)
 
 // not optimized for ARM
 void fvec_L2sqr_ny (float * dis, const float * x,
-                        const float * y, size_t d, size_t ny) {
+                        const float * y, int64_t d, int64_t ny) {
     fvec_L2sqr_ny_ref (dis, x, y, d, ny);
 }
 
-float fvec_L1 (const float * x, const float * y, size_t d)
+float fvec_L1 (const float * x, const float * y, int64_t d)
 {
     return fvec_L1_ref (x, y, d);
 }
 
-float fvec_Linf (const float * x, const float * y, size_t d)
+float fvec_Linf (const float * x, const float * y, int64_t d)
 {
     return fvec_Linf_ref (x, y, d);
 }
@@ -613,35 +613,35 @@ float fvec_Linf (const float * x, const float * y, size_t d)
 
 float fvec_L2sqr (const float * x,
                   const float * y,
-                  size_t d)
+                  int64_t d)
 {
     return fvec_L2sqr_ref (x, y, d);
 }
 
-float fvec_L1 (const float * x, const float * y, size_t d)
+float fvec_L1 (const float * x, const float * y, int64_t d)
 {
     return fvec_L1_ref (x, y, d);
 }
 
-float fvec_Linf (const float * x, const float * y, size_t d)
+float fvec_Linf (const float * x, const float * y, int64_t d)
 {
     return fvec_Linf_ref (x, y, d);
 }
 
 float fvec_inner_product (const float * x,
                              const float * y,
-                             size_t d)
+                             int64_t d)
 {
     return fvec_inner_product_ref (x, y, d);
 }
 
-float fvec_norm_L2sqr (const float *x, size_t d)
+float fvec_norm_L2sqr (const float *x, int64_t d)
 {
     return fvec_norm_L2sqr_ref (x, d);
 }
 
 void fvec_L2sqr_ny (float * dis, const float * x,
-                        const float * y, size_t d, size_t ny) {
+                        const float * y, int64_t d, int64_t ny) {
     fvec_L2sqr_ny_ref (dis, x, y, d, ny);
 }
 
@@ -672,15 +672,15 @@ void fvec_L2sqr_ny (float * dis, const float * x,
  ***************************************************************************/
 
 
-static inline void fvec_madd_ref (size_t n, const float *a,
+static inline void fvec_madd_ref (int64_t n, const float *a,
                            float bf, const float *b, float *c) {
-    for (size_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++)
         c[i] = a[i] + bf * b[i];
 }
 
 #ifdef __SSE__
 
-static inline void fvec_madd_sse (size_t n, const float *a,
+static inline void fvec_madd_sse (int64_t n, const float *a,
                                   float bf, const float *b, float *c) {
     n >>= 2;
     __m128 bf4 = _mm_set_ps1 (bf);
@@ -696,11 +696,11 @@ static inline void fvec_madd_sse (size_t n, const float *a,
     }
 }
 
-void fvec_madd (size_t n, const float *a,
+void fvec_madd (int64_t n, const float *a,
                 float bf, const float *b, float *c)
 {
     if ((n & 3) == 0 &&
-        ((((long)a) | ((long)b) | ((long)c)) & 15) == 0)
+        ((((int64_t)a) | ((int64_t)b) | ((int64_t)c)) & 15) == 0)
         fvec_madd_sse (n, a, bf, b, c);
     else
         fvec_madd_ref (n, a, bf, b, c);
@@ -708,7 +708,7 @@ void fvec_madd (size_t n, const float *a,
 
 #else
 
-void fvec_madd (size_t n, const float *a,
+void fvec_madd (int64_t n, const float *a,
                 float bf, const float *b, float *c)
 {
     fvec_madd_ref (n, a, bf, b, c);
@@ -716,12 +716,12 @@ void fvec_madd (size_t n, const float *a,
 
 #endif
 
-static inline int fvec_madd_and_argmin_ref (size_t n, const float *a,
+static inline int fvec_madd_and_argmin_ref (int64_t n, const float *a,
                                          float bf, const float *b, float *c) {
     float vmin = 1e20;
     int imin = -1;
 
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         c[i] = a[i] + bf * b[i];
         if (c[i] < vmin) {
             vmin = c[i];
@@ -734,7 +734,7 @@ static inline int fvec_madd_and_argmin_ref (size_t n, const float *a,
 #ifdef __SSE__
 
 static inline int fvec_madd_and_argmin_sse (
-        size_t n, const float *a,
+        int64_t n, const float *a,
         float bf, const float *b, float *c) {
     n >>= 2;
     __m128 bf4 = _mm_set_ps1 (bf);
@@ -783,11 +783,11 @@ static inline int fvec_madd_and_argmin_sse (
 }
 
 
-int fvec_madd_and_argmin (size_t n, const float *a,
+int fvec_madd_and_argmin (int64_t n, const float *a,
                           float bf, const float *b, float *c)
 {
     if ((n & 3) == 0 &&
-        ((((long)a) | ((long)b) | ((long)c)) & 15) == 0)
+        ((((int64_t)a) | ((int64_t)b) | ((int64_t)c)) & 15) == 0)
         return fvec_madd_and_argmin_sse (n, a, bf, b, c);
     else
         return fvec_madd_and_argmin_ref (n, a, bf, b, c);
@@ -795,7 +795,7 @@ int fvec_madd_and_argmin (size_t n, const float *a,
 
 #else
 
-int fvec_madd_and_argmin (size_t n, const float *a,
+int fvec_madd_and_argmin (int64_t n, const float *a,
                           float bf, const float *b, float *c)
 {
   return fvec_madd_and_argmin_ref (n, a, bf, b, c);

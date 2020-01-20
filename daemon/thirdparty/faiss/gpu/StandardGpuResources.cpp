@@ -19,16 +19,16 @@ namespace {
 constexpr int kNumStreams = 2;
 
 // Use 256 MiB of pinned memory for async CPU <-> GPU copies by default
-constexpr size_t kDefaultPinnedMemoryAllocation = (size_t) 256 * 1024 * 1024;
+constexpr int64_t kDefaultPinnedMemoryAllocation = (int64_t) 256 * 1024 * 1024;
 
 // Default temporary memory allocation for <= 4 GiB memory GPUs
-constexpr size_t k4GiBTempMem = (size_t) 512 * 1024 * 1024;
+constexpr int64_t k4GiBTempMem = (int64_t) 512 * 1024 * 1024;
 
 // Default temporary memory allocation for <= 8 GiB memory GPUs
-constexpr size_t k8GiBTempMem = (size_t) 1024 * 1024 * 1024;
+constexpr int64_t k8GiBTempMem = (int64_t) 1024 * 1024 * 1024;
 
 // Maximum temporary memory allocation for all GPUs
-constexpr size_t kMaxTempMem = (size_t) 1536 * 1024 * 1024;
+constexpr int64_t kMaxTempMem = (int64_t) 1536 * 1024 * 1024;
 
 }
 
@@ -38,7 +38,7 @@ StandardGpuResources::StandardGpuResources() :
     // let the adjustment function determine the memory size for us by passing
     // in a huge value that will then be adjusted
     tempMemSize_(getDefaultTempMemForGPU(-1,
-                                         std::numeric_limits<size_t>::max())),
+                                         std::numeric_limits<int64_t>::max())),
     pinnedMemSize_(kDefaultPinnedMemoryAllocation),
     cudaMallocWarning_(true) {
 }
@@ -81,20 +81,20 @@ StandardGpuResources::~StandardGpuResources() {
   }
 }
 
-size_t
+int64_t
 StandardGpuResources::getDefaultTempMemForGPU(int device,
-                                              size_t requested) {
+                                              int64_t requested) {
   auto totalMem = device != -1 ?
     getDeviceProperties(device).totalGlobalMem :
-    std::numeric_limits<size_t>::max();
+    std::numeric_limits<int64_t>::max();
 
-  if (totalMem <= (size_t) 4 * 1024 * 1024 * 1024) {
+  if (totalMem <= (int64_t) 4 * 1024 * 1024 * 1024) {
     // If the GPU has <= 4 GiB of memory, reserve 512 MiB
 
     if (requested > k4GiBTempMem) {
       return k4GiBTempMem;
     }
-  } else if (totalMem <= (size_t) 8 * 1024 * 1024 * 1024) {
+  } else if (totalMem <= (int64_t) 8 * 1024 * 1024 * 1024) {
     // If the GPU has <= 8 GiB of memory, reserve 1 GiB
 
     if (requested > k8GiBTempMem) {
@@ -118,7 +118,7 @@ StandardGpuResources::noTempMemory() {
 }
 
 void
-StandardGpuResources::setTempMemory(size_t size) {
+StandardGpuResources::setTempMemory(int64_t size) {
   if (tempMemSize_ != size) {
     // adjust based on general limits
     tempMemSize_ = getDefaultTempMemForGPU(-1, size);
@@ -143,7 +143,7 @@ StandardGpuResources::setTempMemory(size_t size) {
 }
 
 void
-StandardGpuResources::setPinnedMemory(size_t size) {
+StandardGpuResources::setPinnedMemory(int64_t size) {
   // Should not call this after devices have been initialized
   FAISS_ASSERT(defaultStreams_.size() == 0);
   FAISS_ASSERT(!pinnedMemAlloc_);
@@ -281,7 +281,7 @@ DeviceMemory& StandardGpuResources::getMemoryManager(int device) {
   return *memory_[device];
 }
 
-std::pair<void*, size_t>
+std::pair<void*, int64_t>
 StandardGpuResources::getPinnedMemory() {
   return std::make_pair(pinnedMemAlloc_, pinnedMemAllocSize_);
 }

@@ -48,10 +48,10 @@ int getMaxThreads(int device);
 int getMaxThreadsCurrentDevice();
 
 /// Returns the maximum smem available for the given GPU device
-size_t getMaxSharedMemPerBlock(int device);
+int64_t getMaxSharedMemPerBlock(int device);
 
 /// Equivalent to getMaxSharedMemPerBlock(getCurrentDevice())
-size_t getMaxSharedMemPerBlockCurrentDevice();
+int64_t getMaxSharedMemPerBlockCurrentDevice();
 
 /// For a given pointer, returns whether or not it is located on
 /// a device (deviceId >= 0) or the host (-1).

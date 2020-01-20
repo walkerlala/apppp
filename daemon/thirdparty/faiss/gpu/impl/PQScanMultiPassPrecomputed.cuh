@@ -35,7 +35,7 @@ void runPQScanMultiPassPrecomputed(Tensor<float, 2, true>& queries,
                                    // output
                                    Tensor<float, 2, true>& outDistances,
                                    // output
-                                   Tensor<long, 2, true>& outIndices,
+                                   Tensor<int64_t, 2, true>& outIndices,
                                    GpuResources* res);
 
 } } // namespace

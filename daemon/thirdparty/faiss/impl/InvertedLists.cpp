@@ -24,7 +24,7 @@ using ScopedCodes = InvertedLists::ScopedCodes;
  * InvertedLists implementation
  ******************************************/
 
-InvertedLists::InvertedLists (size_t nlist, size_t code_size):
+InvertedLists::InvertedLists (int64_t nlist, int64_t code_size):
     nlist (nlist), code_size (code_size)
 {
 }
@@ -33,52 +33,52 @@ InvertedLists::~InvertedLists ()
 {}
 
 InvertedLists::idx_t InvertedLists::get_single_id (
-     size_t list_no, size_t offset) const
+     int64_t list_no, int64_t offset) const
 {
     assert (offset < list_size (list_no));
     return get_ids(list_no)[offset];
 }
 
 
-void InvertedLists::release_codes (size_t, const uint8_t *) const
+void InvertedLists::release_codes (int64_t, const uint8_t *) const
 {}
 
-void InvertedLists::release_ids (size_t, const idx_t *) const
+void InvertedLists::release_ids (int64_t, const idx_t *) const
 {}
 
 void InvertedLists::prefetch_lists (const idx_t *, int) const
 {}
 
 const uint8_t * InvertedLists::get_single_code (
-                   size_t list_no, size_t offset) const
+                   int64_t list_no, int64_t offset) const
 {
     assert (offset < list_size (list_no));
     return get_codes(list_no) + offset * code_size;
 }
 
-size_t InvertedLists::add_entry (size_t list_no, idx_t theid,
+int64_t InvertedLists::add_entry (int64_t list_no, idx_t theid,
                                  const uint8_t *code)
 {
     return add_entries (list_no, 1, &theid, code);
 }
 
-void InvertedLists::update_entry (size_t list_no, size_t offset,
+void InvertedLists::update_entry (int64_t list_no, int64_t offset,
                                         idx_t id, const uint8_t *code)
 {
     update_entries (list_no, offset, 1, &id, code);
 }
 
 void InvertedLists::reset () {
-    for (size_t i = 0; i < nlist; i++) {
+    for (int64_t i = 0; i < nlist; i++) {
         resize (i, 0);
     }
 }
 
-void InvertedLists::merge_from (InvertedLists *oivf, size_t add_id) {
+void InvertedLists::merge_from (InvertedLists *oivf, int64_t add_id) {
 
 #pragma omp parallel for
     for (idx_t i = 0; i < nlist; i++) {
-        size_t list_size = oivf->list_size (i);
+        int64_t list_size = oivf->list_size (i);
         ScopedIds ids (oivf, i);
         if (add_id == 0) {
             add_entries (i, list_size, ids.get (),
@@ -86,7 +86,7 @@ void InvertedLists::merge_from (InvertedLists *oivf, size_t add_id) {
         } else {
             std::vector <idx_t> new_ids (list_size);
 
-            for (size_t j = 0; j < list_size; j++) {
+            for (int64_t j = 0; j < list_size; j++) {
                 new_ids [j] = ids[j] + add_id;
             }
             add_entries (i, list_size, new_ids.data(),
@@ -99,7 +99,7 @@ void InvertedLists::merge_from (InvertedLists *oivf, size_t add_id) {
 double InvertedLists::imbalance_factor () const {
     std::vector<int> hist(nlist);
 
-    for (size_t i = 0; i < nlist; i++) {
+    for (int64_t i = 0; i < nlist; i++) {
         hist[i] = list_size(i);
     }
 
@@ -108,24 +108,24 @@ double InvertedLists::imbalance_factor () const {
 
 void InvertedLists::print_stats () const {
     std::vector<int> sizes(40);
-    for (size_t i = 0; i < nlist; i++) {
-        for (size_t j = 0; j < sizes.size(); j++) {
+    for (int64_t i = 0; i < nlist; i++) {
+        for (int64_t j = 0; j < sizes.size(); j++) {
             if ((list_size(i) >> j) == 0) {
                 sizes[j]++;
                 break;
             }
         }
     }
-    for (size_t i = 0; i < sizes.size(); i++) {
+    for (int64_t i = 0; i < sizes.size(); i++) {
         if (sizes[i]) {
             printf("list size in < %d: %d instances\n", 1 << i, sizes[i]);
         }
     }
 }
 
-size_t InvertedLists::compute_ntotal () const {
-    size_t tot = 0;
-    for (size_t i = 0; i < nlist; i++) {
+int64_t InvertedLists::compute_ntotal () const {
+    int64_t tot = 0;
+    for (int64_t i = 0; i < nlist; i++) {
         tot += list_size(i);
     }
     return tot;
@@ -135,20 +135,20 @@ size_t InvertedLists::compute_ntotal () const {
  * ArrayInvertedLists implementation
  ******************************************/
 
-ArrayInvertedLists::ArrayInvertedLists (size_t nlist, size_t code_size):
+ArrayInvertedLists::ArrayInvertedLists (int64_t nlist, int64_t code_size):
     InvertedLists (nlist, code_size)
 {
     ids.resize (nlist);
     codes.resize (nlist);
 }
 
-size_t ArrayInvertedLists::add_entries (
-           size_t list_no, size_t n_entry,
+int64_t ArrayInvertedLists::add_entries (
+           int64_t list_no, int64_t n_entry,
            const idx_t* ids_in, const uint8_t *code)
 {
     if (n_entry == 0) return 0;
     assert (list_no < nlist);
-    size_t o = ids [list_no].size();
+    int64_t o = ids [list_no].size();
     ids [list_no].resize (o + n_entry);
     memcpy (&ids[list_no][o], ids_in, sizeof (ids_in[0]) * n_entry);
     codes [list_no].resize ((o + n_entry) * code_size);
@@ -156,33 +156,33 @@ size_t ArrayInvertedLists::add_entries (
     return o;
 }
 
-size_t ArrayInvertedLists::list_size(size_t list_no) const
+int64_t ArrayInvertedLists::list_size(int64_t list_no) const
 {
     assert (list_no < nlist);
     return ids[list_no].size();
 }
 
-const uint8_t * ArrayInvertedLists::get_codes (size_t list_no) const
+const uint8_t * ArrayInvertedLists::get_codes (int64_t list_no) const
 {
     assert (list_no < nlist);
     return codes[list_no].data();
 }
 
 
-const InvertedLists::idx_t * ArrayInvertedLists::get_ids (size_t list_no) const
+const InvertedLists::idx_t * ArrayInvertedLists::get_ids (int64_t list_no) const
 {
     assert (list_no < nlist);
     return ids[list_no].data();
 }
 
-void ArrayInvertedLists::resize (size_t list_no, size_t new_size)
+void ArrayInvertedLists::resize (int64_t list_no, int64_t new_size)
 {
     ids[list_no].resize (new_size);
     codes[list_no].resize (new_size * code_size);
 }
 
 void ArrayInvertedLists::update_entries (
-      size_t list_no, size_t offset, size_t n_entry,
+      int64_t list_no, int64_t offset, int64_t n_entry,
       const idx_t *ids_in, const uint8_t *codes_in)
 {
     assert (list_no < nlist);
@@ -200,20 +200,20 @@ ArrayInvertedLists::~ArrayInvertedLists ()
  *****************************************************************/
 
 
-size_t ReadOnlyInvertedLists::add_entries (
-           size_t , size_t ,
+int64_t ReadOnlyInvertedLists::add_entries (
+           int64_t , int64_t ,
            const idx_t* , const uint8_t *)
 {
     FAISS_THROW_MSG ("not implemented");
 }
 
-void ReadOnlyInvertedLists::update_entries (size_t, size_t , size_t ,
+void ReadOnlyInvertedLists::update_entries (int64_t, int64_t , int64_t ,
                          const idx_t *, const uint8_t *)
 {
     FAISS_THROW_MSG ("not implemented");
 }
 
-void ReadOnlyInvertedLists::resize (size_t , size_t )
+void ReadOnlyInvertedLists::resize (int64_t , int64_t )
 {
     FAISS_THROW_MSG ("not implemented");
 }
@@ -237,9 +237,9 @@ HStackInvertedLists::HStackInvertedLists (
     }
 }
 
-size_t HStackInvertedLists::list_size(size_t list_no) const
+int64_t HStackInvertedLists::list_size(int64_t list_no) const
 {
-    size_t sz = 0;
+    int64_t sz = 0;
     for (int i = 0; i < ils.size(); i++) {
         const InvertedLists *il = ils[i];
         sz += il->list_size (list_no);
@@ -247,13 +247,13 @@ size_t HStackInvertedLists::list_size(size_t list_no) const
     return sz;
 }
 
-const uint8_t * HStackInvertedLists::get_codes (size_t list_no) const
+const uint8_t * HStackInvertedLists::get_codes (int64_t list_no) const
 {
     uint8_t *codes = new uint8_t [code_size * list_size(list_no)], *c = codes;
 
     for (int i = 0; i < ils.size(); i++) {
         const InvertedLists *il = ils[i];
-        size_t sz = il->list_size(list_no) * code_size;
+        int64_t sz = il->list_size(list_no) * code_size;
         if (sz > 0) {
             memcpy (c, ScopedCodes (il, list_no).get(), sz);
             c += sz;
@@ -263,11 +263,11 @@ const uint8_t * HStackInvertedLists::get_codes (size_t list_no) const
 }
 
 const uint8_t * HStackInvertedLists::get_single_code (
-           size_t list_no, size_t offset) const
+           int64_t list_no, int64_t offset) const
 {
     for (int i = 0; i < ils.size(); i++) {
         const InvertedLists *il = ils[i];
-        size_t sz = il->list_size (list_no);
+        int64_t sz = il->list_size (list_no);
         if (offset < sz) {
             // here we have to copy the code, otherwise it will crash at dealloc
             uint8_t * code = new uint8_t [code_size];
@@ -276,21 +276,21 @@ const uint8_t * HStackInvertedLists::get_single_code (
         }
         offset -= sz;
     }
-    FAISS_THROW_FMT ("offset %ld unknown", offset);
+    FAISS_THROW_FMT ("offset  %" PRId64 " unknown", offset);
 }
 
 
-void HStackInvertedLists::release_codes (size_t, const uint8_t *codes) const {
+void HStackInvertedLists::release_codes (int64_t, const uint8_t *codes) const {
     delete [] codes;
 }
 
-const Index::idx_t * HStackInvertedLists::get_ids (size_t list_no) const
+const Index::idx_t * HStackInvertedLists::get_ids (int64_t list_no) const
 {
     idx_t *ids = new idx_t [list_size(list_no)], *c = ids;
 
     for (int i = 0; i < ils.size(); i++) {
         const InvertedLists *il = ils[i];
-        size_t sz = il->list_size(list_no);
+        int64_t sz = il->list_size(list_no);
         if (sz > 0) {
             memcpy (c, ScopedIds (il, list_no).get(), sz * sizeof(idx_t));
             c += sz;
@@ -300,22 +300,22 @@ const Index::idx_t * HStackInvertedLists::get_ids (size_t list_no) const
 }
 
 Index::idx_t HStackInvertedLists::get_single_id (
-                    size_t list_no, size_t offset) const
+                    int64_t list_no, int64_t offset) const
 {
 
     for (int i = 0; i < ils.size(); i++) {
         const InvertedLists *il = ils[i];
-        size_t sz = il->list_size (list_no);
+        int64_t sz = il->list_size (list_no);
         if (offset < sz) {
             return il->get_single_id (list_no, offset);
         }
         offset -= sz;
     }
-    FAISS_THROW_FMT ("offset %ld unknown", offset);
+    FAISS_THROW_FMT ("offset  %" PRId64 " unknown", offset);
 }
 
 
-void HStackInvertedLists::release_ids (size_t, const idx_t *ids) const {
+void HStackInvertedLists::release_ids (int64_t, const idx_t *ids) const {
     delete [] ids;
 }
 
@@ -354,41 +354,41 @@ SliceInvertedLists::SliceInvertedLists (
 
 }
 
-size_t SliceInvertedLists::list_size(size_t list_no) const
+int64_t SliceInvertedLists::list_size(int64_t list_no) const
 {
     return il->list_size (translate_list_no (this, list_no));
 }
 
-const uint8_t * SliceInvertedLists::get_codes (size_t list_no) const
+const uint8_t * SliceInvertedLists::get_codes (int64_t list_no) const
 {
     return il->get_codes (translate_list_no (this, list_no));
 }
 
 const uint8_t * SliceInvertedLists::get_single_code (
-           size_t list_no, size_t offset) const
+           int64_t list_no, int64_t offset) const
 {
     return il->get_single_code (translate_list_no (this, list_no), offset);
 }
 
 
 void SliceInvertedLists::release_codes (
-       size_t list_no, const uint8_t *codes) const {
+       int64_t list_no, const uint8_t *codes) const {
     return il->release_codes (translate_list_no (this, list_no), codes);
 }
 
-const Index::idx_t * SliceInvertedLists::get_ids (size_t list_no) const
+const Index::idx_t * SliceInvertedLists::get_ids (int64_t list_no) const
 {
     return il->get_ids (translate_list_no (this, list_no));
 }
 
 Index::idx_t SliceInvertedLists::get_single_id (
-                    size_t list_no, size_t offset) const
+                    int64_t list_no, int64_t offset) const
 {
     return il->get_single_id (translate_list_no (this, list_no), offset);
 }
 
 
-void SliceInvertedLists::release_ids (size_t list_no, const idx_t *ids) const {
+void SliceInvertedLists::release_ids (int64_t list_no, const idx_t *ids) const {
     return il->release_ids (translate_list_no (this, list_no), ids);
 }
 
@@ -457,14 +457,14 @@ VStackInvertedLists::VStackInvertedLists (
     }
 }
 
-size_t VStackInvertedLists::list_size(size_t list_no) const
+int64_t VStackInvertedLists::list_size(int64_t list_no) const
 {
     int i = translate_list_no (this, list_no);
     list_no -= cumsz[i];
     return ils[i]->list_size (list_no);
 }
 
-const uint8_t * VStackInvertedLists::get_codes (size_t list_no) const
+const uint8_t * VStackInvertedLists::get_codes (int64_t list_no) const
 {
     int i = translate_list_no (this, list_no);
     list_no -= cumsz[i];
@@ -472,7 +472,7 @@ const uint8_t * VStackInvertedLists::get_codes (size_t list_no) const
 }
 
 const uint8_t * VStackInvertedLists::get_single_code (
-           size_t list_no, size_t offset) const
+           int64_t list_no, int64_t offset) const
 {
     int i = translate_list_no (this, list_no);
     list_no -= cumsz[i];
@@ -481,13 +481,13 @@ const uint8_t * VStackInvertedLists::get_single_code (
 
 
 void VStackInvertedLists::release_codes (
-          size_t list_no, const uint8_t *codes) const {
+          int64_t list_no, const uint8_t *codes) const {
     int i = translate_list_no (this, list_no);
     list_no -= cumsz[i];
     return ils[i]->release_codes (list_no, codes);
 }
 
-const Index::idx_t * VStackInvertedLists::get_ids (size_t list_no) const
+const Index::idx_t * VStackInvertedLists::get_ids (int64_t list_no) const
 {
     int i = translate_list_no (this, list_no);
     list_no -= cumsz[i];
@@ -495,7 +495,7 @@ const Index::idx_t * VStackInvertedLists::get_ids (size_t list_no) const
 }
 
 Index::idx_t VStackInvertedLists::get_single_id (
-                    size_t list_no, size_t offset) const
+                    int64_t list_no, int64_t offset) const
 {
     int i = translate_list_no (this, list_no);
     list_no -= cumsz[i];
@@ -503,7 +503,7 @@ Index::idx_t VStackInvertedLists::get_single_id (
 }
 
 
-void VStackInvertedLists::release_ids (size_t list_no, const idx_t *ids) const {
+void VStackInvertedLists::release_ids (int64_t list_no, const idx_t *ids) const {
     int i = translate_list_no (this, list_no);
     list_no -= cumsz[i];
     return ils[i]->release_ids (list_no, ids);
@@ -560,47 +560,47 @@ MaskedInvertedLists::MaskedInvertedLists (const InvertedLists *il0,
     FAISS_THROW_IF_NOT (il1->code_size == code_size);
 }
 
-size_t MaskedInvertedLists::list_size(size_t list_no) const
+int64_t MaskedInvertedLists::list_size(int64_t list_no) const
 {
-    size_t sz = il0->list_size(list_no);
+    int64_t sz = il0->list_size(list_no);
     return sz ? sz : il1->list_size(list_no);
 }
 
-const uint8_t * MaskedInvertedLists::get_codes (size_t list_no) const
+const uint8_t * MaskedInvertedLists::get_codes (int64_t list_no) const
 {
-    size_t sz = il0->list_size(list_no);
+    int64_t sz = il0->list_size(list_no);
     return (sz ? il0 : il1)->get_codes(list_no);
 }
 
-const idx_t * MaskedInvertedLists::get_ids (size_t list_no) const
+const idx_t * MaskedInvertedLists::get_ids (int64_t list_no) const
 {
-    size_t sz = il0->list_size (list_no);
+    int64_t sz = il0->list_size (list_no);
     return (sz ? il0 : il1)->get_ids (list_no);
 }
 
 void MaskedInvertedLists::release_codes (
-      size_t list_no, const uint8_t *codes) const
+      int64_t list_no, const uint8_t *codes) const
 {
-    size_t sz = il0->list_size (list_no);
+    int64_t sz = il0->list_size (list_no);
     (sz ? il0 : il1)->release_codes (list_no, codes);
 }
 
-void MaskedInvertedLists::release_ids (size_t list_no, const idx_t *ids) const
+void MaskedInvertedLists::release_ids (int64_t list_no, const idx_t *ids) const
 {
-    size_t sz = il0->list_size (list_no);
+    int64_t sz = il0->list_size (list_no);
     (sz ? il0 : il1)->release_ids (list_no, ids);
 }
 
-idx_t MaskedInvertedLists::get_single_id (size_t list_no, size_t offset) const
+idx_t MaskedInvertedLists::get_single_id (int64_t list_no, int64_t offset) const
 {
-    size_t sz = il0->list_size (list_no);
+    int64_t sz = il0->list_size (list_no);
     return (sz ? il0 : il1)->get_single_id (list_no, offset);
 }
 
 const uint8_t * MaskedInvertedLists::get_single_code (
-           size_t list_no, size_t offset) const
+           int64_t list_no, int64_t offset) const
 {
-    size_t sz = il0->list_size (list_no);
+    int64_t sz = il0->list_size (list_no);
     return (sz ? il0 : il1)->get_single_code (list_no, offset);
 }
 
@@ -611,7 +611,7 @@ void MaskedInvertedLists::prefetch_lists (
     for (int i = 0; i < nlist; i++) {
         idx_t list_no = list_nos[i];
         if (list_no < 0) continue;
-        size_t sz = il0->list_size(list_no);
+        int64_t sz = il0->list_size(list_no);
         (sz ? list0 : list1).push_back (list_no);
     }
     il0->prefetch_lists (list0.data(), list0.size());

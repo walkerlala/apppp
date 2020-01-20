@@ -10,6 +10,7 @@
 #ifndef FAISS_PRODUCT_QUANTIZER_H
 #define FAISS_PRODUCT_QUANTIZER_H
 
+#include <cinttypes>
 #include <stdint.h>
 
 #include <vector>
@@ -24,14 +25,14 @@ struct ProductQuantizer {
 
     using idx_t = Index::idx_t;
 
-    size_t d;              ///< size of the input vectors
-    size_t M;              ///< number of subquantizers
-    size_t nbits;          ///< number of bits per quantization index
+    int64_t d;              ///< size of the input vectors
+    int64_t M;              ///< number of subquantizers
+    int64_t nbits;          ///< number of bits per quantization index
 
     // values derived from the above
-    size_t dsub;           ///< dimensionality of each subvector
-    size_t code_size;      ///< bytes per indexed vector
-    size_t ksub;           ///< number of centroids for each subquantizer
+    int64_t dsub;           ///< dimensionality of each subvector
+    int64_t code_size;      ///< bytes per indexed vector
+    int64_t ksub;           ///< number of centroids for each subquantizer
     bool verbose;          ///< verbose during training?
 
     /// initialization
@@ -54,10 +55,10 @@ struct ProductQuantizer {
     std::vector<float> centroids;
 
     /// return the centroids associated with subvector m
-    float * get_centroids (size_t m, size_t i) {
+    float * get_centroids (int64_t m, int64_t i) {
         return &centroids [(m * ksub + i) * dsub];
     }
-    const float * get_centroids (size_t m, size_t i) const {
+    const float * get_centroids (int64_t m, int64_t i) const {
         return &centroids [(m * ksub + i) * dsub];
     }
 
@@ -65,9 +66,9 @@ struct ProductQuantizer {
     // can be set on input to define non-default clustering parameters
     void train (int n, const float *x);
 
-    ProductQuantizer(size_t d, /* dimensionality of the input vectors */
-            size_t M,          /* number of subquantizers */
-            size_t nbits);     /* number of bit per subvector index */
+    ProductQuantizer(int64_t d, /* dimensionality of the input vectors */
+            int64_t M,          /* number of subquantizers */
+            int64_t nbits);     /* number of bit per subvector index */
 
     ProductQuantizer ();
 
@@ -83,18 +84,18 @@ struct ProductQuantizer {
     /// same as compute_code for several vectors
     void compute_codes (const float * x,
                         uint8_t * codes,
-                        size_t n) const ;
+                        int64_t n) const ;
 
     /// speed up code assignment using assign_index
     /// (non-const because the index is changed)
     void compute_codes_with_assign_index (
                 const float * x,
                 uint8_t * codes,
-                size_t n);
+                int64_t n);
 
     /// decode a vector from a given code (or n vectors if third argument)
     void decode (const uint8_t *code, float *x) const;
-    void decode (const uint8_t *code, float *x, size_t n) const;
+    void decode (const uint8_t *code, float *x, int64_t n) const;
 
     /// If we happen to have the distance tables precomputed, this is
     /// more efficient to compute the codes.
@@ -127,11 +128,11 @@ struct ProductQuantizer {
      * @param x         input vector size nx * d
      * @param dis_table output table, size nx * M * ksub
      */
-    void compute_distance_tables (size_t nx,
+    void compute_distance_tables (int64_t nx,
                                   const float * x,
                                   float * dis_tables) const;
 
-    void compute_inner_prod_tables (size_t nx,
+    void compute_inner_prod_tables (int64_t nx,
                                     const float * x,
                                     float * dis_tables) const;
 
@@ -145,17 +146,17 @@ struct ProductQuantizer {
      * @param init_finalize_heap  initialize heap (input) and sort (output)?
      */
     void search (const float * x,
-                 size_t nx,
+                 int64_t nx,
                  const uint8_t * codes,
-                 const size_t ncodes,
+                 const int64_t ncodes,
                  float_maxheap_array_t *res,
                  bool init_finalize_heap = true) const;
 
     /** same as search, but with inner product similarity */
     void search_ip (const float * x,
-                 size_t nx,
+                 int64_t nx,
                  const uint8_t * codes,
-                 const size_t ncodes,
+                 const int64_t ncodes,
                  float_minheap_array_t *res,
                  bool init_finalize_heap = true) const;
 
@@ -167,9 +168,9 @@ struct ProductQuantizer {
     void compute_sdc_table ();
 
     void search_sdc (const uint8_t * qcodes,
-                     size_t nq,
+                     int64_t nq,
                      const uint8_t * bcodes,
-                     const size_t ncodes,
+                     const int64_t ncodes,
                      float_maxheap_array_t * res,
                      bool init_finalize_heap = true) const;
 

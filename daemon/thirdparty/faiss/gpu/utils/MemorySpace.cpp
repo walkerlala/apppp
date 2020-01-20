@@ -13,7 +13,7 @@
 namespace faiss { namespace gpu {
 
 /// Allocates CUDA memory for a given memory space
-void allocMemorySpaceV(MemorySpace space, void** p, size_t size) {
+void allocMemorySpaceV(MemorySpace space, void** p, int64_t size) {
   switch (space) {
     case MemorySpace::Device:
     {
@@ -22,7 +22,7 @@ void allocMemorySpaceV(MemorySpace space, void** p, size_t size) {
       // Throw if we fail to allocate
       FAISS_THROW_IF_NOT_FMT(
         err == cudaSuccess,
-        "failed to cudaMalloc %zu bytes (error %d %s)",
+        "failed to cudaMalloc  %" PRId64 " bytes (error %d %s)",
         size, (int) err, cudaGetErrorString(err));
     }
     break;
@@ -34,7 +34,7 @@ void allocMemorySpaceV(MemorySpace space, void** p, size_t size) {
       // Throw if we fail to allocate
       FAISS_THROW_IF_NOT_FMT(
         err == cudaSuccess,
-        "failed to cudaMallocManaged %zu bytes (error %d %s)",
+        "failed to cudaMallocManaged  %" PRId64 " bytes (error %d %s)",
         size, (int) err, cudaGetErrorString(err));
 #else
       FAISS_THROW_MSG("Attempting to allocate via cudaMallocManaged "
@@ -49,7 +49,7 @@ void allocMemorySpaceV(MemorySpace space, void** p, size_t size) {
       // Throw if we fail to allocate
       FAISS_THROW_IF_NOT_FMT(
         err == cudaSuccess,
-        "failed to cudaHostAlloc %zu bytes (error %d %s)",
+        "failed to cudaHostAlloc  %" PRId64 " bytes (error %d %s)",
         size, (int) err, cudaGetErrorString(err));
     }
     break;

@@ -81,7 +81,7 @@ point_list_t sum_of_sq (float total, int v, int n, float add = 0) {
         while (v >= 0) {
             point_list_t sub_points =
                 sum_of_sq (total - sqr(v + add), v, n - 1, add);
-            for (size_t i = 0; i < sub_points.size(); i += n - 1) {
+            for (int64_t i = 0; i < sub_points.size(); i += n - 1) {
                 res.push_back (v + add);
                 for (int j = 0; j < n - 1; j++) {
                     res.push_back(sub_points[i + j]);
@@ -102,7 +102,7 @@ int decode_comb_1 (uint64_t *n, int k1, int r) {
 }
 
 // optimized version for < 64 bits
-long repeats_encode_64 (
+int64_t repeats_encode_64 (
      const std::vector<Repeat> & repeats,
      int dim, const float *c)
 {
@@ -190,9 +190,9 @@ Repeats::Repeats (int dim, const float *c): dim(dim)
 }
 
 
-long Repeats::count () const
+int64_t Repeats::count () const
 {
-    long accu = 1;
+    int64_t accu = 1;
     int remain = dim;
     for (int i = 0; i < repeats.size(); i++) {
         accu *= comb(remain, repeats[i].n);
@@ -204,7 +204,7 @@ long Repeats::count () const
 
 
 // version with a bool vector that works for > 64 dim
-long Repeats::encode(const float *c) const
+int64_t Repeats::encode(const float *c) const
 {
     if (dim < 64) {
         return repeats_encode_64 (repeats, dim, c);
@@ -278,7 +278,7 @@ void Repeats::decode(uint64_t code, float *c) const
  ********************************************/
 
 
-void EnumeratedVectors::encode_multi(size_t n, const float *c,
+void EnumeratedVectors::encode_multi(int64_t n, const float *c,
                                uint64_t * codes) const
 {
 #pragma omp parallel if (n > 1000)
@@ -291,7 +291,7 @@ void EnumeratedVectors::encode_multi(size_t n, const float *c,
 }
 
 
-void EnumeratedVectors::decode_multi(size_t n, const uint64_t * codes,
+void EnumeratedVectors::decode_multi(int64_t n, const uint64_t * codes,
                                float *c) const
 {
 #pragma omp parallel if (n > 1000)
@@ -304,20 +304,20 @@ void EnumeratedVectors::decode_multi(size_t n, const uint64_t * codes,
 }
 
 void EnumeratedVectors::find_nn (
-                  size_t nc, const uint64_t * codes,
-                  size_t nq, const float *xq,
-                  long *labels, float *distances)
+                  int64_t nc, const uint64_t * codes,
+                  int64_t nq, const float *xq,
+                  int64_t *labels, float *distances)
 {
-    for (long i = 0; i < nq; i++) {
+    for (int64_t i = 0; i < nq; i++) {
         distances[i] = -1e20;
         labels[i] = -1;
     }
 
     float c[dim];
-    for(long i = 0; i < nc; i++) {
+    for(int64_t i = 0; i < nc; i++) {
         uint64_t code = codes[nc];
         decode(code, c);
-        for (long j = 0; j < nq; j++) {
+        for (int64_t j = 0; j < nq; j++) {
             const float *x = xq + j * dim;
             float dis = fvec_inner_product(x, c, dim);
             if (dis > distances[j]) {

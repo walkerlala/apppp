@@ -10,6 +10,7 @@
 #ifndef FAISS_INDEX_SCALAR_QUANTIZER_H
 #define FAISS_INDEX_SCALAR_QUANTIZER_H
 
+#include <cinttypes>
 #include <stdint.h>
 #include <vector>
 
@@ -35,7 +36,7 @@ struct IndexScalarQuantizer: Index {
     /// Codes. Size ntotal * pq.code_size
     std::vector<uint8_t> codes;
 
-    size_t code_size;
+    int64_t code_size;
 
     /** Constructor.
      *
@@ -69,7 +70,7 @@ struct IndexScalarQuantizer: Index {
     DistanceComputer *get_distance_computer () const override;
 
     /* standalone codec interface */
-    size_t sa_code_size () const override;
+    int64_t sa_code_size () const override;
 
     void sa_encode (idx_t n, const float *x,
                           uint8_t *bytes) const override;
@@ -91,7 +92,7 @@ struct IndexIVFScalarQuantizer: IndexIVF {
     ScalarQuantizer sq;
     bool by_residual;
 
-    IndexIVFScalarQuantizer(Index *quantizer, size_t d, size_t nlist,
+    IndexIVFScalarQuantizer(Index *quantizer, int64_t d, int64_t nlist,
                             ScalarQuantizer::QuantizerType qtype,
                             MetricType metric = METRIC_L2,
                             bool encode_residual = true);

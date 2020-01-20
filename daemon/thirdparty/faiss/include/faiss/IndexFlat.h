@@ -11,6 +11,7 @@
 #define INDEX_FLAT_H
 
 #include <vector>
+#include <cinttypes>
 
 #include <faiss/Index.h>
 
@@ -61,14 +62,14 @@ struct IndexFlat: Index {
     /** remove some ids. NB that Because of the structure of the
      * indexing structure, the semantics of this operation are
      * different from the usual ones: the new ids are shifted */
-    size_t remove_ids(const IDSelector& sel) override;
+    int64_t remove_ids(const IDSelector& sel) override;
 
     IndexFlat () {}
 
     DistanceComputer * get_distance_computer() const override;
 
     /* The stanadlone codec interface (just memcopies in this case) */
-    size_t sa_code_size () const override;
+    int64_t sa_code_size () const override;
 
     void sa_encode (idx_t n, const float *x,
                           uint8_t *bytes) const override;
@@ -96,7 +97,7 @@ struct IndexFlatL2:IndexFlat {
 struct IndexFlatL2BaseShift: IndexFlatL2 {
     std::vector<float> shift;
 
-    IndexFlatL2BaseShift (idx_t d, size_t nshift, const float *shift);
+    IndexFlatL2BaseShift (idx_t d, int64_t nshift, const float *shift);
 
     void search(
         idx_t n,

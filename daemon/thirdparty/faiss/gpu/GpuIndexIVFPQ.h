@@ -66,7 +66,7 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
   void copyTo(faiss::IndexIVFPQ* index) const;
 
   /// Reserve GPU memory in our inverted lists for this number of vectors
-  void reserveMemory(size_t numVecs);
+  void reserveMemory(int64_t numVecs);
 
   /// Enable or disable pre-computed codes
   void setPrecomputedCodes(bool enable);
@@ -85,7 +85,7 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
 
   /// After adding vectors, one can call this to reclaim device memory
   /// to exactly the amount needed. Returns space reclaimed in bytes
-  size_t reclaimMemory();
+  int64_t reclaimMemory();
 
   /// Clears out all inverted lists, but retains the coarse and
   /// product centroid information
@@ -103,7 +103,7 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
 
   /// For debugging purposes, return the list indices of a particular
   /// list
-  std::vector<long> getListIndices(int listId) const;
+  std::vector<int64_t> getListIndices(int listId) const;
 
  protected:
   /// Called from GpuIndex for add/add_with_ids
@@ -133,7 +133,7 @@ class GpuIndexIVFPQ : public GpuIndexIVF {
   int bitsPerCode_;
 
   /// Desired inverted list memory reservation
-  size_t reserveMemoryVecs_;
+  int64_t reserveMemoryVecs_;
 
   /// The product quantizer instance that we own; contains the
   /// inverted lists

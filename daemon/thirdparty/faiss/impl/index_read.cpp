@@ -56,17 +56,17 @@ namespace faiss {
 
 
 #define READANDCHECK(ptr, n) {                                  \
-        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);              \
+        int64_t ret = (*f)(ptr, sizeof(*(ptr)), n);              \
         FAISS_THROW_IF_NOT_FMT(ret == (n),                      \
-            "read error in %s: %ld != %ld (%s)",                \
-            f->name.c_str(), ret, size_t(n), strerror(errno));  \
+            "read error in %s:  %" PRId64 " !=  %" PRId64 " (%s)",                \
+            f->name.c_str(), ret, int64_t(n), strerror(errno));  \
     }
 
 #define READ1(x)  READANDCHECK(&(x), 1)
 
 // will fail if we write 256G of data at once...
 #define READVECTOR(vec) {                       \
-        long size;                            \
+        int64_t size;                            \
         READANDCHECK (&size, 1);                \
         FAISS_THROW_IF_NOT (size >= 0 && size < (1L << 40));  \
         (vec).resize (size);                    \
@@ -173,18 +173,18 @@ VectorTransform* read_VectorTransform (IOReader *f) {
 
 
 static void read_ArrayInvertedLists_sizes (
-         IOReader *f, std::vector<size_t> & sizes)
+         IOReader *f, std::vector<int64_t> & sizes)
 {
     uint32_t list_type;
     READ1(list_type);
     if (list_type == fourcc("full")) {
-        size_t os = sizes.size();
+        int64_t os = sizes.size();
         READVECTOR (sizes);
         FAISS_THROW_IF_NOT (os == sizes.size());
     } else if (list_type == fourcc("sprs")) {
-        std::vector<size_t> idsizes;
+        std::vector<int64_t> idsizes;
         READVECTOR (idsizes);
-        for (size_t j = 0; j < idsizes.size(); j += 2) {
+        for (int64_t j = 0; j < idsizes.size(); j += 2) {
             FAISS_THROW_IF_NOT (idsizes[j] < sizes.size());
             sizes[idsizes[j]] = idsizes[j + 1];
         }
@@ -206,14 +206,14 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
         READ1 (ails->code_size);
         ails->ids.resize (ails->nlist);
         ails->codes.resize (ails->nlist);
-        std::vector<size_t> sizes (ails->nlist);
+        std::vector<int64_t> sizes (ails->nlist);
         read_ArrayInvertedLists_sizes (f, sizes);
-        for (size_t i = 0; i < ails->nlist; i++) {
+        for (int64_t i = 0; i < ails->nlist; i++) {
             ails->ids[i].resize (sizes[i]);
             ails->codes[i].resize (sizes[i] * ails->code_size);
         }
-        for (size_t i = 0; i < ails->nlist; i++) {
-            size_t n = ails->ids[i].size();
+        for (int64_t i = 0; i < ails->nlist; i++) {
+            int64_t n = ails->ids[i].size();
             if (n > 0) {
                 READANDCHECK (ails->codes[i].data(), n * ails->code_size);
                 READANDCHECK (ails->ids[i].data(), n);
@@ -232,9 +232,9 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
         READ1 (ails->code_size);
         ails->read_only = true;
         ails->lists.resize (ails->nlist);
-        std::vector<size_t> sizes (ails->nlist);
+        std::vector<int64_t> sizes (ails->nlist);
         read_ArrayInvertedLists_sizes (f, sizes);
-        size_t o0 = ftell(fdesc), o = o0;
+        int64_t o0 = ftell(fdesc), o = o0;
         { // do the mmap
             struct stat buf;
             int ret = fstat (fileno(fdesc), &buf);
@@ -249,7 +249,7 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
                             strerror(errno));
         }
 
-        for (size_t i = 0; i < ails->nlist; i++) {
+        for (int64_t i = 0; i < ails->nlist; i++) {
             OnDiskInvertedLists::List & l = ails->lists[i];
             l.size = l.capacity = sizes[i];
             l.offset = o;
@@ -284,7 +284,7 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
                     "when reading from file");
                 std::string indexname = reader->name;
                 std::string dirname = "./";
-                size_t slash = indexname.find_last_of('/');
+                int64_t slash = indexname.find_last_of('/');
                 if (slash != std::string::npos) {
                     dirname = indexname.substr(0, slash + 1);
                 }
@@ -375,7 +375,7 @@ static void read_ivf_header (
     ivf->own_fields = true;
     if (ids) { // used in legacy "Iv" formats
         ids->resize (ivf->nlist);
-        for (size_t i = 0; i < ivf->nlist; i++)
+        for (int64_t i = 0; i < ivf->nlist; i++)
             READVECTOR ((*ids)[i]);
     }
     READ1 (ivf->maintain_direct_map);
@@ -411,7 +411,7 @@ static IndexIVFPQ *read_ivfpq (IOReader *f, uint32_t h, int io_flags)
 
     if (legacy) {
         ArrayInvertedLists *ail = set_array_invlist (ivpq, ids);
-        for (size_t i = 0; i < ail->nlist; i++)
+        for (int64_t i = 0; i < ail->nlist; i++)
             READVECTOR (ail->codes[i]);
     } else {
         read_InvertedLists (ivpq, f, io_flags);
@@ -502,11 +502,11 @@ Index *read_index (IOReader *f, int io_flags) {
         ArrayInvertedLists *ail = set_array_invlist (ivfl, ids);
 
         if (h == fourcc ("IvFL")) {
-            for (size_t i = 0; i < ivfl->nlist; i++) {
+            for (int64_t i = 0; i < ivfl->nlist; i++) {
                 READVECTOR (ail->codes[i]);
             }
         } else { // old format
-            for (size_t i = 0; i < ivfl->nlist; i++) {
+            for (int64_t i = 0; i < ivfl->nlist; i++) {
                 std::vector<float> vec;
                 READVECTOR (vec);
                 ail->codes[i].resize(vec.size() * sizeof(float));
@@ -522,7 +522,7 @@ Index *read_index (IOReader *f, int io_flags) {
         {
             std::vector<Index::idx_t> tab;
             READVECTOR (tab);
-            for (long i = 0; i < tab.size(); i += 2) {
+            for (int64_t i = 0; i < tab.size(); i += 2) {
                 std::pair<Index::idx_t, Index::idx_t>
                     pair (tab[i], tab[i + 1]);
                 ivfl->instances.insert (pair);
@@ -723,7 +723,7 @@ static void read_binary_ivf_header (
     ivf->own_fields = true;
     if (ids) { // used in legacy "Iv" formats
         ids->resize (ivf->nlist);
-        for (size_t i = 0; i < ivf->nlist; i++)
+        for (int64_t i = 0; i < ivf->nlist; i++)
             READVECTOR ((*ids)[i]);
     }
     READ1 (ivf->maintain_direct_map);

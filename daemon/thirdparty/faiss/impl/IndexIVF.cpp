@@ -32,7 +32,7 @@ using ScopedCodes = InvertedLists::ScopedCodes;
  ******************************************/
 
 
-Level1Quantizer::Level1Quantizer (Index * quantizer, size_t nlist):
+Level1Quantizer::Level1Quantizer (Index * quantizer, int64_t nlist):
     quantizer (quantizer),
     nlist (nlist),
     quantizer_trains_alone (0),
@@ -57,9 +57,9 @@ Level1Quantizer::~Level1Quantizer ()
     if (own_fields) delete quantizer;
 }
 
-void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricType metric_type)
+void Level1Quantizer::train_q1 (int64_t n, const float *x, bool verbose, MetricType metric_type)
 {
-    size_t d = quantizer->d;
+    int64_t d = quantizer->d;
     if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
         if (verbose)
             printf ("IVF quantizer does not need training.\n");
@@ -72,7 +72,7 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
                           "nlist not consistent with quantizer size");
     } else if (quantizer_trains_alone == 0) {
         if (verbose)
-            printf ("Training level-1 quantizer on %ld vectors in %ldD\n",
+            printf ("Training level-1 quantizer on  %" PRId64 " vectors in  %" PRId64 "D\n",
                     n, d);
 
         Clustering clus (d, nlist, cp);
@@ -87,7 +87,7 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
     } else if (quantizer_trains_alone == 2) {
         if (verbose)
             printf (
-                "Training L2 quantizer on %ld vectors in %ldD%s\n",
+                "Training L2 quantizer on  %" PRId64 " vectors in  %" PRId64 "D%s\n",
                 n, d,
                 clustering_index ? "(user provided index)" : "");
         FAISS_THROW_IF_NOT (metric_type == METRIC_L2);
@@ -104,10 +104,10 @@ void Level1Quantizer::train_q1 (size_t n, const float *x, bool verbose, MetricTy
     }
 }
 
-size_t Level1Quantizer::coarse_code_size () const
+int64_t Level1Quantizer::coarse_code_size () const
 {
-    size_t nl = nlist - 1;
-    size_t nbyte = 0;
+    int64_t nl = nlist - 1;
+    int64_t nbyte = 0;
     while (nl > 0) {
         nbyte ++;
         nl >>= 8;
@@ -118,7 +118,7 @@ size_t Level1Quantizer::coarse_code_size () const
 void Level1Quantizer::encode_listno (Index::idx_t list_no, uint8_t *code) const
 {
     // little endian
-    size_t nl = nlist - 1;
+    int64_t nl = nlist - 1;
     while (nl > 0) {
         *code++ = list_no & 0xff;
         list_no >>= 8;
@@ -128,7 +128,7 @@ void Level1Quantizer::encode_listno (Index::idx_t list_no, uint8_t *code) const
 
 Index::idx_t Level1Quantizer::decode_listno (const uint8_t *code) const
 {
-    size_t nl = nlist - 1;
+    int64_t nl = nlist - 1;
     int64_t list_no = 0;
     int nbit = 0;
     while (nl > 0) {
@@ -147,8 +147,8 @@ Index::idx_t Level1Quantizer::decode_listno (const uint8_t *code) const
  ******************************************/
 
 
-IndexIVF::IndexIVF (Index * quantizer, size_t d,
-                    size_t nlist, size_t code_size,
+IndexIVF::IndexIVF (Index * quantizer, int64_t d,
+                    int64_t nlist, int64_t code_size,
                     MetricType metric):
     Index (d, metric),
     Level1Quantizer (quantizer, nlist),
@@ -190,7 +190,7 @@ void IndexIVF::add_with_ids (idx_t n, const float * x, const idx_t *xids)
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min (n, i0 + bs);
             if (verbose) {
-                printf("   IndexIVF::add_with_ids %ld:%ld\n", i0, i1);
+                printf("   IndexIVF::add_with_ids  %" PRId64 ": %" PRId64 "\n", i0, i1);
             }
             add_with_ids (i1 - i0, x + i0 * d,
                           xids ? xids + i0 : nullptr);
@@ -201,9 +201,9 @@ void IndexIVF::add_with_ids (idx_t n, const float * x, const idx_t *xids)
     FAISS_THROW_IF_NOT (is_trained);
     std::unique_ptr<idx_t []> idx(new idx_t[n]);
     quantizer->assign (n, x, idx.get());
-    size_t nadd = 0, nminus1 = 0;
+    int64_t nadd = 0, nminus1 = 0;
 
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         if (idx[i] < 0) nminus1++;
     }
 
@@ -216,7 +216,7 @@ void IndexIVF::add_with_ids (idx_t n, const float * x, const idx_t *xids)
         int rank = omp_get_thread_num();
 
         // each thread takes care of a subset of lists
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             idx_t list_no = idx [i];
             if (list_no >= 0 && list_no % nt == rank) {
                 idx_t id = xids ? xids[i] : ntotal + i;
@@ -228,7 +228,7 @@ void IndexIVF::add_with_ids (idx_t n, const float * x, const idx_t *xids)
     }
 
     if (verbose) {
-        printf("    added %ld / %ld vectors (%ld -1s)\n", nadd, n, nminus1);
+        printf("    added  %" PRId64 " /  %" PRId64 " vectors ( %" PRId64 " -1s)\n", nadd, n, nminus1);
     }
 
     ntotal += n;
@@ -243,11 +243,11 @@ void IndexIVF::make_direct_map (bool new_maintain_direct_map)
 
     if (new_maintain_direct_map) {
         direct_map.resize (ntotal, -1);
-        for (size_t key = 0; key < nlist; key++) {
-            size_t list_size = invlists->list_size (key);
+        for (int64_t key = 0; key < nlist; key++) {
+            int64_t list_size = invlists->list_size (key);
             ScopedIds idlist (invlists, key);
 
-            for (long ofs = 0; ofs < list_size; ofs++) {
+            for (int64_t ofs = 0; ofs < list_size; ofs++) {
                 FAISS_THROW_IF_NOT_MSG (
                        0 <= idlist [ofs] && idlist[ofs] < ntotal,
                        "direct map supported only for seuquential ids");
@@ -288,10 +288,10 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
                                    bool store_pairs,
                                    const IVFSearchParameters *params) const
 {
-    long nprobe = params ? params->nprobe : this->nprobe;
-    long max_codes = params ? params->max_codes : this->max_codes;
+    int64_t nprobe = params ? params->nprobe : this->nprobe;
+    int64_t max_codes = params ? params->max_codes : this->max_codes;
 
-    size_t nlistv = 0, ndis = 0, nheap = 0;
+    int64_t nlistv = 0, ndis = 0, nheap = 0;
 
     using HeapForIP = CMin<float, idx_t>;
     using HeapForL2 = CMax<float, idx_t>;
@@ -340,17 +340,17 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 
             if (key < 0) {
                 // not enough centroids for multiprobe
-                return (size_t)0;
+                return (int64_t)0;
             }
             FAISS_THROW_IF_NOT_FMT (key < (idx_t) nlist,
-                                    "Invalid key=%ld nlist=%ld\n",
+                                    "Invalid key= %" PRId64 " nlist= %" PRId64 "\n",
                                     key, nlist);
 
-            size_t list_size = invlists->list_size(key);
+            int64_t list_size = invlists->list_size(key);
 
             // don't waste time on empty lists
             if (list_size == 0) {
-                return (size_t)0;
+                return (int64_t)0;
             }
 
             scanner->set_list (key, coarse_dis_i);
@@ -380,7 +380,7 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
         if (parallel_mode == 0) {
 
 #pragma omp for
-            for (size_t i = 0; i < n; i++) {
+            for (int64_t i = 0; i < n; i++) {
 
                 if (interrupt) {
                     continue;
@@ -393,10 +393,10 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
 
                 init_result (simi, idxi);
 
-                long nscan = 0;
+                int64_t nscan = 0;
 
                 // loop over probes
-                for (size_t ik = 0; ik < nprobe; ik++) {
+                for (int64_t ik = 0; ik < nprobe; ik++) {
 
                     nscan += scan_one_list (
                          keys [i * nprobe + ik],
@@ -421,12 +421,12 @@ void IndexIVF::search_preassigned (idx_t n, const float *x, idx_t k,
             std::vector <idx_t> local_idx (k);
             std::vector <float> local_dis (k);
 
-            for (size_t i = 0; i < n; i++) {
+            for (int64_t i = 0; i < n; i++) {
                 scanner->set_query (x + i * d);
                 init_result (local_dis.data(), local_idx.data());
 
 #pragma omp for schedule(dynamic)
-                for (size_t ik = 0; ik < nprobe; ik++) {
+                for (int64_t ik = 0; ik < nprobe; ik++) {
                     ndis += scan_one_list
                         (keys [i * nprobe + ik],
                          coarse_dis[i * nprobe + ik],
@@ -503,7 +503,7 @@ void IndexIVF::range_search_preassigned (
          RangeSearchResult *result) const
 {
 
-    size_t nlistv = 0, ndis = 0;
+    int64_t nlistv = 0, ndis = 0;
     bool store_pairs = false;
 
     std::vector<RangeSearchPartialResult *> all_pres (omp_get_max_threads());
@@ -518,15 +518,15 @@ void IndexIVF::range_search_preassigned (
 
         // prepare the list scanning function
 
-        auto scan_list_func = [&](size_t i, size_t ik, RangeQueryResult &qres) {
+        auto scan_list_func = [&](int64_t i, int64_t ik, RangeQueryResult &qres) {
 
             idx_t key = keys[i * nprobe + ik];  /* select the list  */
             if (key < 0) return;
             FAISS_THROW_IF_NOT_FMT (
                   key < (idx_t) nlist,
-                  "Invalid key=%ld  at ik=%ld nlist=%ld\n",
+                  "Invalid key= %" PRId64 "  at ik= %" PRId64 " nlist= %" PRId64 "\n",
                   key, ik, nlist);
-            const size_t list_size = invlists->list_size(key);
+            const int64_t list_size = invlists->list_size(key);
 
             if (list_size == 0) return;
 
@@ -543,12 +543,12 @@ void IndexIVF::range_search_preassigned (
         if (parallel_mode == 0) {
 
 #pragma omp for
-            for (size_t i = 0; i < nx; i++) {
+            for (int64_t i = 0; i < nx; i++) {
                 scanner->set_query (x + i * d);
 
                 RangeQueryResult & qres = pres.new_result (i);
 
-                for (size_t ik = 0; ik < nprobe; ik++) {
+                for (int64_t ik = 0; ik < nprobe; ik++) {
                     scan_list_func (i, ik, qres);
                 }
 
@@ -556,13 +556,13 @@ void IndexIVF::range_search_preassigned (
 
         } else if (parallel_mode == 1) {
 
-            for (size_t i = 0; i < nx; i++) {
+            for (int64_t i = 0; i < nx; i++) {
                 scanner->set_query (x + i * d);
 
                 RangeQueryResult & qres = pres.new_result (i);
 
 #pragma omp for schedule(dynamic)
-                for (size_t ik = 0; ik < nprobe; ik++) {
+                for (int64_t ik = 0; ik < nprobe; ik++) {
                     scan_list_func (i, ik, qres);
                 }
             }
@@ -571,9 +571,9 @@ void IndexIVF::range_search_preassigned (
             RangeQueryResult *qres = nullptr;
 
 #pragma omp for schedule(dynamic)
-            for (size_t iik = 0; iik < nx * nprobe; iik++) {
-                size_t i = iik / nprobe;
-                size_t ik = iik % nprobe;
+            for (int64_t iik = 0; iik < nx * nprobe; iik++) {
+                int64_t i = iik / nprobe;
+                int64_t ik = iik % nprobe;
                 if (qres == nullptr || qres->qno != i) {
                     FAISS_ASSERT (!qres || i > qres->qno);
                     qres = &pres.new_result (i);
@@ -623,7 +623,7 @@ void IndexIVF::reconstruct_n (idx_t i0, idx_t ni, float* recons) const
     FAISS_THROW_IF_NOT (ni == 0 || (i0 >= 0 && i0 + ni <= ntotal));
 
     for (idx_t list_no = 0; list_no < nlist; list_no++) {
-        size_t list_size = invlists->list_size (list_no);
+        int64_t list_size = invlists->list_size (list_no);
         ScopedIds idlist (invlists, list_no);
 
         for (idx_t offset = 0; offset < list_size; offset++) {
@@ -640,9 +640,9 @@ void IndexIVF::reconstruct_n (idx_t i0, idx_t ni, float* recons) const
 
 
 /* standalone codec interface */
-size_t IndexIVF::sa_code_size () const
+int64_t IndexIVF::sa_code_size () const
 {
-    size_t coarse_size = coarse_code_size();
+    int64_t coarse_size = coarse_code_size();
     return code_size + coarse_size;
 }
 
@@ -709,7 +709,7 @@ void IndexIVF::reset ()
 }
 
 
-size_t IndexIVF::remove_ids (const IDSelector & sel)
+int64_t IndexIVF::remove_ids (const IDSelector & sel)
 {
     FAISS_THROW_IF_NOT_MSG (!maintain_direct_map,
                     "direct map remove not implemented");
@@ -734,7 +734,7 @@ size_t IndexIVF::remove_ids (const IDSelector & sel)
         toremove[i] = l0 - l;
     }
     // this will not run well in parallel on ondisk because of possible shrinks
-    size_t nremove = 0;
+    int64_t nremove = 0;
     for (idx_t i = 0; i < nlist; i++) {
         if (toremove[i] > 0) {
             nremove += toremove[i];
@@ -822,14 +822,14 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
           subset_type == 0 || subset_type == 1 || subset_type == 2,
           "subset type %d not implemented", subset_type);
 
-    size_t accu_n = 0;
-    size_t accu_a1 = 0;
-    size_t accu_a2 = 0;
+    int64_t accu_n = 0;
+    int64_t accu_a1 = 0;
+    int64_t accu_a2 = 0;
 
     InvertedLists *oivf = other.invlists;
 
     for (idx_t list_no = 0; list_no < nlist; list_no++) {
-        size_t n = invlists->list_size (list_no);
+        int64_t n = invlists->list_size (list_no);
         ScopedIds ids_in (invlists, list_no);
 
         if (subset_type == 0) {
@@ -854,11 +854,11 @@ void IndexIVF::copy_subset_to (IndexIVF & other, int subset_type,
             }
         } else if (subset_type == 2) {
             // see what is allocated to a1 and to a2
-            size_t next_accu_n = accu_n + n;
-            size_t next_accu_a1 = next_accu_n * a1 / ntotal;
-            size_t i1 = next_accu_a1 - accu_a1;
-            size_t next_accu_a2 = next_accu_n * a2 / ntotal;
-            size_t i2 = next_accu_a2 - accu_a2;
+            int64_t next_accu_n = accu_n + n;
+            int64_t next_accu_a1 = next_accu_n * a1 / ntotal;
+            int64_t i1 = next_accu_a1 - accu_a1;
+            int64_t next_accu_a2 = next_accu_n * a2 / ntotal;
+            int64_t i2 = next_accu_a2 - accu_a2;
 
             for (idx_t i = i1; i < i2; i++) {
                 oivf->add_entry (list_no,
@@ -895,7 +895,7 @@ void IndexIVFStats::reset()
 
 IndexIVFStats indexIVF_stats;
 
-void InvertedListScanner::scan_codes_range (size_t ,
+void InvertedListScanner::scan_codes_range (int64_t ,
                        const uint8_t *,
                        const idx_t *,
                        float ,

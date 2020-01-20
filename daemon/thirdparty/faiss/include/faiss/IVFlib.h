@@ -16,6 +16,7 @@
  * IndexIVFs embedded within an IndexPreTransform.
  */
 
+#include <cinttypes>
 #include <vector>
 #include <faiss/IndexIVF.h>
 
@@ -68,9 +69,9 @@ void search_centroid(Index *index,
  * other arguments are the same as the standard search function
  */
 void search_and_return_centroids(Index *index,
-                                 size_t n,
+                                 int64_t n,
                                  const float* xin,
-                                 long k,
+                                 int64_t k,
                                  float *distances,
                                  idx_t* labels,
                                  idx_t* query_centroid_ids,
@@ -91,10 +92,10 @@ struct SlidingIndexWindow {
     int n_slice;
 
     /// same as index->nlist
-    size_t nlist;
+    int64_t nlist;
 
     /// cumulative list sizes at each slice
-    std::vector<std::vector<size_t> > sizes;
+    std::vector<std::vector<int64_t> > sizes;
 
     /// index should be initially empty and trained
     SlidingIndexWindow (Index *index);
@@ -110,10 +111,10 @@ struct SlidingIndexWindow {
 
 /// Get a subset of inverted lists [i0, i1)
 ArrayInvertedLists * get_invlist_range (const Index *index,
-                                        long i0, long i1);
+                                        int64_t i0, int64_t i1);
 
 /// Set a subset of inverted lists
-void set_invlist_range (Index *index, long i0, long i1,
+void set_invlist_range (Index *index, int64_t i0, int64_t i1,
                         ArrayInvertedLists * src);
 
 // search an IndexIVF, possibly embedded in an IndexPreTransform with
@@ -123,7 +124,7 @@ void search_with_parameters (const Index *index,
                              idx_t n, const float *x, idx_t k,
                              float *distances, idx_t *labels,
                              IVFSearchParameters *params,
-                             size_t *nb_dis = nullptr);
+                             int64_t *nb_dis = nullptr);
 
 
 

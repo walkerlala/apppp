@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <cinttypes>
 #include <stdint.h>
 
 #include <faiss/utils/Heap.h>
@@ -28,24 +29,24 @@ namespace faiss {
 float fvec_L2sqr (
         const float * x,
         const float * y,
-        size_t d);
+        int64_t d);
 
 /// inner product
 float  fvec_inner_product (
         const float * x,
         const float * y,
-        size_t d);
+        int64_t d);
 
 /// L1 distance
 float fvec_L1 (
         const float * x,
         const float * y,
-        size_t d);
+        int64_t d);
 
 float fvec_Linf (
         const float * x,
         const float * y,
-        size_t d);
+        int64_t d);
 
 
 /** Compute pairwise distances between sets of vectors
@@ -69,32 +70,32 @@ void fvec_inner_products_ny (
         float * ip,         /* output inner product */
         const float * x,
         const float * y,
-        size_t d, size_t ny);
+        int64_t d, int64_t ny);
 
 /* compute ny square L2 distance bewteen x and a set of contiguous y vectors */
 void fvec_L2sqr_ny (
         float * dis,
         const float * x,
         const float * y,
-        size_t d, size_t ny);
+        int64_t d, int64_t ny);
 
 
 /** squared norm of a vector */
 float fvec_norm_L2sqr (const float * x,
-                       size_t d);
+                       int64_t d);
 
 /** compute the L2 norms for a set of vectors
  *
  * @param  ip       output norms, size nx
  * @param  x        set of vectors, size nx * d
  */
-void fvec_norms_L2 (float * ip, const float * x, size_t d, size_t nx);
+void fvec_norms_L2 (float * ip, const float * x, int64_t d, int64_t nx);
 
 /// same as fvec_norms_L2, but computes square norms
-void fvec_norms_L2sqr (float * ip, const float * x, size_t d, size_t nx);
+void fvec_norms_L2sqr (float * ip, const float * x, int64_t d, int64_t nx);
 
 /* L2-renormalize a set of vector. Nothing done if the vector is 0-normed */
-void fvec_renorm_L2 (size_t d, size_t nx, float * x);
+void fvec_renorm_L2 (int64_t d, int64_t nx, float * x);
 
 
 /* This function exists because the Torch counterpart is extremly slow
@@ -103,7 +104,7 @@ void fvec_renorm_L2 (size_t d, size_t nx, float * x);
 void inner_product_to_L2sqr (float * dis,
                              const float * nr1,
                              const float * nr2,
-                             size_t n1, size_t n2);
+                             int64_t n1, int64_t n2);
 
 /***************************************************************************
  * Compute a subset of  distances
@@ -116,7 +117,7 @@ void fvec_inner_products_by_idx (
         const float * x,
         const float * y,
         const int64_t *ids,
-        size_t d, size_t nx, size_t ny);
+        int64_t d, int64_t nx, int64_t ny);
 
 /* same but for a subset in y indexed by idsy (ny vectors in total) */
 void fvec_L2sqr_by_idx (
@@ -124,7 +125,7 @@ void fvec_L2sqr_by_idx (
         const float * x,
         const float * y,
         const int64_t *ids, /* ids of y vecs */
-        size_t d, size_t nx, size_t ny);
+        int64_t d, int64_t nx, int64_t ny);
 
 
 /** compute dis[j] = L2sqr(x[ix[j]], y[iy[j]]) forall j=0..n-1
@@ -136,14 +137,14 @@ void fvec_L2sqr_by_idx (
  * @param dis size n
  */
 void pairwise_indexed_L2sqr (
-        size_t d, size_t n,
+        int64_t d, int64_t n,
         const float * x, const int64_t *ix,
         const float * y, const int64_t *iy,
         float *dis);
 
 /* same for inner product */
 void pairwise_indexed_inner_product (
-        size_t d, size_t n,
+        int64_t d, int64_t n,
         const float * x, const int64_t *ix,
         const float * y, const int64_t *iy,
         float *dis);
@@ -165,14 +166,14 @@ extern int distance_compute_blas_threshold;
 void knn_inner_product (
         const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         float_minheap_array_t * res);
 
 /** Same as knn_inner_product, for the L2 distance */
 void knn_L2sqr (
         const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         float_maxheap_array_t * res);
 
 
@@ -185,7 +186,7 @@ void knn_L2sqr (
 void knn_L2sqr_base_shift (
          const float * x,
          const float * y,
-         size_t d, size_t nx, size_t ny,
+         int64_t d, int64_t nx, int64_t ny,
          float_maxheap_array_t * res,
          const float *base_shift);
 
@@ -196,13 +197,13 @@ void knn_inner_products_by_idx (
         const float * x,
         const float * y,
         const int64_t *  ids,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         float_minheap_array_t * res);
 
 void knn_L2sqr_by_idx (const float * x,
                        const float * y,
                        const int64_t * ids,
-                       size_t d, size_t nx, size_t ny,
+                       int64_t d, int64_t nx, int64_t ny,
                        float_maxheap_array_t * res);
 
 /***************************************************************************
@@ -225,7 +226,7 @@ struct RangeSearchResult;
 void range_search_L2sqr (
         const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         float radius,
         RangeSearchResult *result);
 
@@ -233,7 +234,7 @@ void range_search_L2sqr (
 void range_search_inner_product (
         const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         float radius,
         RangeSearchResult *result);
 

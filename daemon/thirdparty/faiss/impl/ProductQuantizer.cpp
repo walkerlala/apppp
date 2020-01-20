@@ -41,19 +41,19 @@ namespace faiss {
 /* compute an estimator using look-up tables for typical values of M */
 template <typename CT, class C>
 void pq_estimators_from_tables_Mmul4 (int M, const CT * codes,
-                                      size_t ncodes,
+                                      int64_t ncodes,
                                       const float * __restrict dis_table,
-                                      size_t ksub,
-                                      size_t k,
+                                      int64_t ksub,
+                                      int64_t k,
                                       float * heap_dis,
                                       int64_t * heap_ids)
 {
 
-    for (size_t j = 0; j < ncodes; j++) {
+    for (int64_t j = 0; j < ncodes; j++) {
         float dis = 0;
         const float *dt = dis_table;
 
-        for (size_t m = 0; m < M; m+=4) {
+        for (int64_t m = 0; m < M; m+=4) {
             float dism = 0;
             dism  = dt[*codes++]; dt += ksub;
             dism += dt[*codes++]; dt += ksub;
@@ -72,15 +72,15 @@ void pq_estimators_from_tables_Mmul4 (int M, const CT * codes,
 
 template <typename CT, class C>
 void pq_estimators_from_tables_M4 (const CT * codes,
-                                   size_t ncodes,
+                                   int64_t ncodes,
                                    const float * __restrict dis_table,
-                                   size_t ksub,
-                                   size_t k,
+                                   int64_t ksub,
+                                   int64_t k,
                                    float * heap_dis,
                                    int64_t * heap_ids)
 {
 
-    for (size_t j = 0; j < ncodes; j++) {
+    for (int64_t j = 0; j < ncodes; j++) {
         float dis = 0;
         const float *dt = dis_table;
         dis  = dt[*codes++]; dt += ksub;
@@ -99,9 +99,9 @@ void pq_estimators_from_tables_M4 (const CT * codes,
 template <typename CT, class C>
 static inline void pq_estimators_from_tables (const ProductQuantizer& pq,
                                               const CT * codes,
-                                              size_t ncodes,
+                                              int64_t ncodes,
                                               const float * dis_table,
-                                              size_t k,
+                                              int64_t k,
                                               float * heap_dis,
                                               int64_t * heap_ids)
 {
@@ -122,9 +122,9 @@ static inline void pq_estimators_from_tables (const ProductQuantizer& pq,
     }
 
     /* Default is relatively slow */
-    const size_t M = pq.M;
-    const size_t ksub = pq.ksub;
-    for (size_t j = 0; j < ncodes; j++) {
+    const int64_t M = pq.M;
+    const int64_t ksub = pq.ksub;
+    for (int64_t j = 0; j < ncodes; j++) {
         float dis = 0;
         const float * __restrict dt = dis_table;
         for (int m = 0; m < M; m++) {
@@ -140,23 +140,23 @@ static inline void pq_estimators_from_tables (const ProductQuantizer& pq,
 
 template <class C>
 static inline void pq_estimators_from_tables_generic(const ProductQuantizer& pq,
-                                                     size_t nbits,
+                                                     int64_t nbits,
                                                      const uint8_t *codes,
-                                                     size_t ncodes,
+                                                     int64_t ncodes,
                                                      const float *dis_table,
-                                                     size_t k,
+                                                     int64_t k,
                                                      float *heap_dis,
                                                      int64_t *heap_ids)
 {
-  const size_t M = pq.M;
-  const size_t ksub = pq.ksub;
-  for (size_t j = 0; j < ncodes; ++j) {
+  const int64_t M = pq.M;
+  const int64_t ksub = pq.ksub;
+  for (int64_t j = 0; j < ncodes; ++j) {
     faiss::ProductQuantizer::PQDecoderGeneric decoder(
       codes + j * pq.code_size, nbits
     );
     float dis = 0;
     const float * __restrict dt = dis_table;
-    for (size_t m = 0; m < M; m++) {
+    for (int64_t m = 0; m < M; m++) {
       uint64_t c = decoder.decode();
       dis += dt[c];
       dt += ksub;
@@ -175,7 +175,7 @@ static inline void pq_estimators_from_tables_generic(const ProductQuantizer& pq,
 
 
 
-ProductQuantizer::ProductQuantizer (size_t d, size_t M, size_t nbits):
+ProductQuantizer::ProductQuantizer (int64_t d, int64_t M, int64_t nbits):
     d(d), M(M), nbits(nbits), assign_index(nullptr)
 {
     set_derived_values ();
@@ -261,7 +261,7 @@ void ProductQuantizer::train (int n, const float * x)
             train_type == Train_hypercube_pca) {
             if (dsub < nbits) {
                 final_train_type = Train_default;
-                printf ("cannot train hypercube: nbits=%ld > log2(d=%ld)\n",
+                printf ("cannot train hypercube: nbits= %" PRId64 " > log2(d= %" PRId64 ")\n",
                         nbits, dsub);
             }
         }
@@ -300,7 +300,7 @@ void ProductQuantizer::train (int n, const float * x)
 
             if(verbose) {
                 clus.verbose = true;
-                printf ("Training PQ slice %d/%zd\n", m, M);
+                printf ("Training PQ slice %d/ %" PRId64 "\n", m, M);
             }
             IndexFlatL2 index (dsub);
             clus.train (n, xslice, assign_index ? *assign_index : index);
@@ -331,7 +331,7 @@ template<class PQEncoder>
 void compute_code(const ProductQuantizer& pq, const float *x, uint8_t *code) {
   float distances [pq.ksub];
   PQEncoder encoder(code, pq.nbits);
-  for (size_t m = 0; m < pq.M; m++) {
+  for (int64_t m = 0; m < pq.M; m++) {
     float mindis = 1e20;
     uint64_t idxm = 0;
     const float * xsub = x + m * pq.dsub;
@@ -339,7 +339,7 @@ void compute_code(const ProductQuantizer& pq, const float *x, uint8_t *code) {
     fvec_L2sqr_ny(distances, xsub, pq.get_centroids(m, 0), pq.dsub, pq.ksub);
 
     /* Find best centroid */
-    for (size_t i = 0; i < pq.ksub; i++) {
+    for (int64_t i = 0; i < pq.ksub; i++) {
       float dis = distances[i];
       if (dis < mindis) {
         mindis = dis;
@@ -371,7 +371,7 @@ template<class PQDecoder>
 void decode(const ProductQuantizer& pq, const uint8_t *code, float *x)
 {
   PQDecoder decoder(code, pq.nbits);
-  for (size_t m = 0; m < pq.M; m++) {
+  for (int64_t m = 0; m < pq.M; m++) {
     uint64_t c = decoder.decode();
     memcpy(x + m * pq.dsub, pq.get_centroids(m, c), sizeof(float) * pq.dsub);
   }
@@ -395,9 +395,9 @@ void ProductQuantizer::decode (const uint8_t *code, float *x) const
 }
 
 
-void ProductQuantizer::decode (const uint8_t *code, float *x, size_t n) const
+void ProductQuantizer::decode (const uint8_t *code, float *x, int64_t n) const
 {
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         this->decode (code + code_size * i, x + d * i);
     }
 }
@@ -407,12 +407,12 @@ void ProductQuantizer::compute_code_from_distance_table (const float *tab,
                                                          uint8_t *code) const
 {
   PQEncoderGeneric encoder(code, nbits);
-  for (size_t m = 0; m < M; m++) {
+  for (int64_t m = 0; m < M; m++) {
     float mindis = 1e20;
     uint64_t idxm = 0;
 
     /* Find best centroid */
-    for (size_t j = 0; j < ksub; j++) {
+    for (int64_t j = 0; j < ksub; j++) {
       float dis = *tab++;
       if (dis < mindis) {
         mindis = dis;
@@ -427,23 +427,23 @@ void ProductQuantizer::compute_code_from_distance_table (const float *tab,
 void ProductQuantizer::compute_codes_with_assign_index (
                 const float * x,
                 uint8_t * codes,
-                size_t n)
+                int64_t n)
 {
     FAISS_THROW_IF_NOT (assign_index && assign_index->d == dsub);
 
-    for (size_t m = 0; m < M; m++) {
+    for (int64_t m = 0; m < M; m++) {
         assign_index->reset ();
         assign_index->add (ksub, get_centroids (m, 0));
-        size_t bs = 65536;
+        int64_t bs = 65536;
         float * xslice = new float[bs * dsub];
         ScopeDeleter<float> del (xslice);
         idx_t *assign = new idx_t[bs];
         ScopeDeleter<idx_t> del2 (assign);
 
-        for (size_t i0 = 0; i0 < n; i0 += bs) {
-            size_t i1 = std::min(i0 + bs, n);
+        for (int64_t i0 = 0; i0 < n; i0 += bs) {
+            int64_t i1 = std::min(i0 + bs, n);
 
-            for (size_t i = i0; i < i1; i++) {
+            for (int64_t i = i0; i < i1; i++) {
                 memcpy (xslice + (i - i0) * dsub,
                         x + i * d + m * dsub,
                         dsub * sizeof(float));
@@ -453,18 +453,18 @@ void ProductQuantizer::compute_codes_with_assign_index (
 
             if (nbits == 8) {
               uint8_t *c = codes + code_size * i0 + m;
-              for (size_t i = i0; i < i1; i++) {
+              for (int64_t i = i0; i < i1; i++) {
                 *c = assign[i - i0];
                 c += M;
               }
             } else if (nbits == 16) {
               uint16_t *c = (uint16_t*)(codes + code_size * i0 + m * 2);
-              for (size_t i = i0; i < i1; i++) {
+              for (int64_t i = i0; i < i1; i++) {
                 *c = assign[i - i0];
                 c += M;
               }
             } else {
-              for (size_t i = i0; i < i1; ++i) {
+              for (int64_t i = i0; i < i1; ++i) {
                 uint8_t *c = codes + code_size * i + ((m * nbits) / 8);
                 uint8_t offset = (m * nbits) % 8;
                 uint64_t ass = assign[i - i0];
@@ -481,13 +481,13 @@ void ProductQuantizer::compute_codes_with_assign_index (
 
 void ProductQuantizer::compute_codes (const float * x,
                                       uint8_t * codes,
-                                      size_t n)  const
+                                      int64_t n)  const
 {
   // process by blocks to avoid using too much RAM
-    size_t bs = 256 * 1024;
+    int64_t bs = 256 * 1024;
     if (n > bs) {
-        for (size_t i0 = 0; i0 < n; i0 += bs) {
-            size_t i1 = std::min(i0 + bs, n);
+        for (int64_t i0 = 0; i0 < n; i0 += bs) {
+            int64_t i1 = std::min(i0 + bs, n);
             compute_codes (x + d * i0, codes + code_size * i0, i1 - i0);
         }
         return;
@@ -496,7 +496,7 @@ void ProductQuantizer::compute_codes (const float * x,
     if (dsub < 16) { // simple direct computation
 
 #pragma omp parallel for
-        for (size_t i = 0; i < n; i++)
+        for (int64_t i = 0; i < n; i++)
             compute_code (x + i * d, codes + i * code_size);
 
     } else { // worthwile to use BLAS
@@ -505,7 +505,7 @@ void ProductQuantizer::compute_codes (const float * x,
         compute_distance_tables (n, x, dis_tables);
 
 #pragma omp parallel for
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             uint8_t * code = codes + i * code_size;
             const float * tab = dis_tables + i * ksub * M;
             compute_code_from_distance_table (tab, code);
@@ -517,7 +517,7 @@ void ProductQuantizer::compute_codes (const float * x,
 void ProductQuantizer::compute_distance_table (const float * x,
                                                float * dis_table) const
 {
-    size_t m;
+    int64_t m;
 
     for (m = 0; m < M; m++) {
         fvec_L2sqr_ny (dis_table + m * ksub,
@@ -531,7 +531,7 @@ void ProductQuantizer::compute_distance_table (const float * x,
 void ProductQuantizer::compute_inner_prod_table (const float * x,
                                                  float * dis_table) const
 {
-    size_t m;
+    int64_t m;
 
     for (m = 0; m < M; m++) {
         fvec_inner_products_ny (dis_table + m * ksub,
@@ -544,7 +544,7 @@ void ProductQuantizer::compute_inner_prod_table (const float * x,
 
 
 void ProductQuantizer::compute_distance_tables (
-           size_t nx,
+           int64_t nx,
            const float * x,
            float * dis_tables) const
 {
@@ -552,7 +552,7 @@ void ProductQuantizer::compute_distance_tables (
     if (dsub < 16) {
 
 #pragma omp parallel for
-        for (size_t i = 0; i < nx; i++) {
+        for (int64_t i = 0; i < nx; i++) {
             compute_distance_table (x + i * d, dis_tables + i * ksub * M);
         }
 
@@ -569,7 +569,7 @@ void ProductQuantizer::compute_distance_tables (
 }
 
 void ProductQuantizer::compute_inner_prod_tables (
-           size_t nx,
+           int64_t nx,
            const float * x,
            float * dis_tables) const
 {
@@ -577,7 +577,7 @@ void ProductQuantizer::compute_inner_prod_tables (
     if (dsub < 16) {
 
 #pragma omp parallel for
-        for (size_t i = 0; i < nx; i++) {
+        for (int64_t i = 0; i < nx; i++) {
             compute_inner_prod_table (x + i * d, dis_tables + i * ksub * M);
         }
 
@@ -602,19 +602,19 @@ void ProductQuantizer::compute_inner_prod_tables (
 template <class C>
 static void pq_knn_search_with_tables (
       const ProductQuantizer& pq,
-      size_t nbits,
+      int64_t nbits,
       const float *dis_tables,
       const uint8_t * codes,
-      const size_t ncodes,
+      const int64_t ncodes,
       HeapArray<C> * res,
       bool init_finalize_heap)
 {
-    size_t k = res->k, nx = res->nh;
-    size_t ksub = pq.ksub, M = pq.M;
+    int64_t k = res->k, nx = res->nh;
+    int64_t ksub = pq.ksub, M = pq.M;
 
 
 #pragma omp parallel for
-    for (size_t i = 0; i < nx; i++) {
+    for (int64_t i = 0; i < nx; i++) {
         /* query preparation for asymmetric search: compute look-up tables */
         const float* dis_table = dis_tables + i * ksub * M;
 
@@ -657,9 +657,9 @@ static void pq_knn_search_with_tables (
 }
 
 void ProductQuantizer::search (const float * __restrict x,
-                               size_t nx,
+                               int64_t nx,
                                const uint8_t * codes,
-                               const size_t ncodes,
+                               const int64_t ncodes,
                                float_maxheap_array_t * res,
                                bool init_finalize_heap) const
 {
@@ -672,9 +672,9 @@ void ProductQuantizer::search (const float * __restrict x,
 }
 
 void ProductQuantizer::search_ip (const float * __restrict x,
-                               size_t nx,
+                               int64_t nx,
                                const uint8_t * codes,
-                               const size_t ncodes,
+                               const int64_t ncodes,
                                float_minheap_array_t * res,
                                bool init_finalize_heap) const
 {
@@ -716,19 +716,19 @@ void ProductQuantizer::compute_sdc_table ()
 }
 
 void ProductQuantizer::search_sdc (const uint8_t * qcodes,
-                     size_t nq,
+                     int64_t nq,
                      const uint8_t * bcodes,
-                     const size_t nb,
+                     const int64_t nb,
                      float_maxheap_array_t * res,
                      bool init_finalize_heap) const
 {
     FAISS_THROW_IF_NOT (sdc_table.size() == M * ksub * ksub);
     FAISS_THROW_IF_NOT (nbits == 8);
-    size_t k = res->k;
+    int64_t k = res->k;
 
 
 #pragma omp parallel for
-    for (size_t i = 0; i < nq; i++) {
+    for (int64_t i = 0; i < nq; i++) {
 
         /* Compute distances and keep smallest values */
         idx_t * heap_ids = res->ids + i * k;
@@ -739,7 +739,7 @@ void ProductQuantizer::search_sdc (const uint8_t * qcodes,
             maxheap_heapify (k, heap_dis, heap_ids);
 
         const uint8_t * bcode = bcodes;
-        for (size_t j = 0; j < nb; j++) {
+        for (int64_t j = 0; j < nb; j++) {
             float dis = 0;
             const float * tab = sdc_table.data();
             for (int m = 0; m < M; m++) {

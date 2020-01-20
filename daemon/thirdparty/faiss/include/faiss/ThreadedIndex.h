@@ -12,6 +12,7 @@
 #include <faiss/utils/WorkerThread.h>
 #include <memory>
 #include <vector>
+#include <cinttypes>
 
 namespace faiss {
 

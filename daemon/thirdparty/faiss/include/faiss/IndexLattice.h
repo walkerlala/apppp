@@ -11,6 +11,7 @@
 #define FAISS_INDEX_LATTICE_H
 
 
+#include <cinttypes>
 #include <vector>
 
 #include <faiss/IndexIVF.h>
@@ -29,7 +30,7 @@ struct IndexLattice: Index {
     /// number of sub-vectors
     int nsq;
     /// dimension of sub-vectors
-    size_t dsq;
+    int64_t dsq;
 
     /// the lattice quantizer
     ZnSphereCodecAlt zn_sphere_codec;
@@ -37,7 +38,7 @@ struct IndexLattice: Index {
     /// nb bits used to encode the scale, per subvector
     int scale_nbit, lattice_nbit;
     /// total, in bytes
-    size_t code_size;
+    int64_t code_size;
 
     /// mins and maxes of the vector norms, per subquantizer
     std::vector<float> trained;
@@ -47,7 +48,7 @@ struct IndexLattice: Index {
     void train(idx_t n, const float* x) override;
 
     /* The standalone codec interface */
-    size_t sa_code_size () const override;
+    int64_t sa_code_size () const override;
 
     void sa_encode (idx_t n, const float *x,
                           uint8_t *bytes) const override;

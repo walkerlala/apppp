@@ -23,7 +23,7 @@ inline float relativeError(float a, float b) {
 
 // This seed is also used for the faiss float_rand API; in a test it
 // is all within a single thread, so it is ok
-long s_seed = 1;
+int64_t s_seed = 1;
 
 void newTestSeed() {
   struct timespec t;
@@ -32,8 +32,8 @@ void newTestSeed() {
   setTestSeed(t.tv_nsec);
 }
 
-void setTestSeed(long seed) {
-  printf("testing with random seed %ld\n", seed);
+void setTestSeed(int64_t seed) {
+  printf("testing with random seed  %" PRId64 "\n", seed);
 
   srand48(seed);
   s_seed = seed;
@@ -50,7 +50,7 @@ bool randBool() {
   return randSelect<bool>({true, false});
 }
 
-std::vector<float> randVecs(size_t num, size_t dim) {
+std::vector<float> randVecs(int64_t num, int64_t dim) {
   std::vector<float> v(num * dim);
 
   faiss::float_rand(v.data(), v.size(), s_seed);
@@ -61,7 +61,7 @@ std::vector<float> randVecs(size_t num, size_t dim) {
   return v;
 }
 
-std::vector<unsigned char> randBinaryVecs(size_t num, size_t dim) {
+std::vector<unsigned char> randBinaryVecs(int64_t num, int64_t dim) {
   std::vector<unsigned char> v(num * (dim / 8));
 
   faiss::byte_rand(v.data(), v.size(), s_seed);
@@ -282,8 +282,8 @@ void compareLists(const float* refDist,
     printf("==================\n");
     for (int query = 0; query < dim1; ++query) {
       for (int result = 0; result < dim2; ++result) {
-        long refI = lookup(refInd, query, result, dim1, dim2);
-        long testI = lookup(testInd, query, result, dim1, dim2);
+        int64_t refI = lookup(refInd, query, result, dim1, dim2);
+        int64_t testI = lookup(testInd, query, result, dim1, dim2);
 
         if (refI != testI) {
           float refD = lookup(refDist, query, result, dim1, dim2);
@@ -295,12 +295,12 @@ void compareLists(const float* refDist,
           float relErr = delta / maxDist;
 
           if (refD == testD) {
-            printf("(%d, %d [%d]) (ref %ld tst %ld dist ==)\n",
+            printf("(%d, %d [%d]) (ref  %" PRId64 " tst  %" PRId64 " dist ==)\n",
                    query, result,
                    indexDiffs[query][result],
                    refI, testI);
           } else {
-            printf("(%d, %d [%d]) (ref %ld tst %ld abs %.8f "
+            printf("(%d, %d [%d]) (ref  %" PRId64 " tst  %" PRId64 " abs %.8f "
                    "rel %.8f ref %a tst %a)\n",
                    query, result,
                    indexDiffs[query][result],

@@ -11,6 +11,7 @@
 #define INDEX_BINARY_FLAT_H
 
 #include <vector>
+#include <cinttypes>
 
 #include <faiss/IndexBinary.h>
 
@@ -27,7 +28,7 @@ struct IndexBinaryFlat : IndexBinary {
    */
   bool use_heap = true;
 
-  size_t query_batch_size = 32;
+  int64_t query_batch_size = 32;
 
   explicit IndexBinaryFlat(idx_t d);
 
@@ -43,7 +44,7 @@ struct IndexBinaryFlat : IndexBinary {
   /** Remove some ids. Note that because of the indexing structure,
    * the semantics of this operation are different from the usual ones:
    * the new ids are shifted. */
-  size_t remove_ids(const IDSelector& sel) override;
+  int64_t remove_ids(const IDSelector& sel) override;
 
   IndexBinaryFlat() {}
 };

@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <cinttypes>
 #include <vector>
 
 #include <faiss/HNSW.h>
@@ -27,26 +28,26 @@ struct ReconstructFromNeighbors {
     typedef HNSW::storage_idx_t storage_idx_t;
 
     const IndexHNSW & index;
-    size_t M; // number of neighbors
-    size_t k; // number of codebook entries
-    size_t nsq; // number of subvectors
-    size_t code_size;
+    int64_t M; // number of neighbors
+    int64_t k; // number of codebook entries
+    int64_t nsq; // number of subvectors
+    int64_t code_size;
     int k_reorder; // nb to reorder. -1 = all
 
     std::vector<float> codebook; // size nsq * k * (M + 1)
 
     std::vector<uint8_t> codes; // size ntotal * code_size
-    size_t ntotal;
-    size_t d, dsub; // derived values
+    int64_t ntotal;
+    int64_t d, dsub; // derived values
 
     explicit ReconstructFromNeighbors(const IndexHNSW& index,
-                                      size_t k=256, size_t nsq=1);
+                                      int64_t k=256, int64_t nsq=1);
 
     /// codes must be added in the correct order and the IndexHNSW
     /// must be populated and sorted
-    void add_codes(size_t n, const float *x);
+    void add_codes(int64_t n, const float *x);
 
-    size_t compute_distances(size_t n, const idx_t *shortlist,
+    int64_t compute_distances(int64_t n, const idx_t *shortlist,
                              const float *query, float *distances) const;
 
     /// called by add_codes
@@ -156,7 +157,7 @@ struct IndexHNSWSQ : IndexHNSW {
  */
 struct IndexHNSW2Level : IndexHNSW {
     IndexHNSW2Level();
-    IndexHNSW2Level(Index *quantizer, size_t nlist, int m_pq, int M);
+    IndexHNSW2Level(Index *quantizer, int64_t nlist, int m_pq, int M);
 
     void flip_to_ivf();
 

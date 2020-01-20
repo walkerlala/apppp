@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
   cudaProfilerStop();
 
   auto seed = FLAGS_seed != -1L ? FLAGS_seed : time(nullptr);
-  printf("using seed %ld\n", seed);
+  printf("using seed  %" PRId64 "\n", seed);
 
   auto numQueries = FLAGS_num_queries;
 

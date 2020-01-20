@@ -12,6 +12,7 @@
 
 #include <unordered_map>
 #include <stdint.h>
+#include <cinttypes>
 
 #include <faiss/IndexIVF.h>
 
@@ -25,7 +26,7 @@ namespace faiss {
 struct IndexIVFFlat: IndexIVF {
 
     IndexIVFFlat (
-            Index * quantizer, size_t d, size_t nlist_,
+            Index * quantizer, int64_t d, int64_t nlist_,
             MetricType = METRIC_L2);
 
     /// same as add_with_ids, with precomputed coarse quantizer
@@ -72,7 +73,7 @@ struct IndexIVFFlatDedup: IndexIVFFlat {
     std::unordered_multimap <idx_t, idx_t> instances;
 
     IndexIVFFlatDedup (
-            Index * quantizer, size_t d, size_t nlist_,
+            Index * quantizer, int64_t d, int64_t nlist_,
             MetricType = METRIC_L2);
 
     /// also dedups the training set
@@ -89,7 +90,7 @@ struct IndexIVFFlatDedup: IndexIVFFlat {
                              const IVFSearchParameters *params=nullptr
                              ) const override;
 
-    size_t remove_ids(const IDSelector& sel) override;
+    int64_t remove_ids(const IDSelector& sel) override;
 
     /// not implemented
     void range_search(

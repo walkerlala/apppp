@@ -13,6 +13,7 @@
 #ifndef FAISS_AUX_INDEX_STRUCTURES_H
 #define FAISS_AUX_INDEX_STRUCTURES_H
 
+#include <cinttypes>
 #include <stdint.h>
 
 #include <vector>
@@ -29,15 +30,15 @@ namespace faiss {
  *  do_allocation can be overloaded to allocate the result tables in
  *  the matrix type of a scripting language like Lua or Python. */
 struct RangeSearchResult {
-    size_t nq;      ///< nb of queries
-    size_t *lims;   ///< size (nq + 1)
+    int64_t nq;      ///< nb of queries
+    int64_t *lims;   ///< size (nq + 1)
 
     typedef Index::idx_t idx_t;
 
     idx_t *labels;     ///< result for query i is labels[lims[i]:lims[i+1]]
     float *distances;  ///< corresponding distances (not sorted)
 
-    size_t buffer_size; ///< size of the result buffers used
+    int64_t buffer_size; ///< size of the result buffers used
 
     /// lims must be allocated on input to range_search.
     explicit RangeSearchResult (idx_t nq, bool alloc_lims=true);
@@ -87,7 +88,7 @@ struct IDSelectorBatch: IDSelector {
     int nbits;
     idx_t mask;
 
-    IDSelectorBatch (size_t n, const idx_t *indices);
+    IDSelectorBatch (int64_t n, const idx_t *indices);
     bool is_member(idx_t id) const override;
     ~IDSelectorBatch() override {}
 };
@@ -108,7 +109,7 @@ struct BufferList {
     typedef Index::idx_t idx_t;
 
     // buffer sizes in # entries
-    size_t buffer_size;
+    int64_t buffer_size;
 
     struct Buffer {
         idx_t *ids;
@@ -116,9 +117,9 @@ struct BufferList {
     };
 
     std::vector<Buffer> buffers;
-    size_t wp; ///< write pointer in the last buffer.
+    int64_t wp; ///< write pointer in the last buffer.
 
-    explicit BufferList (size_t buffer_size);
+    explicit BufferList (int64_t buffer_size);
 
     ~BufferList ();
 
@@ -130,7 +131,7 @@ struct BufferList {
 
     /// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to
     /// tables dest_ids, dest_dis
-    void copy_range (size_t ofs, size_t n,
+    void copy_range (int64_t ofs, int64_t n,
                      idx_t * dest_ids, float *dest_dis);
 
 };
@@ -141,7 +142,7 @@ struct RangeSearchPartialResult;
 struct RangeQueryResult {
     using idx_t = Index::idx_t;
     idx_t qno;    //< id of the query
-    size_t nres;  //< nb of results for this query
+    int64_t nres;  //< nb of results for this query
     RangeSearchPartialResult * pres;
 
     /// called by search function to report a new result
@@ -233,7 +234,7 @@ struct InterruptCallback {
     /** assuming each iteration takes a certain number of flops, what
      * is a reasonable interval to check for interrupts?
      */
-    static size_t get_period_hint (size_t flops);
+    static int64_t get_period_hint (int64_t flops);
 
 };
 

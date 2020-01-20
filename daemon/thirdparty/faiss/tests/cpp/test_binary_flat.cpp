@@ -18,7 +18,7 @@ TEST(BinaryFlat, accuracy) {
   int d = 64;
 
   // size of the database we plan to index
-  size_t nb = 1000;
+  int64_t nb = 1000;
 
   // make the index object and train it
   faiss::IndexBinaryFlat index(d);
@@ -26,7 +26,7 @@ TEST(BinaryFlat, accuracy) {
   srand(35);
 
   std::vector<uint8_t> database(nb * (d / 8));
-  for (size_t i = 0; i < nb * (d / 8); i++) {
+  for (int64_t i = 0; i < nb * (d / 8); i++) {
     database[i] = rand() % 0x100;
   }
 
@@ -34,12 +34,12 @@ TEST(BinaryFlat, accuracy) {
     index.add(nb, database.data());
   }
 
-  size_t nq = 200;
+  int64_t nq = 200;
 
   { // searching the database
 
     std::vector<uint8_t> queries(nq * (d / 8));
-    for (size_t i = 0; i < nq * (d / 8); i++) {
+    for (int64_t i = 0; i < nq * (d / 8); i++) {
       queries[i] = rand() % 0x100;
     }
 
@@ -49,10 +49,10 @@ TEST(BinaryFlat, accuracy) {
 
     index.search(nq, queries.data(), k, dis.data(), nns.data());
 
-    for (size_t i = 0; i < nq; ++i) {
+    for (int64_t i = 0; i < nq; ++i) {
       faiss::HammingComputer8 hc(queries.data() + i * (d / 8), d / 8);
       hamdis_t dist_min = hc.hamming(database.data());
-      for (size_t j = 1; j < nb; ++j) {
+      for (int64_t j = 1; j < nb; ++j) {
         hamdis_t dist = hc.hamming(database.data() + j * (d / 8));
         if (dist < dist_min) {
           dist_min = dist;

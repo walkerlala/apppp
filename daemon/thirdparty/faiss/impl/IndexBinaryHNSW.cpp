@@ -10,6 +10,7 @@
 #include <faiss/IndexBinaryHNSW.h>
 
 
+#include <cinttypes>
 #include <memory>
 #include <cstdlib>
 #include <cassert>
@@ -44,15 +45,15 @@ namespace {
 
 
 void hnsw_add_vertices(IndexBinaryHNSW& index_hnsw,
-                       size_t n0,
-                       size_t n, const uint8_t *x,
+                       int64_t n0,
+                       int64_t n, const uint8_t *x,
                        bool verbose,
                        bool preset_levels = false) {
   HNSW& hnsw = index_hnsw.hnsw;
-  size_t ntotal = n0 + n;
+  int64_t ntotal = n0 + n;
   double t0 = getmillisecs();
   if (verbose) {
-    printf("hnsw_add_vertices: adding %ld elements on top of %ld "
+    printf("hnsw_add_vertices: adding  %" PRId64 " elements on top of  %" PRId64 " "
            "(preset_levels=%d)\n",
            n, n0, int(preset_levels));
   }
@@ -254,7 +255,7 @@ template<class HammingComputer>
 struct FlatHammingDis : DistanceComputer {
   const int code_size;
   const uint8_t *b;
-  size_t ndis;
+  int64_t ndis;
   HammingComputer hc;
 
   float operator () (idx_t i) override {

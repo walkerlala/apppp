@@ -51,7 +51,7 @@ struct ToGpuClonerMultiple: faiss::Cloner, GpuMultipleClonerOptions {
                         const GpuMultipleClonerOptions &options);
 
     void copy_ivf_shard (const IndexIVF *index_ivf, IndexIVF *idx2,
-                         long n, long i);
+                         int64_t n, int64_t i);
 
     Index * clone_Index_to_shards (const Index *index);
 

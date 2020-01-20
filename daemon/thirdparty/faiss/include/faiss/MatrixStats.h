@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <cinttypes>
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -24,21 +25,21 @@ namespace faiss {
  * accessed from code */
 
 struct MatrixStats {
-    MatrixStats (size_t n, size_t d, const float *x);
+    MatrixStats (int64_t n, int64_t d, const float *x);
     std::string comments;
 
     // raw statistics
-    size_t n, d;
-    size_t n_collision, n_valid, n0;
+    int64_t n, d;
+    int64_t n_collision, n_valid, n0;
     double min_norm2, max_norm2;
 
     struct PerDimStats {
-        size_t n, n_nan, n_inf, n0;
+        int64_t n, n_nan, n_inf, n0;
 
         float min, max;
         double sum, sum2;
 
-        size_t n_valid;
+        int64_t n_valid;
         double mean, stddev;
 
         PerDimStats();
@@ -48,13 +49,13 @@ struct MatrixStats {
 
     std::vector<PerDimStats> per_dim_stats;
     struct Occurrence {
-        size_t first;
-        size_t count;
+        int64_t first;
+        int64_t count;
     };
     std::unordered_map<uint64_t, Occurrence> occurrences;
 
     char *buf;
-    size_t nbuf;
+    int64_t nbuf;
     void do_comment (const char *fmt, ...);
 
 };

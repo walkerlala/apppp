@@ -65,7 +65,7 @@ void IndexLattice::train(idx_t n, const float* x)
 }
 
 /* The standalone codec interface */
-size_t IndexLattice::sa_code_size () const
+int64_t IndexLattice::sa_code_size () const
 {
     return code_size;
 }

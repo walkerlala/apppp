@@ -10,6 +10,7 @@
 #ifndef FAISS_INDEX_PQ_H
 #define FAISS_INDEX_PQ_H
 
+#include <cinttypes>
 #include <stdint.h>
 
 #include <vector>
@@ -38,8 +39,8 @@ struct IndexPQ: Index {
      * @param nbits  number of bit per subvector index
      */
     IndexPQ (int d,                    ///< dimensionality of the input vectors
-             size_t M,                 ///< number of subquantizers
-             size_t nbits,             ///< number of bit per subvector index
+             int64_t M,                 ///< number of subquantizers
+             int64_t nbits,             ///< number of bit per subvector index
              MetricType metric = METRIC_L2);
 
     IndexPQ ();
@@ -61,10 +62,10 @@ struct IndexPQ: Index {
 
     void reconstruct(idx_t key, float* recons) const override;
 
-    size_t remove_ids(const IDSelector& sel) override;
+    int64_t remove_ids(const IDSelector& sel) override;
 
     /* The standalone codec interface */
-    size_t sa_code_size () const override;
+    int64_t sa_code_size () const override;
 
     void sa_encode (idx_t n, const float *x,
                           uint8_t *bytes) const override;
@@ -129,10 +130,10 @@ struct IndexPQ: Index {
 /// statistics are robust to internal threading, but not if
 /// IndexPQ::search is called by multiple threads
 struct IndexPQStats {
-    size_t nq;       // nb of queries run
-    size_t ncode;    // nb of codes visited
+    int64_t nq;       // nb of queries run
+    int64_t ncode;    // nb of codes visited
 
-    size_t n_hamming_pass; // nb of passed Hamming distance tests (for polysemy)
+    int64_t n_hamming_pass; // nb of passed Hamming distance tests (for polysemy)
 
     IndexPQStats () {reset (); }
     void reset ();
@@ -148,8 +149,8 @@ struct MultiIndexQuantizer: Index  {
     ProductQuantizer pq;
 
     MultiIndexQuantizer (int d,         ///< dimension of the input vectors
-                         size_t M,      ///< number of subquantizers
-                         size_t nbits); ///< number of bit per subvector index
+                         int64_t M,      ///< number of subquantizers
+                         int64_t nbits); ///< number of bit per subvector index
 
     void train(idx_t n, const float* x) override;
 
@@ -176,11 +177,11 @@ struct MultiIndexQuantizer2: MultiIndexQuantizer {
     bool own_fields;
 
     MultiIndexQuantizer2 (
-        int d, size_t M, size_t nbits,
+        int d, int64_t M, int64_t nbits,
         Index **indexes);
 
     MultiIndexQuantizer2 (
-        int d, size_t nbits,
+        int d, int64_t nbits,
         Index *assign_index_0,
         Index *assign_index_1);
 

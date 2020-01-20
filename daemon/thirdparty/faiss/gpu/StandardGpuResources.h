@@ -33,11 +33,11 @@ class StandardGpuResources : public GpuResources {
   /// memory that we will reserve. We will never go above 1.5 GiB on any GPU;
   /// smaller GPUs (with <= 4 GiB or <= 8 GiB) will use less memory than that.
   /// To avoid any temporary memory allocation, pass 0.
-  void setTempMemory(size_t size);
+  void setTempMemory(int64_t size);
 
   /// Set amount of pinned memory to allocate, for async GPU <-> CPU
   /// transfers
-  void setPinnedMemory(size_t size);
+  void setPinnedMemory(int64_t size);
 
   /// Called to change the stream for work ordering
   void setDefaultStream(int device, cudaStream_t stream);
@@ -64,7 +64,7 @@ class StandardGpuResources : public GpuResources {
 
   DeviceMemory& getMemoryManager(int device) override;
 
-  std::pair<void*, size_t> getPinnedMemory() override;
+  std::pair<void*, int64_t> getPinnedMemory() override;
 
   cudaStream_t getAsyncCopyStream(int device) override;
 
@@ -74,7 +74,7 @@ class StandardGpuResources : public GpuResources {
 
   /// Adjust the default temporary memory allocation based on the total GPU
   /// memory size
-  static size_t getDefaultTempMemForGPU(int device, size_t requested);
+  static int64_t getDefaultTempMemForGPU(int device, int64_t requested);
 
  private:
   /// Our default stream that work is ordered on, one per each device
@@ -98,14 +98,14 @@ class StandardGpuResources : public GpuResources {
 
   /// Pinned memory allocation for use with this GPU
   void* pinnedMemAlloc_;
-  size_t pinnedMemAllocSize_;
+  int64_t pinnedMemAllocSize_;
 
   /// Another option is to use a specified amount of memory on all
   /// devices
-  size_t tempMemSize_;
+  int64_t tempMemSize_;
 
   /// Amount of pinned memory we should allocate
-  size_t pinnedMemSize_;
+  int64_t pinnedMemSize_;
 
   /// Whether or not a warning upon cudaMalloc is generated
   bool cudaMallocWarning_;

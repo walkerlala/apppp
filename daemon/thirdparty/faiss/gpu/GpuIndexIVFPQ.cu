@@ -116,16 +116,16 @@ GpuIndexIVFPQ::copyFrom(const faiss::IndexIVFPQ* index) {
 
   // Copy database vectors, if any
   const InvertedLists *ivf = index->invlists;
-  size_t nlist = ivf ? ivf->nlist : 0;
-  for (size_t i = 0; i < nlist; ++i) {
-    size_t list_size = ivf->list_size(i);
+  int64_t nlist = ivf ? ivf->nlist : 0;
+  for (int64_t i = 0; i < nlist; ++i) {
+    int64_t list_size = ivf->list_size(i);
 
     // GPU index can only support max int entries per list
     FAISS_THROW_IF_NOT_FMT(list_size <=
-                       (size_t) std::numeric_limits<int>::max(),
+                       (int64_t) std::numeric_limits<int>::max(),
                        "GPU inverted list can only support "
-                       "%zu entries; %zu found",
-                       (size_t) std::numeric_limits<int>::max(),
+                       " %" PRId64 " entries;  %" PRId64 " found",
+                       (int64_t) std::numeric_limits<int>::max(),
                        list_size);
 
     index_->addCodeVectorsFromCpu(
@@ -188,7 +188,7 @@ GpuIndexIVFPQ::copyTo(faiss::IndexIVFPQ* index) const {
 }
 
 void
-GpuIndexIVFPQ::reserveMemory(size_t numVecs) {
+GpuIndexIVFPQ::reserveMemory(int64_t numVecs) {
   reserveMemoryVecs_ = numVecs;
   if (index_) {
     DeviceScope scope(device_);
@@ -227,7 +227,7 @@ GpuIndexIVFPQ::getCentroidsPerSubQuantizer() const {
   return utils::pow2(bitsPerCode_);
 }
 
-size_t
+int64_t
 GpuIndexIVFPQ::reclaimMemory() {
   if (index_) {
     DeviceScope scope(device_);
@@ -270,7 +270,7 @@ GpuIndexIVFPQ::trainResidualQuantizer_(Index::idx_t n, const float* x) {
   }
 
   if (this->verbose) {
-    printf("training %d x %d product quantizer on %ld vectors in %dD\n",
+    printf("training %d x %d product quantizer on  %" PRId64 " vectors in %dD\n",
            subQuantizers_, getCentroidsPerSubQuantizer(), n, this->d);
   }
 
@@ -333,8 +333,8 @@ GpuIndexIVFPQ::addImpl_(int n,
   // Data is already resident on the GPU
   Tensor<float, 2, true> data(const_cast<float*>(x), {n, (int) this->d});
 
-  static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
-  Tensor<long, 1, true> labels(const_cast<long*>(xids), {n});
+  static_assert(sizeof(int64_t) == sizeof(Index::idx_t), "size mismatch");
+  Tensor<int64_t, 1, true> labels(const_cast<int64_t*>(xids), {n});
 
   // Not all vectors may be able to be added (some may contain NaNs etc)
   index_->classifyAndAddVectors(data, labels);
@@ -358,8 +358,8 @@ GpuIndexIVFPQ::searchImpl_(int n,
   Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int) this->d});
   Tensor<float, 2, true> outDistances(distances, {n, k});
 
-  static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
-  Tensor<long, 2, true> outLabels(const_cast<long*>(labels), {n, k});
+  static_assert(sizeof(int64_t) == sizeof(Index::idx_t), "size mismatch");
+  Tensor<int64_t, 2, true> outLabels(const_cast<int64_t*>(labels), {n, k});
 
   index_->query(queries, nprobe, k, outDistances, outLabels);
 }
@@ -378,7 +378,7 @@ GpuIndexIVFPQ::getListCodes(int listId) const {
   return index_->getListCodes(listId);
 }
 
-std::vector<long>
+std::vector<int64_t>
 GpuIndexIVFPQ::getListIndices(int listId) const {
   FAISS_ASSERT(index_);
   DeviceScope scope(device_);
@@ -418,14 +418,14 @@ GpuIndexIVFPQ::verifySettings_() const {
 
   // 64 bytes per code is only supported with usage of float16, at 2^8
   // codes per subquantizer
-  size_t requiredSmemSize =
+  int64_t requiredSmemSize =
     lookupTableSize * subQuantizers_ * utils::pow2(bitsPerCode_);
-  size_t smemPerBlock = getMaxSharedMemPerBlock(device_);
+  int64_t smemPerBlock = getMaxSharedMemPerBlock(device_);
 
   FAISS_THROW_IF_NOT_FMT(requiredSmemSize
                      <= getMaxSharedMemPerBlock(device_),
-                     "Device %d has %zu bytes of shared memory, while "
-                     "%d bits per code and %d sub-quantizers requires %zu "
+                     "Device %d has  %" PRId64 " bytes of shared memory, while "
+                     "%d bits per code and %d sub-quantizers requires  %" PRId64 " "
                      "bytes. Consider useFloat16LookupTables and/or "
                      "reduce parameters",
                      device_, smemPerBlock, bitsPerCode_, subQuantizers_,

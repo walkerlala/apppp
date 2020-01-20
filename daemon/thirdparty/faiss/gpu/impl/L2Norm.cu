@@ -303,10 +303,10 @@ void runL2Norm(Tensor<float, 2, true>& input,
     runL2Norm<float, float4, int>(
       input, inputRowMajor, output, normSquared, stream);
   } else {
-    auto inputCast = input.castIndexType<long>();
-    auto outputCast = output.castIndexType<long>();
+    auto inputCast = input.castIndexType<int64_t>();
+    auto outputCast = output.castIndexType<int64_t>();
 
-    runL2Norm<float, float4, long>(
+    runL2Norm<float, float4, int64_t>(
       inputCast, inputRowMajor, outputCast, normSquared, stream);
   }
 }
@@ -320,10 +320,10 @@ void runL2Norm(Tensor<half, 2, true>& input,
     runL2Norm<half, half2, int>(
       input, inputRowMajor, output, normSquared, stream);
   } else {
-    auto inputCast = input.castIndexType<long>();
-    auto outputCast = output.castIndexType<long>();
+    auto inputCast = input.castIndexType<int64_t>();
+    auto outputCast = output.castIndexType<int64_t>();
 
-    runL2Norm<half, half2, long>(
+    runL2Norm<half, half2, int64_t>(
       inputCast, inputRowMajor, outputCast, normSquared, stream);
   }
 }

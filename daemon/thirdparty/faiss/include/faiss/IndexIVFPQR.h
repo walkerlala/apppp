@@ -11,6 +11,7 @@
 
 #include <vector>
 
+#include <cinttypes>
 #include <faiss/IndexIVFPQ.h>
 
 
@@ -27,13 +28,13 @@ struct IndexIVFPQR: IndexIVFPQ {
     float k_factor;
 
     IndexIVFPQR (
-            Index * quantizer, size_t d, size_t nlist,
-            size_t M, size_t nbits_per_idx,
-            size_t M_refine, size_t nbits_per_idx_refine);
+            Index * quantizer, int64_t d, int64_t nlist,
+            int64_t M, int64_t nbits_per_idx,
+            int64_t M_refine, int64_t nbits_per_idx_refine);
 
     void reset() override;
 
-    size_t remove_ids(const IDSelector& sel) override;
+    int64_t remove_ids(const IDSelector& sel) override;
 
     /// trains the two product quantizers
     void train_residual(idx_t n, const float* x) override;

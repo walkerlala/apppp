@@ -23,7 +23,7 @@ namespace faiss {
 
 RangeSearchResult::RangeSearchResult (idx_t nq, bool alloc_lims): nq (nq) {
     if (alloc_lims) {
-        lims = new size_t [nq + 1];
+        lims = new int64_t [nq + 1];
         memset (lims, 0, sizeof(*lims) * (nq + 1));
     } else {
         lims = nullptr;
@@ -36,9 +36,9 @@ RangeSearchResult::RangeSearchResult (idx_t nq, bool alloc_lims): nq (nq) {
 /// called when lims contains the nb of elements result entries
 /// for each query
 void RangeSearchResult::do_allocation () {
-    size_t ofs = 0;
+    int64_t ofs = 0;
     for (int i = 0; i < nq; i++) {
-        size_t n = lims[i];
+        int64_t n = lims[i];
         lims [i] = ofs;
         ofs += n;
     }
@@ -62,7 +62,7 @@ RangeSearchResult::~RangeSearchResult () {
  ***********************************************************************/
 
 
-BufferList::BufferList (size_t buffer_size):
+BufferList::BufferList (int64_t buffer_size):
     buffer_size (buffer_size)
 {
     wp = buffer_size;
@@ -96,13 +96,13 @@ void BufferList::append_buffer ()
 
 /// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to
 /// tables dest_ids, dest_dis
-void BufferList::copy_range (size_t ofs, size_t n,
+void BufferList::copy_range (int64_t ofs, int64_t n,
                              idx_t * dest_ids, float *dest_dis)
 {
-    size_t bno = ofs / buffer_size;
+    int64_t bno = ofs / buffer_size;
     ofs -= bno * buffer_size;
     while (n > 0) {
-        size_t ncopy = ofs + n < buffer_size ? n : buffer_size - ofs;
+        int64_t ncopy = ofs + n < buffer_size ? n : buffer_size - ofs;
         Buffer buf = buffers [bno];
         memcpy (dest_ids, buf.ids + ofs, ncopy * sizeof(*dest_ids));
         memcpy (dest_dis, buf.dis + ofs, ncopy * sizeof(*dest_dis));
@@ -167,7 +167,7 @@ void RangeSearchPartialResult::set_lims ()
 /// called by range_search after do_allocation
 void RangeSearchPartialResult::copy_result (bool incremental)
 {
-    size_t ofs = 0;
+    int64_t ofs = 0;
     for (int i = 0; i < queries.size(); i++) {
         RangeQueryResult & qres = queries[i];
 
@@ -188,7 +188,7 @@ void RangeSearchPartialResult::merge (std::vector <RangeSearchPartialResult *> &
     int npres = partial_results.size();
     if (npres == 0) return;
     RangeSearchResult *result = partial_results[0]->res;
-    size_t nx = result->nq;
+    int64_t nx = result->nq;
 
     // count
     for (const RangeSearchPartialResult * pres : partial_results) {
@@ -208,7 +208,7 @@ void RangeSearchPartialResult::merge (std::vector <RangeSearchPartialResult *> &
     }
 
     // reset the limits
-    for (size_t i = nx; i > 0; i--) {
+    for (int64_t i = nx; i > 0; i--) {
         result->lims [i] = result->lims [i - 1];
     }
     result->lims [0] = 0;
@@ -233,7 +233,7 @@ bool IDSelectorRange::is_member (idx_t id) const
  * IDSelectorBatch
  ***********************************************************************/
 
-IDSelectorBatch::IDSelectorBatch (size_t n, const idx_t *indices)
+IDSelectorBatch::IDSelectorBatch (int64_t n, const idx_t *indices)
 {
     nbits = 0;
     while (n > (1L << nbits)) nbits++;
@@ -242,7 +242,7 @@ IDSelectorBatch::IDSelectorBatch (size_t n, const idx_t *indices)
 
     mask = (1L << nbits) - 1;
     bloom.resize (1UL << (nbits - 3), 0);
-    for (long i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         Index::idx_t id = indices[i];
         set.insert(id);
         id &= mask;
@@ -252,7 +252,7 @@ IDSelectorBatch::IDSelectorBatch (size_t n, const idx_t *indices)
 
 bool IDSelectorBatch::is_member (idx_t i) const
 {
-    long im = i & mask;
+    int64_t im = i & mask;
     if(!(bloom[im>>3] & (1 << (im & 7)))) {
         return 0;
     }
@@ -291,12 +291,12 @@ bool InterruptCallback::is_interrupted () {
 }
 
 
-size_t InterruptCallback::get_period_hint (size_t flops) {
+int64_t InterruptCallback::get_period_hint (int64_t flops) {
     if (!instance.get()) {
         return 1L << 30; // never check
     }
     // for 10M flops, it is reasonable to check once every 10 iterations
-    return std::max((size_t)10 * 10 * 1000 * 1000 / (flops + 1), (size_t)1);
+    return std::max((int64_t)10 * 10 * 1000 * 1000 / (flops + 1), (int64_t)1);
 }
 
 

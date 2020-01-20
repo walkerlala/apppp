@@ -22,10 +22,10 @@ namespace {
 int d = 64;
 
 // size of the database we plan to index
-size_t nb = 8000;
+int64_t nb = 8000;
 
 
-double eval_codec_error (long ncentroids, long m, const std::vector<float> &v)
+double eval_codec_error (int64_t ncentroids, int64_t m, const std::vector<float> &v)
 {
     faiss::IndexFlatL2 coarse_quantizer (d);
     faiss::IndexIVFPQ index (&coarse_quantizer, d,
@@ -51,7 +51,7 @@ double eval_codec_error (long ncentroids, long m, const std::vector<float> &v)
 TEST(IVFPQ, codec) {
 
     std::vector <float> database (nb * d);
-    for (size_t i = 0; i < nb * d; i++) {
+    for (int64_t i = 0; i < nb * d; i++) {
         database[i] = drand48();
     }
 

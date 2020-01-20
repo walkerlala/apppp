@@ -28,13 +28,13 @@ typedef Index::idx_t idx_t;
 int d = 32;
 
 // nb of training vectors
-size_t nt = 5000;
+int64_t nt = 5000;
 
 // size of the database points per window step
-size_t nb = 1000;
+int64_t nb = 1000;
 
 // nb of queries
-size_t nq = 200;
+int64_t nq = 200;
 
 
 int total_size = 40;
@@ -44,10 +44,10 @@ int window_size = 10;
 
 
 
-std::vector<float> make_data(size_t n)
+std::vector<float> make_data(int64_t n)
 {
     std::vector <float> database (n * d);
-    for (size_t i = 0; i < n * d; i++) {
+    for (int64_t i = 0; i < n * d; i++) {
         database[i] = drand48();
     }
     return database;
@@ -192,7 +192,7 @@ int test_sliding_invlists (const char *index_key) {
         // will be deleted by the index
         index_ivf->replace_invlists (ci, true);
 
-        printf ("   nb invlists = %ld\n", ils.size());
+        printf ("   nb invlists =  %" PRId64 "\n", ils.size());
 
         auto new_res = search_index (index.get(), xq.data());
 
@@ -203,12 +203,12 @@ int test_sliding_invlists (const char *index_key) {
 
         EXPECT_EQ (ref_res.size(), new_res.size());
 
-        size_t ndiff = 0;
-        for (size_t j = 0; j < ref_res.size(); j++) {
+        int64_t ndiff = 0;
+        for (int64_t j = 0; j < ref_res.size(); j++) {
             if (ref_res[j] != new_res[j])
                 ndiff++;
         }
-        printf("  nb differences: %ld / %ld\n",
+        printf("  nb differences:  %" PRId64 " /  %" PRId64 "\n",
                ndiff, ref_res.size());
         EXPECT_EQ (ref_res, new_res);
     }

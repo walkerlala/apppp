@@ -36,7 +36,7 @@ IndexReplicasTemplate<IndexT>::onAfterAddIndex(IndexT* index) {
     FAISS_THROW_IF_NOT_FMT(index->ntotal == existing->ntotal,
                            "IndexReplicas: newly added index does "
                            "not have same number of vectors as prior index; "
-                           "prior index has %ld vectors, new index has %ld",
+                           "prior index has  %" PRId64 " vectors, new index has  %" PRId64 "",
                            existing->ntotal, index->ntotal);
 
     FAISS_THROW_IF_NOT_MSG(index->is_trained == existing->is_trained,
@@ -88,7 +88,7 @@ IndexReplicasTemplate<IndexT>::search(idx_t n,
   }
 
   auto dim = this->d;
-  size_t componentsPerVec =
+  int64_t componentsPerVec =
     sizeof(component_t) == 1 ? (dim + 7) / 8 : dim;
 
   // Partition the query by the number of indices we have

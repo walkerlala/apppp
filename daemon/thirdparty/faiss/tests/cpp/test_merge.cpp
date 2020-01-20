@@ -56,8 +56,8 @@ typedef faiss::Index::idx_t idx_t;
 
 // parameters to use for the test
 int d = 64;
-size_t nb = 1000;
-size_t nq = 100;
+int64_t nb = 1000;
+int64_t nq = 100;
 int nindex = 4;
 int k = 10;
 int nlist = 40;
@@ -71,10 +71,10 @@ struct CommonData {
 
     CommonData(): database (nb * d), queries (nq * d), ids(nb), quantizer (d) {
 
-        for (size_t i = 0; i < nb * d; i++) {
+        for (int64_t i = 0; i < nb * d; i++) {
             database[i] = drand48();
         }
-        for (size_t i = 0; i < nq * d; i++) {
+        for (int64_t i = 0; i < nq * d; i++) {
             queries[i] = drand48();
         }
         for (int i = 0; i < nb; i++) {
@@ -116,7 +116,7 @@ int compare_merged (faiss::IndexShards *index_shards, bool shift_ids,
     } else {
         std::vector<const faiss::InvertedLists *> lists;
         faiss::IndexIVF *index0 = nullptr;
-        size_t ntotal = 0;
+        int64_t ntotal = 0;
         for (int i = 0; i < nindex; i++) {
             auto index_ivf = dynamic_cast<faiss::IndexIVF*>(index_shards->at(i));
             assert (index_ivf);
@@ -140,8 +140,8 @@ int compare_merged (faiss::IndexShards *index_shards, bool shift_ids,
     index_shards->at(0)->search(nq, cd.queries.data(),
                                 k, newD.data(), newI.data());
 
-    size_t ndiff = 0;
-    for (size_t i = 0; i < k * nq; i++) {
+    int64_t ndiff = 0;
+    for (int64_t i = 0; i < k * nq; i++) {
         if (refI[i] != newI[i]) {
             ndiff ++;
         }
@@ -162,7 +162,7 @@ TEST(MERGE, merge_flat_no_ids) {
     }
     EXPECT_TRUE(index_shards.is_trained);
     index_shards.add(nb, cd.database.data());
-    size_t prev_ntotal = index_shards.ntotal;
+    int64_t prev_ntotal = index_shards.ntotal;
     int ndiff = compare_merged(&index_shards, true);
     EXPECT_EQ (prev_ntotal, index_shards.ntotal);
     EXPECT_EQ(0, ndiff);
@@ -211,7 +211,7 @@ TEST(MERGE, merge_flat_vt) {
     }
     EXPECT_TRUE(index_shards.is_trained);
     index_shards.add_with_ids(nb, cd.database.data(), cd.ids.data());
-    size_t prev_ntotal = index_shards.ntotal;
+    int64_t prev_ntotal = index_shards.ntotal;
     int ndiff = compare_merged(&index_shards, false);
     EXPECT_EQ (prev_ntotal, index_shards.ntotal);
     EXPECT_GE(0, ndiff);

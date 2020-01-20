@@ -58,7 +58,7 @@ int FlatIndex::getDim() const {
 }
 
 void
-FlatIndex::reserve(size_t numVecs, cudaStream_t stream) {
+FlatIndex::reserve(int64_t numVecs, cudaStream_t stream) {
   if (useFloat16_) {
     rawData_.reserve(numVecs * dim_ * sizeof(half), stream);
   } else {
@@ -254,7 +254,7 @@ FlatIndex::add(const float* data, int numVecs, cudaStream_t stream) {
                     true /* reserve exactly */);
   } else {
     rawData_.append((char*) data,
-                    (size_t) dim_ * numVecs * sizeof(float),
+                    (int64_t) dim_ * numVecs * sizeof(float),
                     stream,
                     true /* reserve exactly */);
   }

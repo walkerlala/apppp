@@ -8,6 +8,7 @@
 #include <faiss/FaissAssert.h>
 #include <exception>
 #include <iostream>
+#include <cinttypes>
 
 namespace faiss {
 

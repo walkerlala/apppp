@@ -107,9 +107,9 @@ void search_centroid(faiss::Index *index,
 
 
 void search_and_return_centroids(faiss::Index *index,
-                                 size_t n,
+                                 int64_t n,
                                  const float* xin,
-                                 long k,
+                                 int64_t k,
                                  float *distances,
                                  idx_t* labels,
                                  idx_t* query_centroid_ids,
@@ -125,14 +125,14 @@ void search_and_return_centroids(faiss::Index *index,
     faiss::IndexIVF* index_ivf = dynamic_cast<faiss::IndexIVF*>(index);
     assert(index_ivf);
 
-    size_t nprobe = index_ivf->nprobe;
+    int64_t nprobe = index_ivf->nprobe;
     std::vector<idx_t> cent_nos (n * nprobe);
     std::vector<float> cent_dis (n * nprobe);
     index_ivf->quantizer->search(
         n, x, nprobe, cent_dis.data(), cent_nos.data());
 
     if (query_centroid_ids) {
-        for (size_t i = 0; i < n; i++)
+        for (int64_t i = 0; i < n; i++)
             query_centroid_ids[i] = cent_nos[i * nprobe];
     }
 
@@ -140,14 +140,14 @@ void search_and_return_centroids(faiss::Index *index,
                                    cent_nos.data(), cent_dis.data(),
                                    distances, labels, true);
 
-    for (size_t i = 0; i < n * k; i++) {
+    for (int64_t i = 0; i < n * k; i++) {
         idx_t label = labels[i];
         if (label < 0) {
             if (result_centroid_ids)
                 result_centroid_ids[i] = -1;
         } else {
-            long list_no = label >> 32;
-            long list_index = label & 0xffffffff;
+            int64_t list_no = label >> 32;
+            int64_t list_index = label & 0xffffffff;
             if (result_centroid_ids)
                 result_centroid_ids[i] = list_no;
             labels[i] = index_ivf->invlists->get_single_id(list_no, list_index);
@@ -168,20 +168,20 @@ SlidingIndexWindow::SlidingIndexWindow (Index *index): index (index) {
 
 template<class T>
 static void shift_and_add (std::vector<T> & dst,
-                           size_t remove,
+                           int64_t remove,
                            const std::vector<T> & src)
 {
     if (remove > 0)
         memmove (dst.data(), dst.data() + remove,
                  (dst.size() - remove) * sizeof (T));
-    size_t insert_point = dst.size() - remove;
+    int64_t insert_point = dst.size() - remove;
     dst.resize (insert_point + src.size());
     memcpy (dst.data() + insert_point, src.data (), src.size() * sizeof(T));
 }
 
 template<class T>
 static void remove_from_begin (std::vector<T> & v,
-                               size_t remove)
+                               int64_t remove)
 {
     if (remove > 0)
         v.erase (v.begin(), v.begin() + remove);
@@ -203,8 +203,8 @@ void SlidingIndexWindow::step(const Index *sub_index, bool remove_oldest) {
 
     if (remove_oldest && ils2) {
         for (int i = 0; i < nlist; i++) {
-            std::vector<size_t> & sizesi = sizes[i];
-            size_t amount_to_remove = sizesi[0];
+            std::vector<int64_t> & sizesi = sizes[i];
+            int64_t amount_to_remove = sizesi[0];
             index_ivf->ntotal += ils2->ids[i].size() - amount_to_remove;
 
             shift_and_add (ils->ids[i], amount_to_remove, ils2->ids[i]);
@@ -225,7 +225,7 @@ void SlidingIndexWindow::step(const Index *sub_index, bool remove_oldest) {
         n_slice++;
     } else if (remove_oldest) {
         for (int i = 0; i < nlist; i++) {
-            size_t amount_to_remove = sizes[i][0];
+            int64_t amount_to_remove = sizes[i][0];
             index_ivf->ntotal -= amount_to_remove;
             remove_from_begin (ils->ids[i], amount_to_remove);
             remove_from_begin (ils->codes[i],
@@ -248,7 +248,7 @@ void SlidingIndexWindow::step(const Index *sub_index, bool remove_oldest) {
 // IndexIVF's embedded in a IndexPreTransform
 
 ArrayInvertedLists *
-get_invlist_range (const Index *index, long i0, long i1)
+get_invlist_range (const Index *index, int64_t i0, int64_t i1)
 {
     const IndexIVF *ivf = extract_index_ivf (index);
 
@@ -258,7 +258,7 @@ get_invlist_range (const Index *index, long i0, long i1)
 
     ArrayInvertedLists * il = new ArrayInvertedLists(i1 - i0, src->code_size);
 
-    for (long i = i0; i < i1; i++) {
+    for (int64_t i = i0; i < i1; i++) {
         il->add_entries(i - i0, src->list_size(i),
                         InvertedLists::ScopedIds (src, i).get(),
                         InvertedLists::ScopedCodes (src, i).get());
@@ -268,7 +268,7 @@ get_invlist_range (const Index *index, long i0, long i1)
 
 
 
-void set_invlist_range (Index *index, long i0, long i1,
+void set_invlist_range (Index *index, int64_t i0, int64_t i1,
                         ArrayInvertedLists * src)
 {
     IndexIVF *ivf = extract_index_ivf (index);
@@ -280,8 +280,8 @@ void set_invlist_range (Index *index, long i0, long i1,
     FAISS_THROW_IF_NOT (src->nlist == i1 - i0 &&
                         dst->code_size == src->code_size);
 
-    size_t ntotal = index->ntotal;
-    for (long i = i0 ; i < i1; i++) {
+    int64_t ntotal = index->ntotal;
+    for (int64_t i = i0 ; i < i1; i++) {
         ntotal -= dst->list_size (i);
         ntotal += src->list_size (i - i0);
         std::swap (src->codes[i - i0], dst->codes[i]);
@@ -295,7 +295,7 @@ void search_with_parameters (const Index *index,
                              idx_t n, const float *x, idx_t k,
                              float *distances, idx_t *labels,
                              IVFSearchParameters *params,
-                             size_t *nb_dis_ptr)
+                             int64_t *nb_dis_ptr)
 {
     FAISS_THROW_IF_NOT (params);
     const float *prev_x = x;
@@ -319,7 +319,7 @@ void search_with_parameters (const Index *index,
                                  Dq.data(), Iq.data());
 
     if (nb_dis_ptr) {
-        size_t nb_dis = 0;
+        int64_t nb_dis = 0;
         const InvertedLists *il = index_ivf->invlists;
         for (idx_t i = 0; i < n * params->nprobe; i++) {
           if (Iq[i] >= 0) {

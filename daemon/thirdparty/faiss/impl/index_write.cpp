@@ -81,16 +81,16 @@ namespace faiss {
 
 
 #define WRITEANDCHECK(ptr, n) {                                 \
-        size_t ret = (*f)(ptr, sizeof(*(ptr)), n);              \
+        int64_t ret = (*f)(ptr, sizeof(*(ptr)), n);              \
         FAISS_THROW_IF_NOT_FMT(ret == (n),                      \
-            "write error in %s: %ld != %ld (%s)",               \
-            f->name.c_str(), ret, size_t(n), strerror(errno));  \
+            "write error in %s:  %" PRId64 " !=  %" PRId64 " (%s)",               \
+            f->name.c_str(), ret, int64_t(n), strerror(errno));  \
     }
 
 #define WRITE1(x) WRITEANDCHECK(&(x), 1)
 
 #define WRITEVECTOR(vec) {                      \
-        size_t size = (vec).size ();            \
+        int64_t size = (vec).size ();            \
         WRITEANDCHECK (&size, 1);               \
         WRITEANDCHECK ((vec).data (), size);    \
     }
@@ -203,25 +203,25 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
         WRITE1 (ails->nlist);
         WRITE1 (ails->code_size);
         // here we store either as a full or a sparse data buffer
-        size_t n_non0 = 0;
-        for (size_t i = 0; i < ails->nlist; i++) {
+        int64_t n_non0 = 0;
+        for (int64_t i = 0; i < ails->nlist; i++) {
             if (ails->ids[i].size() > 0)
                 n_non0++;
         }
         if (n_non0 > ails->nlist / 2) {
             uint32_t list_type = fourcc("full");
             WRITE1 (list_type);
-            std::vector<size_t> sizes;
-            for (size_t i = 0; i < ails->nlist; i++) {
+            std::vector<int64_t> sizes;
+            for (int64_t i = 0; i < ails->nlist; i++) {
                 sizes.push_back (ails->ids[i].size());
             }
             WRITEVECTOR (sizes);
         } else {
             int list_type = fourcc("sprs"); // sparse
             WRITE1 (list_type);
-            std::vector<size_t> sizes;
-            for (size_t i = 0; i < ails->nlist; i++) {
-                size_t n = ails->ids[i].size();
+            std::vector<int64_t> sizes;
+            for (int64_t i = 0; i < ails->nlist; i++) {
+                int64_t n = ails->ids[i].size();
                 if (n > 0) {
                     sizes.push_back (i);
                     sizes.push_back (n);
@@ -230,8 +230,8 @@ void write_InvertedLists (const InvertedLists *ils, IOWriter *f) {
             WRITEVECTOR (sizes);
         }
         // make a single contiguous data buffer (useful for mmapping)
-        for (size_t i = 0; i < ails->nlist; i++) {
-            size_t n = ails->ids[i].size();
+        for (int64_t i = 0; i < ails->nlist; i++) {
+            int64_t n = ails->ids[i].size();
             if (n > 0) {
                 WRITEANDCHECK (ails->codes[i].data(), n * ails->code_size);
                 WRITEANDCHECK (ails->ids[i].data(), n);
@@ -361,7 +361,7 @@ void write_index (const Index *idx, IOWriter *f) {
         write_ivf_header (ivfl, f);
         {
             std::vector<Index::idx_t> tab (2 * ivfl->instances.size());
-            long i = 0;
+            int64_t i = 0;
             for (auto it = ivfl->instances.begin();
                  it != ivfl->instances.end(); ++it) {
                 tab[i++] = it->first;

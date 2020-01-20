@@ -34,7 +34,7 @@ class IVFBase {
   virtual ~IVFBase();
 
   /// Reserve GPU memory in our inverted lists for this number of vectors
-  void reserveMemory(size_t numVecs);
+  void reserveMemory(int64_t numVecs);
 
   /// Clear out all inverted lists, but retain the coarse quantizer
   /// and the product quantizer info
@@ -45,17 +45,17 @@ class IVFBase {
 
   /// After adding vectors, one can call this to reclaim device memory
   /// to exactly the amount needed. Returns space reclaimed in bytes
-  size_t reclaimMemory();
+  int64_t reclaimMemory();
 
   /// Returns the number of inverted lists
-  size_t getNumLists() const;
+  int64_t getNumLists() const;
 
   /// For debugging purposes, return the list length of a particular
   /// list
   int getListLength(int listId) const;
 
   /// Return the list indices of a particular list back to the CPU
-  std::vector<long> getListIndices(int listId) const;
+  std::vector<int64_t> getListIndices(int listId) const;
 
   /// Return the encoded vectors of a particular list back to the CPU
   std::vector<unsigned char> getListVectors(int listId) const;
@@ -63,7 +63,7 @@ class IVFBase {
  protected:
   /// Reclaim memory consumed on the device for our inverted lists
   /// `exact` means we trim exactly to the memory needed
-  size_t reclaimMemory_(bool exact);
+  int64_t reclaimMemory_(bool exact);
 
   /// Update all device-side list pointer and size information
   void updateDeviceListInfo_(cudaStream_t stream);
@@ -75,8 +75,8 @@ class IVFBase {
 
   /// Shared function to copy indices from CPU to GPU
   void addIndicesFromCpu_(int listId,
-                          const long* indices,
-                          size_t numVecs);
+                          const int64_t* indices,
+                          int64_t numVecs);
 
  protected:
   /// Collection of GPU resources that we use
@@ -125,7 +125,7 @@ class IVFBase {
   /// If we are storing indices on the CPU (indicesOptions_ is
   /// INDICES_CPU), then this maintains a CPU-side map of what
   /// (inverted list id, offset) maps to which user index
-  std::vector<std::vector<long>> listOffsetToUserIndex_;
+  std::vector<std::vector<int64_t>> listOffsetToUserIndex_;
 };
 
 } } // namespace

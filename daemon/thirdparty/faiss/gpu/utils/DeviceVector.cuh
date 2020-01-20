@@ -44,8 +44,8 @@ class DeviceVector {
     capacity_ = 0;
   }
 
-  size_t size() const { return num_; }
-  size_t capacity() const { return capacity_; }
+  int64_t size() const { return num_; }
+  int64_t capacity() const { return capacity_; }
   T* data() { return data_; }
   const T* data() const { return data_; }
 
@@ -64,13 +64,13 @@ class DeviceVector {
   // If `reserveExact` is true, then we reserve only the memory that
   // we need for what we're appending
   bool append(const T* d,
-              size_t n,
+              int64_t n,
               cudaStream_t stream,
               bool reserveExact = false) {
     bool mem = false;
 
     if (n > 0) {
-      size_t reserveSize = num_ + n;
+      int64_t reserveSize = num_ + n;
       if (!reserveExact) {
         reserveSize = getNewCapacity_(reserveSize);
       }
@@ -92,7 +92,7 @@ class DeviceVector {
   }
 
   // Returns true if we actually reallocated memory
-  bool resize(size_t newSize, cudaStream_t stream) {
+  bool resize(int64_t newSize, cudaStream_t stream) {
     bool mem = false;
 
     if (num_ < newSize) {
@@ -110,8 +110,8 @@ class DeviceVector {
   // remain for subsequent allocations (if `exact` false) or to
   // exactly the space we need (if `exact` true); returns space
   // reclaimed in bytes
-  size_t reclaim(bool exact, cudaStream_t stream) {
-    size_t free = capacity_ - num_;
+  int64_t reclaim(bool exact, cudaStream_t stream) {
+    int64_t free = capacity_ - num_;
 
     if (exact) {
       realloc_(num_, stream);
@@ -123,10 +123,10 @@ class DeviceVector {
     // preserves some space for new elements, but won't force us to
     // double our size right away
     if (free > (capacity_ / 4)) {
-      size_t newFree = capacity_ / 8;
-      size_t newCapacity = num_ + newFree;
+      int64_t newFree = capacity_ / 8;
+      int64_t newCapacity = num_ + newFree;
 
-      size_t oldCapacity = capacity_;
+      int64_t oldCapacity = capacity_;
       FAISS_ASSERT(newCapacity < oldCapacity);
 
       realloc_(newCapacity, stream);
@@ -138,7 +138,7 @@ class DeviceVector {
   }
 
   // Returns true if we actually reallocated memory
-  bool reserve(size_t newCapacity, cudaStream_t stream) {
+  bool reserve(int64_t newCapacity, cudaStream_t stream) {
     if (newCapacity <= capacity_) {
       return false;
     }
@@ -149,7 +149,7 @@ class DeviceVector {
   }
 
  private:
-  void realloc_(size_t newCapacity, cudaStream_t stream) {
+  void realloc_(int64_t newCapacity, cudaStream_t stream) {
     FAISS_ASSERT(num_ <= newCapacity);
 
     T* newData = nullptr;
@@ -162,13 +162,13 @@ class DeviceVector {
     capacity_ = newCapacity;
   }
 
-  size_t getNewCapacity_(size_t preferredSize) {
+  int64_t getNewCapacity_(int64_t preferredSize) {
     return utils::nextHighestPowerOf2(preferredSize);
   }
 
   T* data_;
-  size_t num_;
-  size_t capacity_;
+  int64_t num_;
+  int64_t capacity_;
   MemorySpace space_;
 };
 

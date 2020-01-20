@@ -11,6 +11,7 @@
 #define FAISS_INDEX_H
 
 
+#include <cinttypes>
 #include <cstdio>
 #include <typeinfo>
 #include <string>
@@ -160,7 +161,7 @@ struct Index {
     /** removes IDs from the index. Not supported by all
      * indexes. Returns the number of elements removed.
      */
-    virtual size_t remove_ids (const IDSelector & sel);
+    virtual int64_t remove_ids (const IDSelector & sel);
 
     /** Reconstruct a stored vector (or an approximation if lossy coding)
      *
@@ -232,7 +233,7 @@ struct Index {
     /* The standalone codec interface */
 
     /** size of the produced codes in bytes */
-    virtual size_t sa_code_size () const;
+    virtual int64_t sa_code_size () const;
 
     /** encode a set of vectors
      *

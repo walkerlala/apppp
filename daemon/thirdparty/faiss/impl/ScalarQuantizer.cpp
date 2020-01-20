@@ -316,16 +316,16 @@ struct QuantizerTemplate {};
 
 template<class Codec>
 struct QuantizerTemplate<Codec, true, 1>: ScalarQuantizer::Quantizer {
-    const size_t d;
+    const int64_t d;
     const float vmin, vdiff;
 
-    QuantizerTemplate(size_t d, const std::vector<float> &trained):
+    QuantizerTemplate(int64_t d, const std::vector<float> &trained):
         d(d), vmin(trained[0]), vdiff(trained[1])
     {
     }
 
     void encode_vector(const float* x, uint8_t* code) const final {
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             float xi = (x[i] - vmin) / vdiff;
             if (xi < 0) {
                 xi = 0;
@@ -338,7 +338,7 @@ struct QuantizerTemplate<Codec, true, 1>: ScalarQuantizer::Quantizer {
     }
 
     void decode_vector(const uint8_t* code, float* x) const final {
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             float xi = Codec::decode_component(code, i);
             x[i] = vmin + xi * vdiff;
         }
@@ -359,7 +359,7 @@ struct QuantizerTemplate<Codec, true, 1>: ScalarQuantizer::Quantizer {
 template<class Codec>
 struct QuantizerTemplate<Codec, true, 8>: QuantizerTemplate<Codec, true, 1> {
 
-    QuantizerTemplate (size_t d, const std::vector<float> &trained):
+    QuantizerTemplate (int64_t d, const std::vector<float> &trained):
         QuantizerTemplate<Codec, true, 1> (d, trained) {}
 
     __m256 reconstruct_8_components (const uint8_t * code, int i) const
@@ -376,14 +376,14 @@ struct QuantizerTemplate<Codec, true, 8>: QuantizerTemplate<Codec, true, 1> {
 
 template<class Codec>
 struct QuantizerTemplate<Codec, false, 1>: ScalarQuantizer::Quantizer {
-    const size_t d;
+    const int64_t d;
     const float *vmin, *vdiff;
 
-    QuantizerTemplate (size_t d, const std::vector<float> &trained):
+    QuantizerTemplate (int64_t d, const std::vector<float> &trained):
         d(d), vmin(trained.data()), vdiff(trained.data() + d) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             float xi = (x[i] - vmin[i]) / vdiff[i];
             if (xi < 0)
                 xi = 0;
@@ -394,7 +394,7 @@ struct QuantizerTemplate<Codec, false, 1>: ScalarQuantizer::Quantizer {
     }
 
     void decode_vector(const uint8_t* code, float* x) const final {
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             float xi = Codec::decode_component(code, i);
             x[i] = vmin[i] + xi * vdiff[i];
         }
@@ -414,7 +414,7 @@ struct QuantizerTemplate<Codec, false, 1>: ScalarQuantizer::Quantizer {
 template<class Codec>
 struct QuantizerTemplate<Codec, false, 8>: QuantizerTemplate<Codec, false, 1> {
 
-    QuantizerTemplate (size_t d, const std::vector<float> &trained):
+    QuantizerTemplate (int64_t d, const std::vector<float> &trained):
         QuantizerTemplate<Codec, false, 1> (d, trained) {}
 
     __m256 reconstruct_8_components (const uint8_t * code, int i) const
@@ -437,19 +437,19 @@ struct QuantizerFP16 {};
 
 template<>
 struct QuantizerFP16<1>: ScalarQuantizer::Quantizer {
-    const size_t d;
+    const int64_t d;
 
-    QuantizerFP16(size_t d, const std::vector<float> & /* unused */):
+    QuantizerFP16(int64_t d, const std::vector<float> & /* unused */):
         d(d) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             ((uint16_t*)code)[i] = encode_fp16(x[i]);
         }
     }
 
     void decode_vector(const uint8_t* code, float* x) const final {
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             x[i] = decode_fp16(((uint16_t*)code)[i]);
         }
     }
@@ -466,7 +466,7 @@ struct QuantizerFP16<1>: ScalarQuantizer::Quantizer {
 template<>
 struct QuantizerFP16<8>: QuantizerFP16<1> {
 
-    QuantizerFP16 (size_t d, const std::vector<float> &trained):
+    QuantizerFP16 (int64_t d, const std::vector<float> &trained):
         QuantizerFP16<1> (d, trained) {}
 
     __m256 reconstruct_8_components (const uint8_t * code, int i) const
@@ -488,20 +488,20 @@ struct Quantizer8bitDirect {};
 
 template<>
 struct Quantizer8bitDirect<1>: ScalarQuantizer::Quantizer {
-    const size_t d;
+    const int64_t d;
 
-    Quantizer8bitDirect(size_t d, const std::vector<float> & /* unused */):
+    Quantizer8bitDirect(int64_t d, const std::vector<float> & /* unused */):
         d(d) {}
 
 
     void encode_vector(const float* x, uint8_t* code) const final {
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             code[i] = (uint8_t)x[i];
         }
     }
 
     void decode_vector(const uint8_t* code, float* x) const final {
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             x[i] = code[i];
         }
     }
@@ -518,7 +518,7 @@ struct Quantizer8bitDirect<1>: ScalarQuantizer::Quantizer {
 template<>
 struct Quantizer8bitDirect<8>: Quantizer8bitDirect<1> {
 
-    Quantizer8bitDirect (size_t d, const std::vector<float> &trained):
+    Quantizer8bitDirect (int64_t d, const std::vector<float> &trained):
         Quantizer8bitDirect<1> (d, trained) {}
 
     __m256 reconstruct_8_components (const uint8_t * code, int i) const
@@ -536,7 +536,7 @@ struct Quantizer8bitDirect<8>: Quantizer8bitDirect<1> {
 template<int SIMDWIDTH>
 ScalarQuantizer::Quantizer *select_quantizer_1 (
           QuantizerType qtype,
-          size_t d, const std::vector<float> & trained)
+          int64_t d, const std::vector<float> & trained)
 {
     switch(qtype) {
     case ScalarQuantizer::QT_8bit:
@@ -579,7 +579,7 @@ void train_Uniform(RangeStat rs, float rs_arg,
 
     if (rs == ScalarQuantizer::RS_minmax) {
         vmin = HUGE_VAL; vmax = -HUGE_VAL;
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             if (x[i] < vmin) vmin = x[i];
             if (x[i] > vmax) vmax = x[i];
         }
@@ -588,7 +588,7 @@ void train_Uniform(RangeStat rs, float rs_arg,
         vmax += vexp;
     } else if (rs == ScalarQuantizer::RS_meanstd) {
         double sum = 0, sum2 = 0;
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             sum += x[i];
             sum2 += x[i] * x[i];
         }
@@ -614,7 +614,7 @@ void train_Uniform(RangeStat rs, float rs_arg,
         float sx = 0;
         {
             vmin = HUGE_VAL, vmax = -HUGE_VAL;
-            for (size_t i = 0; i < n; i++) {
+            for (int64_t i = 0; i < n; i++) {
                 if (x[i] < vmin) vmin = x[i];
                 if (x[i] > vmax) vmax = x[i];
                 sx += x[i];
@@ -679,15 +679,15 @@ void train_NonUniform(RangeStat rs, float rs_arg,
     if (rs == ScalarQuantizer::RS_minmax) {
         memcpy (vmin, x, sizeof(*x) * d);
         memcpy (vmax, x, sizeof(*x) * d);
-        for (size_t i = 1; i < n; i++) {
+        for (int64_t i = 1; i < n; i++) {
             const float *xi = x + i * d;
-            for (size_t j = 0; j < d; j++) {
+            for (int64_t j = 0; j < d; j++) {
                 if (xi[j] < vmin[j]) vmin[j] = xi[j];
                 if (xi[j] > vmax[j]) vmax[j] = xi[j];
             }
         }
         float *vdiff = vmax;
-        for (size_t j = 0; j < d; j++) {
+        for (int64_t j = 0; j < d; j++) {
             float vexp = (vmax[j] - vmin[j]) * rs_arg;
             vmin[j] -= vexp;
             vmax[j] += vexp;
@@ -696,15 +696,15 @@ void train_NonUniform(RangeStat rs, float rs_arg,
     } else {
         // transpose
         std::vector<float> xt(n * d);
-        for (size_t i = 1; i < n; i++) {
+        for (int64_t i = 1; i < n; i++) {
             const float *xi = x + i * d;
-            for (size_t j = 0; j < d; j++) {
+            for (int64_t j = 0; j < d; j++) {
                 xt[j * n + i] = xi[j];
             }
         }
         std::vector<float> trained_d(2);
 #pragma omp parallel for
-        for (size_t j = 0; j < d; j++) {
+        for (int64_t j = 0; j < d; j++) {
             train_Uniform(rs, rs_arg,
                           n, k, xt.data() + j * n,
                           trained_d);
@@ -893,7 +893,7 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer
 
     Quantizer quant;
 
-    DCTemplate(size_t d, const std::vector<float> &trained):
+    DCTemplate(int64_t d, const std::vector<float> &trained):
         quant(d, trained)
     {}
 
@@ -901,7 +901,7 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer
 
         Similarity sim(x);
         sim.begin();
-        for (size_t i = 0; i < quant.d; i++) {
+        for (int64_t i = 0; i < quant.d; i++) {
             float xi = quant.reconstruct_component(code, i);
             sim.add_component(xi);
         }
@@ -912,7 +912,7 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer
         const {
         Similarity sim(nullptr);
         sim.begin();
-        for (size_t i = 0; i < quant.d; i++) {
+        for (int64_t i = 0; i < quant.d; i++) {
             float x1 = quant.reconstruct_component(code1, i);
             float x2 = quant.reconstruct_component(code2, i);
                 sim.add_component_2(x1, x2);
@@ -949,7 +949,7 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer
 
     Quantizer quant;
 
-    DCTemplate(size_t d, const std::vector<float> &trained):
+    DCTemplate(int64_t d, const std::vector<float> &trained):
         quant(d, trained)
     {}
 
@@ -957,7 +957,7 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer
 
         Similarity sim(x);
         sim.begin_8();
-        for (size_t i = 0; i < quant.d; i += 8) {
+        for (int64_t i = 0; i < quant.d; i += 8) {
             __m256 xi = quant.reconstruct_8_components(code, i);
             sim.add_8_components(xi);
         }
@@ -968,7 +968,7 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer
         const {
         Similarity sim(nullptr);
         sim.begin_8();
-        for (size_t i = 0; i < quant.d; i += 8) {
+        for (int64_t i = 0; i < quant.d; i += 8) {
             __m256 x1 = quant.reconstruct_8_components(code1, i);
             __m256 x2 = quant.reconstruct_8_components(code2, i);
             sim.add_8_components_2(x1, x2);
@@ -1142,7 +1142,7 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
 template<class Sim>
 SQDistanceComputer *select_distance_computer (
           QuantizerType qtype,
-          size_t d, const std::vector<float> & trained)
+          int64_t d, const std::vector<float> & trained)
 {
     constexpr int SIMDWIDTH = Sim::simdwidth;
     switch(qtype) {
@@ -1195,7 +1195,7 @@ SQDistanceComputer *select_distance_computer (
 
 
 ScalarQuantizer::ScalarQuantizer
-          (size_t d, QuantizerType qtype):
+          (int64_t d, QuantizerType qtype):
               qtype (qtype), rangestat(RS_minmax), rangestat_arg(0), d (d)
 {
     switch (qtype) {
@@ -1223,7 +1223,7 @@ ScalarQuantizer::ScalarQuantizer ():
     rangestat(RS_minmax), rangestat_arg(0), d (0), code_size(0)
 {}
 
-void ScalarQuantizer::train (size_t n, const float *x)
+void ScalarQuantizer::train (int64_t n, const float *x)
 {
     int bit_per_dim =
         qtype == QT_4bit_uniform ? 4 :
@@ -1248,7 +1248,7 @@ void ScalarQuantizer::train (size_t n, const float *x)
     }
 }
 
-void ScalarQuantizer::train_residual(size_t n,
+void ScalarQuantizer::train_residual(int64_t n,
                                      const float *x,
                                      Index *quantizer,
                                      bool by_residual,
@@ -1258,7 +1258,7 @@ void ScalarQuantizer::train_residual(size_t n,
 
     // 100k points more than enough
     x = fvecs_maybe_subsample (
-         d, (size_t*)&n, 100000,
+         d, (int64_t*)&n, 100000,
          x, verbose, 1234);
 
     ScopeDeleter<float> del_x (x_in == x ? nullptr : x);
@@ -1292,22 +1292,22 @@ ScalarQuantizer::Quantizer *ScalarQuantizer::select_quantizer () const
 
 void ScalarQuantizer::compute_codes (const float * x,
                                      uint8_t * codes,
-                                     size_t n) const
+                                     int64_t n) const
 {
     std::unique_ptr<Quantizer> squant(select_quantizer ());
 
     memset (codes, 0, code_size * n);
 #pragma omp parallel for
-    for (size_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++)
         squant->encode_vector (x + i * d, codes + i * code_size);
 }
 
-void ScalarQuantizer::decode (const uint8_t *codes, float *x, size_t n) const
+void ScalarQuantizer::decode (const uint8_t *codes, float *x, int64_t n) const
 {
     std::unique_ptr<Quantizer> squant(select_quantizer ());
 
 #pragma omp parallel for
-    for (size_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++)
         squant->decode_vector (codes + i * code_size, x + i * d);
 }
 
@@ -1354,13 +1354,13 @@ struct IVFSQScannerIP: InvertedListScanner {
     DCClass dc;
     bool store_pairs, by_residual;
 
-    size_t code_size;
+    int64_t code_size;
 
     idx_t list_no;  /// current list (set to 0 for Flat index
     float accu0;    /// added to all distances
 
     IVFSQScannerIP(int d, const std::vector<float> & trained,
-                   size_t code_size, bool store_pairs,
+                   int64_t code_size, bool store_pairs,
                    bool by_residual):
         dc(d, trained), store_pairs(store_pairs),
         by_residual(by_residual),
@@ -1381,15 +1381,15 @@ struct IVFSQScannerIP: InvertedListScanner {
         return accu0 + dc.query_to_code (code);
     }
 
-    size_t scan_codes (size_t list_size,
+    int64_t scan_codes (int64_t list_size,
                        const uint8_t *codes,
                        const idx_t *ids,
                        float *simi, idx_t *idxi,
-                       size_t k) const override
+                       int64_t k) const override
     {
-        size_t nup = 0;
+        int64_t nup = 0;
 
-        for (size_t j = 0; j < list_size; j++) {
+        for (int64_t j = 0; j < list_size; j++) {
 
             float accu = accu0 + dc.query_to_code (codes);
 
@@ -1404,13 +1404,13 @@ struct IVFSQScannerIP: InvertedListScanner {
         return nup;
     }
 
-    void scan_codes_range (size_t list_size,
+    void scan_codes_range (int64_t list_size,
                            const uint8_t *codes,
                            const idx_t *ids,
                            float radius,
                            RangeQueryResult & res) const override
     {
-        for (size_t j = 0; j < list_size; j++) {
+        for (int64_t j = 0; j < list_size; j++) {
             float accu = accu0 + dc.query_to_code (codes);
             if (accu > radius) {
                 int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
@@ -1430,7 +1430,7 @@ struct IVFSQScannerL2: InvertedListScanner {
     DCClass dc;
 
     bool store_pairs, by_residual;
-    size_t code_size;
+    int64_t code_size;
     const Index *quantizer;
     idx_t list_no;    /// current inverted list
     const float *x;   /// current query
@@ -1438,7 +1438,7 @@ struct IVFSQScannerL2: InvertedListScanner {
     std::vector<float> tmp;
 
     IVFSQScannerL2(int d, const std::vector<float> & trained,
-                   size_t code_size, const Index *quantizer,
+                   int64_t code_size, const Index *quantizer,
                    bool store_pairs, bool by_residual):
         dc(d, trained), store_pairs(store_pairs), by_residual(by_residual),
         code_size(code_size), quantizer(quantizer),
@@ -1470,14 +1470,14 @@ struct IVFSQScannerL2: InvertedListScanner {
         return dc.query_to_code (code);
     }
 
-    size_t scan_codes (size_t list_size,
+    int64_t scan_codes (int64_t list_size,
                        const uint8_t *codes,
                        const idx_t *ids,
                        float *simi, idx_t *idxi,
-                       size_t k) const override
+                       int64_t k) const override
     {
-        size_t nup = 0;
-        for (size_t j = 0; j < list_size; j++) {
+        int64_t nup = 0;
+        for (int64_t j = 0; j < list_size; j++) {
 
             float dis = dc.query_to_code (codes);
 
@@ -1492,13 +1492,13 @@ struct IVFSQScannerL2: InvertedListScanner {
         return nup;
     }
 
-    void scan_codes_range (size_t list_size,
+    void scan_codes_range (int64_t list_size,
                            const uint8_t *codes,
                            const idx_t *ids,
                            float radius,
                            RangeQueryResult & res) const override
     {
-        for (size_t j = 0; j < list_size; j++) {
+        for (int64_t j = 0; j < list_size; j++) {
             float dis = dc.query_to_code (codes);
             if (dis < radius) {
                 int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];

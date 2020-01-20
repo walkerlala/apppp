@@ -43,7 +43,7 @@ void IndexBinaryFlat::search(idx_t n, const uint8_t *x, idx_t k,
     if (use_heap) {
       // We see the distances and labels as heaps.
       int_maxheap_array_t res = {
-        size_t(nn), size_t(k), labels + s * k, distances + s * k
+        int64_t(nn), int64_t(k), labels + s * k, distances + s * k
       };
 
       hammings_knn_hc(&res, x + s * code_size, xb.data(), ntotal, code_size,
@@ -55,7 +55,7 @@ void IndexBinaryFlat::search(idx_t n, const uint8_t *x, idx_t k,
   }
 }
 
-size_t IndexBinaryFlat::remove_ids(const IDSelector& sel) {
+int64_t IndexBinaryFlat::remove_ids(const IDSelector& sel) {
   idx_t j = 0;
   for (idx_t i = 0; i < ntotal; i++) {
     if (sel.is_member(i)) {
@@ -67,7 +67,7 @@ size_t IndexBinaryFlat::remove_ids(const IDSelector& sel) {
       j++;
     }
   }
-  long nremove = ntotal - j;
+  int64_t nremove = ntotal - j;
   if (nremove > 0) {
     ntotal = j;
     xb.resize(ntotal * code_size);

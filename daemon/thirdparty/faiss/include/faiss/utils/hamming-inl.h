@@ -6,6 +6,7 @@
  */
 
 
+#include <cinttypes>
 
 namespace faiss {
 
@@ -414,8 +415,8 @@ void generalized_hammings_knn_hc (
         int_maxheap_array_t * ha,
         const uint8_t * a,
         const uint8_t * b,
-        size_t nb,
-        size_t code_size,
+        int64_t nb,
+        int64_t code_size,
         int ordered = true);
 
 
@@ -448,7 +449,7 @@ struct HCounterState {
         count_eq(0),
         k(k) {}
 
-  void update_counter(const uint8_t *y, size_t j) {
+  void update_counter(const uint8_t *y, int64_t j) {
     int32_t dis = hc.hamming(y);
 
     if (dis <= thres) {

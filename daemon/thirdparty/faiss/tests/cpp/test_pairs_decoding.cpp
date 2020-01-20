@@ -32,15 +32,15 @@ typedef faiss::Index::idx_t idx_t;
 int d = 64;
 
 // size of the database we plan to index
-size_t nb = 8000;
+int64_t nb = 8000;
 
 // nb of queries
-size_t nq = 200;
+int64_t nq = 200;
 
-std::vector<float> make_data(size_t n)
+std::vector<float> make_data(int64_t n)
 {
     std::vector <float> database (n * d);
-    for (size_t i = 0; i < n * d; i++) {
+    for (int64_t i = 0; i < n * d; i++) {
         database[i] = drand48();
     }
     return database;

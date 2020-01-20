@@ -9,6 +9,7 @@
 
 #include <faiss/VectorTransform.h>
 
+#include <cinttypes>
 #include <cstdio>
 #include <cmath>
 #include <cstring>
@@ -198,8 +199,8 @@ void LinearTransform::set_is_orthonormal ()
                 &zero, ATA.data(), &doi);
 
         is_orthonormal = true;
-        for (long i = 0; i < d_out; i++) {
-            for (long j = 0; j < d_out; j++) {
+        for (int64_t i = 0; i < d_out; i++) {
+            for (int64_t j = 0; j < d_out; j++) {
                 float v = ATA[i + j * d_out];
                 if (i == j) v-= 1;
                 if (fabs(v) > eps) {
@@ -297,7 +298,7 @@ namespace {
 /// Compute the eigenvalue decomposition of symmetric matrix cov,
 /// dimensions d_in-by-d_in. Output eigenvectors in cov.
 
-void eig(size_t d_in, double *cov, double *eigenvalues, int verbose)
+void eig(int64_t d_in, double *cov, double *eigenvalues, int verbose)
 {
     { // compute eigenvalues and vectors
         FINTEGER info = 0, lwork = -1, di = d_in;
@@ -322,7 +323,7 @@ void eig(size_t d_in, double *cov, double *eigenvalues, int verbose)
 
 
         if(verbose && d_in <= 10) {
-            printf("info=%ld new eigvals=[", long(info));
+            printf("info=%" PRId64 " new eigvals=[", int64_t(info));
             for(int j = 0; j < d_in; j++) printf("%g ", eigenvalues[j]);
             printf("]\n");
 
@@ -357,7 +358,7 @@ void PCAMatrix::train (Index::idx_t n, const float *x)
 {
     const float * x_in = x;
 
-    x = fvecs_maybe_subsample (d_in, (size_t*)&n,
+    x = fvecs_maybe_subsample (d_in, (int64_t*)&n,
                                max_points_per_d * d_in, x, verbose);
 
     ScopeDeleter<float> del_x (x != x_in ? x : nullptr);
@@ -408,16 +409,16 @@ void PCAMatrix::train (Index::idx_t n, const float *x)
         }
 
         std::vector<double> covd (d_in * d_in);
-        for (size_t i = 0; i < d_in * d_in; i++) covd [i] = cov [i];
+        for (int64_t i = 0; i < d_in * d_in; i++) covd [i] = cov [i];
 
         std::vector<double> eigenvaluesd (d_in);
 
         eig (d_in, covd.data (), eigenvaluesd.data (), verbose);
 
-        for (size_t i = 0; i < d_in * d_in; i++) PCAMat [i] = covd [i];
+        for (int64_t i = 0; i < d_in * d_in; i++) PCAMat [i] = covd [i];
         eigenvalues.resize (d_in);
 
-        for (size_t i = 0; i < d_in; i++)
+        for (int64_t i = 0; i < d_in; i++)
             eigenvalues [i] = eigenvaluesd [i];
 
 
@@ -425,8 +426,8 @@ void PCAMatrix::train (Index::idx_t n, const float *x)
 
         std::vector<float> xc (n * d_in);
 
-        for (size_t i = 0; i < n; i++)
-            for(size_t j = 0; j < d_in; j++)
+        for (int64_t i = 0; i < n; i++)
+            for(int64_t j = 0; j < d_in; j++)
                 xc [i * d_in + j] = x [i * d_in + j] - mean[j];
 
         // compute Gram matrix
@@ -449,7 +450,7 @@ void PCAMatrix::train (Index::idx_t n, const float *x)
         }
 
         std::vector<double> gramd (n * n);
-        for (size_t i = 0; i < n * n; i++)
+        for (int64_t i = 0; i < n * n; i++)
             gramd [i] = gram [i];
 
         std::vector<double> eigenvaluesd (n);
@@ -460,12 +461,12 @@ void PCAMatrix::train (Index::idx_t n, const float *x)
 
         PCAMat.resize(d_in * n);
 
-        for (size_t i = 0; i < n * n; i++)
+        for (int64_t i = 0; i < n * n; i++)
             gram [i] = gramd [i];
 
         eigenvalues.resize (d_in);
         // fill in only the n first ones
-        for (size_t i = 0; i < n; i++)
+        for (int64_t i = 0; i < n; i++)
             eigenvalues [i] = eigenvaluesd [i];
 
         { // compute PCAMat = x' * v
@@ -621,7 +622,7 @@ ITQMatrix::ITQMatrix (int d):
 /** translated from fbcode/deeplearning/catalyzer/catalyzer/quantizers.py */
 void ITQMatrix::train (Index::idx_t n, const float* xf)
 {
-    size_t d = d_in;
+    int64_t d = d_in;
     std::vector<double> rotation (d * d);
 
     if (init_rotation.size() == d * d) {
@@ -630,14 +631,14 @@ void ITQMatrix::train (Index::idx_t n, const float* xf)
     } else {
         RandomRotationMatrix rrot (d, d);
         rrot.init (seed);
-        for (size_t i = 0; i < d * d; i++) {
+        for (int64_t i = 0; i < d * d; i++) {
             rotation[i] = rrot.A[i];
         }
     }
 
     std::vector<double> x (n * d);
 
-    for (size_t i = 0; i < n * d; i++) {
+    for (int64_t i = 0; i < n * d; i++) {
         x[i] = xf[i];
     }
 
@@ -655,7 +656,7 @@ void ITQMatrix::train (Index::idx_t n, const float* xf)
         }
         print_if_verbose ("rotated_x", rotated_x, n, d);
         // binarize
-        for (size_t j = 0; j < n * d; j++) {
+        for (int64_t j = 0; j < n * d; j++) {
             rotated_x[j] = rotated_x[j] < 0 ? -1 : 1;
         }
         // covariance matrix
@@ -681,7 +682,7 @@ void ITQMatrix::train (Index::idx_t n, const float* xf)
                      &lwork1, &lwork, &info);
 
             FAISS_THROW_IF_NOT (info == 0);
-            lwork = size_t (lwork1);
+            lwork = int64_t (lwork1);
             std::vector<double> work (lwork);
             dgesvd_ ("A", "A", &di, &di, cov_mat.data(), &di,
                      singvals.data(), u.data(), &di,
@@ -704,8 +705,8 @@ void ITQMatrix::train (Index::idx_t n, const float* xf)
 
     }
     A.resize (d * d);
-    for (size_t i = 0; i < d; i++) {
-        for (size_t j = 0; j < d; j++) {
+    for (int64_t i = 0; i < d; i++) {
+        for (int64_t j = 0; j < d; j++) {
             A[i + d * j] = rotation[j + d * i];
         }
     }
@@ -734,8 +735,8 @@ void ITQTransform::train (idx_t n, const float *x)
     FAISS_THROW_IF_NOT (!is_trained);
 
     const float * x_in = x;
-    size_t max_train_points = std::max(d_in * max_train_per_dim, 32768);
-    x = fvecs_maybe_subsample (d_in, (size_t*)&n, max_train_points, x);
+    int64_t max_train_points = std::max(d_in * max_train_per_dim, 32768);
+    x = fvecs_maybe_subsample (d_in, (int64_t*)&n, max_train_points, x);
 
     ScopeDeleter<float> del_x (x != x_in ? x : nullptr);
 
@@ -839,14 +840,14 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
 
     const float * x_in = x;
 
-    x = fvecs_maybe_subsample (d_in, (size_t*)&n,
+    x = fvecs_maybe_subsample (d_in, (int64_t*)&n,
                                max_train_points, x, verbose);
 
     ScopeDeleter<float> del_x (x != x_in ? x : nullptr);
 
     // To support d_out > d_in, we pad input vectors with 0s to d_out
-    size_t d = d_out <= d_in ? d_in : d_out;
-    size_t d2 = d_out;
+    int64_t d = d_out <= d_in ? d_in : d_out;
+    int64_t d2 = d_out;
 
 #if 0
     // what this test shows: the only way of getting bit-exact
@@ -867,7 +868,7 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
 
     if (verbose) {
         printf ("OPQMatrix::train: training an OPQ rotation matrix "
-                "for M=%d from %ld vectors in %dD -> %dD\n",
+                "for M=%d from %" PRId64 " vectors in %dD -> %dD\n",
                 M, n, d_in, d_out);
     }
 
@@ -876,14 +877,14 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
     {
         std::vector<float> sum (d);
         const float *xi = x;
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             for (int j = 0; j < d_in; j++)
                 sum [j] += *xi++;
         }
         for (int i = 0; i < d; i++) sum[i] /= n;
         float *yi = xtrain.data();
         xi = x;
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             for (int j = 0; j < d_in; j++)
                 *yi++ = *xi++ - sum[j];
             yi += d - d_in;
@@ -895,7 +896,7 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
         A.resize (d * d);
         rotation = A.data();
         if (verbose)
-            printf("  OPQMatrix::train: making random %ld*%ld rotation\n",
+            printf("  OPQMatrix::train: making random  %" PRId64 "* %" PRId64 " rotation\n",
                    d, d);
         float_randn (rotation, d * d, 1234);
         matrix_qr (d, d, rotation);
@@ -997,7 +998,7 @@ void OPQMatrix::train (Index::idx_t n, const float *x)
 
     // revert A matrix
     if (d > d_in) {
-        for (long i = 0; i < d_out; i++)
+        for (int64_t i = 0; i < d_out; i++)
             memmove (&A[i * d_in], &A[i * d], sizeof(A[0]) * d_in);
         A.resize (d_in * d_out);
     }
@@ -1052,12 +1053,12 @@ void CenteringTransform::train(Index::idx_t n, const float *x) {
     FAISS_THROW_IF_NOT_MSG(n > 0, "need at least one training vector");
     mean.resize (d_in, 0);
     for (idx_t i = 0; i < n; i++) {
-        for (size_t j = 0; j < d_in; j++) {
+        for (int64_t j = 0; j < d_in; j++) {
             mean[j] += *x++;
         }
     }
 
-    for (size_t j = 0; j < d_in; j++) {
+    for (int64_t j = 0; j < d_in; j++) {
         mean[j] /= n;
     }
     is_trained = true;
@@ -1070,7 +1071,7 @@ void CenteringTransform::apply_noalloc
     FAISS_THROW_IF_NOT (is_trained);
 
     for (idx_t i = 0; i < n; i++) {
-        for (size_t j = 0; j < d_in; j++) {
+        for (int64_t j = 0; j < d_in; j++) {
             *xt++ = *x++ - mean[j];
         }
     }
@@ -1082,7 +1083,7 @@ void CenteringTransform::reverse_transform (idx_t n, const float* xt,
     FAISS_THROW_IF_NOT (is_trained);
 
     for (idx_t i = 0; i < n; i++) {
-        for (size_t j = 0; j < d_in; j++) {
+        for (int64_t j = 0; j < d_in; j++) {
             *x++ = *xt++ + mean[j];
         }
     }

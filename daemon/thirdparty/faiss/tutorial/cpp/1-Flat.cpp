@@ -34,12 +34,12 @@ int main() {
     faiss::IndexFlatL2 index(d);           // call constructor
     printf("is_trained = %s\n", index.is_trained ? "true" : "false");
     index.add(nb, xb);                     // add vectors to the index
-    printf("ntotal = %ld\n", index.ntotal);
+    printf("ntotal =  %" PRId64 "\n", index.ntotal);
 
     int k = 4;
 
     {       // sanity check: search 5 first vectors of xb
-        long *I = new long[k * 5];
+        int64_t *I = new int64_t[k * 5];
         float *D = new float[k * 5];
 
         index.search(5, xb, k, D, I);
@@ -48,7 +48,7 @@ int main() {
         printf("I=\n");
         for(int i = 0; i < 5; i++) {
             for(int j = 0; j < k; j++)
-                printf("%5ld ", I[i * k + j]);
+                printf("%" PRId64, I[i * k + j]);
             printf("\n");
         }
 
@@ -65,7 +65,7 @@ int main() {
 
 
     {       // search xq
-        long *I = new long[k * nq];
+        int64_t *I = new int64_t[k * nq];
         float *D = new float[k * nq];
 
         index.search(nq, xq, k, D, I);
@@ -74,14 +74,14 @@ int main() {
         printf("I (5 first results)=\n");
         for(int i = 0; i < 5; i++) {
             for(int j = 0; j < k; j++)
-                printf("%5ld ", I[i * k + j]);
+                printf("%" PRId64, I[i * k + j]);
             printf("\n");
         }
 
         printf("I (5 last results)=\n");
         for(int i = nq - 5; i < nq; i++) {
             for(int j = 0; j < k; j++)
-                printf("%5ld ", I[i * k + j]);
+                printf("%" PRId64, I[i * k + j]);
             printf("\n");
         }
 

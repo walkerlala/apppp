@@ -38,12 +38,12 @@
 #include <faiss/FaissAssert.h>
 #include <faiss/utils/utils.h>
 
-static const size_t BLOCKSIZE_QUERY = 8192;
+static const int64_t BLOCKSIZE_QUERY = 8192;
 
 
 namespace faiss {
 
-size_t hamming_batch_size = 65536;
+int64_t hamming_batch_size = 65536;
 
 static const uint8_t hamdis_tab_ham_bytes[256] = {
     0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
@@ -66,12 +66,12 @@ static const uint8_t hamdis_tab_ham_bytes[256] = {
 
 
 /* Elementary Hamming distance computation: unoptimized  */
-template <size_t nbits, typename T>
+template <int64_t nbits, typename T>
 T hamming (const uint8_t *bs1,
            const uint8_t *bs2)
 {
-    const size_t nbytes = nbits / 8;
-    size_t i;
+    const int64_t nbytes = nbits / 8;
+    int64_t i;
     T h = 0;
     for (i = 0; i < nbytes; i++)
         h += (T) hamdis_tab_ham_bytes[bs1[i]^bs2[i]];
@@ -80,11 +80,11 @@ T hamming (const uint8_t *bs1,
 
 
 /* Hamming distances for multiples of 64 bits */
-template <size_t nbits>
+template <int64_t nbits>
 hamdis_t hamming (const uint64_t * bs1, const uint64_t * bs2)
 {
-    const size_t nwords = nbits / 64;
-    size_t i;
+    const int64_t nwords = nbits / 64;
+    int64_t i;
     hamdis_t h = 0;
     for (i = 0; i < nwords; i++)
         h += popcount64 (bs1[i] ^ bs2[i]);
@@ -122,9 +122,9 @@ hamdis_t hamming<256> (const uint64_t * pa, const uint64_t * pb)
 hamdis_t hamming (
         const uint64_t * bs1,
         const uint64_t * bs2,
-        size_t nwords)
+        int64_t nwords)
 {
-    size_t i;
+    int64_t i;
     hamdis_t h = 0;
     for (i = 0; i < nwords; i++)
         h += popcount64 (bs1[i] ^ bs2[i]);
@@ -133,16 +133,16 @@ hamdis_t hamming (
 
 
 
-template <size_t nbits>
+template <int64_t nbits>
 void hammings (
         const uint64_t * bs1,
         const uint64_t * bs2,
-        size_t n1, size_t n2,
+        int64_t n1, int64_t n2,
         hamdis_t * dis)
 
 {
-    size_t i, j;
-    const size_t nwords = nbits / 64;
+    int64_t i, j;
+    const int64_t nwords = nbits / 64;
     for (i = 0; i < n1; i++) {
         const uint64_t * __restrict bs1_ = bs1 + i * nwords;
         hamdis_t * __restrict dis_ = dis + i * n2;
@@ -156,12 +156,12 @@ void hammings (
 void hammings (
         const uint64_t * bs1,
         const uint64_t * bs2,
-        size_t n1,
-        size_t n2,
-        size_t nwords,
+        int64_t n1,
+        int64_t n2,
+        int64_t nwords,
         hamdis_t * __restrict dis)
 {
-    size_t i, j;
+    int64_t i, j;
     n1 *= nwords;
     n2 *= nwords;
     for (i = 0; i < n1; i+=nwords) {
@@ -175,17 +175,17 @@ void hammings (
 
 
 /* Count number of matches given a max threshold */
-template <size_t nbits>
+template <int64_t nbits>
 void hamming_count_thres (
         const uint64_t * bs1,
         const uint64_t * bs2,
-        size_t n1,
-        size_t n2,
+        int64_t n1,
+        int64_t n2,
         hamdis_t ht,
-        size_t * nptr)
+        int64_t * nptr)
 {
-    const size_t nwords = nbits / 64;
-    size_t i, j, posm = 0;
+    const int64_t nwords = nbits / 64;
+    int64_t i, j, posm = 0;
     const uint64_t * bs2_ = bs2;
 
     for (i = 0; i < n1; i++) {
@@ -202,15 +202,15 @@ void hamming_count_thres (
 }
 
 
-template <size_t nbits>
+template <int64_t nbits>
 void crosshamming_count_thres (
         const uint64_t * dbs,
-        size_t n,
+        int64_t n,
         int ht,
-        size_t * nptr)
+        int64_t * nptr)
 {
-    const size_t nwords = nbits / 64;
-    size_t i, j, posm = 0;
+    const int64_t nwords = nbits / 64;
+    int64_t i, j, posm = 0;
     const uint64_t * bs1 = dbs;
     for (i = 0; i < n; i++) {
         const uint64_t * bs2 = bs1 + 2;
@@ -226,18 +226,18 @@ void crosshamming_count_thres (
 }
 
 
-template <size_t nbits>
-size_t match_hamming_thres (
+template <int64_t nbits>
+int64_t match_hamming_thres (
         const uint64_t * bs1,
         const uint64_t * bs2,
-        size_t n1,
-        size_t n2,
+        int64_t n1,
+        int64_t n2,
         int ht,
         int64_t * idx,
         hamdis_t * hams)
 {
-    const size_t nwords = nbits / 64;
-    size_t i, j, posm = 0;
+    const int64_t nwords = nbits / 64;
+    int64_t i, j, posm = 0;
     hamdis_t h;
     const uint64_t * bs2_ = bs2;
     for (i = 0; i < n1; i++) {
@@ -271,25 +271,25 @@ void hammings_knn_hc (
         int_maxheap_array_t * ha,
         const uint8_t * bs1,
         const uint8_t * bs2,
-        size_t n2,
+        int64_t n2,
         bool order = true,
         bool init_heap = true)
 {
-    size_t k = ha->k;
+    int64_t k = ha->k;
     if (init_heap) ha->heapify ();
 
-    const size_t block_size = hamming_batch_size;
-    for (size_t j0 = 0; j0 < n2; j0 += block_size) {
-      const size_t j1 = std::min(j0 + block_size, n2);
+    const int64_t block_size = hamming_batch_size;
+    for (int64_t j0 = 0; j0 < n2; j0 += block_size) {
+      const int64_t j1 = std::min(j0 + block_size, n2);
 #pragma omp parallel for
-      for (size_t i = 0; i < ha->nh; i++) {
+      for (int64_t i = 0; i < ha->nh; i++) {
         HammingComputer hc (bs1 + i * bytes_per_code, bytes_per_code);
 
         const uint8_t * bs2_ = bs2 + j0 * bytes_per_code;
         hamdis_t dis;
         hamdis_t * __restrict bh_val_ = ha->val + i * k;
         int64_t * __restrict bh_ids_ = ha->ids + i * k;
-        size_t j;
+        int64_t j;
         for (j = j0; j < j1; j++, bs2_+= bytes_per_code) {
           dis = hc.hamming (bs2_);
           if (dis < bh_val_[0]) {
@@ -309,9 +309,9 @@ void hammings_knn_mc (
         int bytes_per_code,
         const uint8_t *a,
         const uint8_t *b,
-        size_t na,
-        size_t nb,
-        size_t k,
+        int64_t na,
+        int64_t nb,
+        int64_t k,
         int32_t *distances,
         int64_t *labels)
 {
@@ -320,7 +320,7 @@ void hammings_knn_mc (
   std::unique_ptr<int64_t[]> all_ids_per_dis(new int64_t[na * nBuckets * k]);
 
   std::vector<HCounterState<HammingComputer>> cs;
-  for (size_t i = 0; i < na; ++i) {
+  for (int64_t i = 0; i < na; ++i) {
     cs.push_back(HCounterState<HammingComputer>(
                    all_counters.data() + i * nBuckets,
                    all_ids_per_dis.get() + i * nBuckets * k,
@@ -330,18 +330,18 @@ void hammings_knn_mc (
                  ));
   }
 
-  const size_t block_size = hamming_batch_size;
-  for (size_t j0 = 0; j0 < nb; j0 += block_size) {
-    const size_t j1 = std::min(j0 + block_size, nb);
+  const int64_t block_size = hamming_batch_size;
+  for (int64_t j0 = 0; j0 < nb; j0 += block_size) {
+    const int64_t j1 = std::min(j0 + block_size, nb);
 #pragma omp parallel for
-    for (size_t i = 0; i < na; ++i) {
-      for (size_t j = j0; j < j1; ++j) {
+    for (int64_t i = 0; i < na; ++i) {
+      for (int64_t j = j0; j < j1; ++j) {
         cs[i].update_counter(b + j * bytes_per_code, j);
       }
     }
   }
 
-  for (size_t i = 0; i < na; ++i) {
+  for (int64_t i = 0; i < na; ++i) {
     HCounterState<HammingComputer>& csi = cs[i];
 
     int nres = 0;
@@ -368,12 +368,12 @@ void hammings_knn_hc_1 (
         int_maxheap_array_t * ha,
         const uint64_t * bs1,
         const uint64_t * bs2,
-        size_t n2,
+        int64_t n2,
         bool order = true,
         bool init_heap = true)
 {
-    const size_t nwords = 1;
-    size_t k = ha->k;
+    const int64_t nwords = 1;
+    int64_t k = ha->k;
 
 
     if (init_heap) {
@@ -381,14 +381,14 @@ void hammings_knn_hc_1 (
     }
 
 #pragma omp parallel for
-    for (size_t i = 0; i < ha->nh; i++) {
+    for (int64_t i = 0; i < ha->nh; i++) {
         const uint64_t bs1_ = bs1 [i];
         const uint64_t * bs2_ = bs2;
         hamdis_t dis;
         hamdis_t * bh_val_ = ha->val + i * k;
         hamdis_t bh_val_0 = bh_val_[0];
         int64_t * bh_ids_ = ha->ids + i * k;
-        size_t j;
+        int64_t j;
         for (j = 0; j < n2; j++, bs2_+= nwords) {
             dis = popcount64 (bs1_ ^ *bs2_);
             if (dis < bh_val_0) {
@@ -413,7 +413,7 @@ void hammings_knn_hc_1 (
  * dimension 0 corresponds to the least significant bit of b[0], or
  * equivalently to the lsb of the first byte that is stored.
  */
-void fvec2bitvec (const float * x, uint8_t * b, size_t d)
+void fvec2bitvec (const float * x, uint8_t * b, int64_t d)
 {
     for (int i = 0; i < d; i += 8) {
         uint8_t w = 0;
@@ -433,11 +433,11 @@ void fvec2bitvec (const float * x, uint8_t * b, size_t d)
 
 /* Same but for n vectors.
    Ensure that the ouptut b is byte-aligned (pad with 0s). */
-void fvecs2bitvecs (const float * x, uint8_t * b, size_t d, size_t n)
+void fvecs2bitvecs (const float * x, uint8_t * b, int64_t d, int64_t n)
 {
     const int64_t ncodes = ((d + 7) / 8);
 #pragma omp parallel for if(n > 100000)
-    for (size_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++)
         fvec2bitvec (x + i * d, b + i * ncodes, d);
 }
 
@@ -446,12 +446,12 @@ void fvecs2bitvecs (const float * x, uint8_t * b, size_t d, size_t n)
 void bitvecs2fvecs (
         const uint8_t * b,
         float * x,
-        size_t d,
-        size_t n) {
+        int64_t d,
+        int64_t n) {
 
     const int64_t ncodes = ((d + 7) / 8);
 #pragma omp parallel for if(n > 100000)
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         binary_to_real (d, b + i * ncodes, x + i * d);
     }
 }
@@ -472,9 +472,9 @@ static uint64_t uint64_reverse_bits (uint64_t b)
 
 
 /* print the bit vector */
-void bitvec_print (const uint8_t * b, size_t d)
+void bitvec_print (const uint8_t * b, int64_t d)
 {
-    size_t i, j;
+    int64_t i, j;
     for (i = 0; i < d; ) {
         uint64_t brev = uint64_reverse_bits (* (uint64_t *) b);
         for (j = 0; j < 64 && i < d; j++, i++) {
@@ -501,8 +501,8 @@ void bitvec_print (const uint8_t * b, size_t d)
 void hammings (
         const uint8_t * a,
         const uint8_t * b,
-        size_t na, size_t nb,
-        size_t ncodes,
+        int64_t na, int64_t nb,
+        int64_t ncodes,
         hamdis_t * __restrict dis)
 {
     FAISS_THROW_IF_NOT (ncodes % 8 == 0);
@@ -524,8 +524,8 @@ void hammings_knn(
     int_maxheap_array_t *ha,
     const uint8_t *a,
     const uint8_t *b,
-    size_t nb,
-    size_t ncodes,
+    int64_t nb,
+    int64_t ncodes,
     int order)
 {
     hammings_knn_hc(ha, a, b, nb, ncodes, order);
@@ -534,8 +534,8 @@ void hammings_knn_hc (
         int_maxheap_array_t * ha,
         const uint8_t * a,
         const uint8_t * b,
-        size_t nb,
-        size_t ncodes,
+        int64_t nb,
+        int64_t ncodes,
         int order)
 {
     switch (ncodes) {
@@ -571,10 +571,10 @@ void hammings_knn_hc (
 void hammings_knn_mc(
     const uint8_t * a,
     const uint8_t * b,
-    size_t na,
-    size_t nb,
-    size_t k,
-    size_t ncodes,
+    int64_t na,
+    int64_t nb,
+    int64_t k,
+    int64_t ncodes,
     int32_t *distances,
     int64_t *labels)
 {
@@ -621,11 +621,11 @@ void hammings_knn_mc(
 void hamming_count_thres (
         const uint8_t * bs1,
         const uint8_t * bs2,
-        size_t n1,
-        size_t n2,
+        int64_t n1,
+        int64_t n2,
         hamdis_t ht,
-        size_t ncodes,
-        size_t * nptr)
+        int64_t ncodes,
+        int64_t * nptr)
 {
     switch (ncodes) {
         case 8:
@@ -645,7 +645,7 @@ void hamming_count_thres (
                                               n1, n2, ht, nptr);
             return;
         default:
-          FAISS_THROW_FMT ("not implemented for %zu bits", ncodes);
+          FAISS_THROW_FMT ("not implemented for  %" PRId64 " bits", ncodes);
     }
 }
 
@@ -653,10 +653,10 @@ void hamming_count_thres (
 /* Count number of cross-matches given a threshold */
 void crosshamming_count_thres (
         const uint8_t * dbs,
-        size_t n,
+        int64_t n,
         hamdis_t ht,
-        size_t ncodes,
-        size_t * nptr)
+        int64_t ncodes,
+        int64_t * nptr)
 {
     switch (ncodes) {
         case 8:
@@ -672,19 +672,19 @@ void crosshamming_count_thres (
             faiss::crosshamming_count_thres <512> (C64(dbs), n, ht, nptr);
             return;
         default:
-            FAISS_THROW_FMT ("not implemented for %zu bits", ncodes);
+            FAISS_THROW_FMT ("not implemented for  %" PRId64 " bits", ncodes);
     }
 }
 
 
 /* Returns all matches given a threshold */
-size_t match_hamming_thres (
+int64_t match_hamming_thres (
         const uint8_t * bs1,
         const uint8_t * bs2,
-        size_t n1,
-        size_t n2,
+        int64_t n1,
+        int64_t n2,
         hamdis_t ht,
-        size_t ncodes,
+        int64_t ncodes,
         int64_t * idx,
         hamdis_t * dis)
 {
@@ -702,7 +702,7 @@ size_t match_hamming_thres (
           return faiss::match_hamming_thres <512> (C64(bs1), C64(bs2),
                                                    n1, n2, ht, idx, dis);
         default:
-            FAISS_THROW_FMT ("not implemented for %zu bits", ncodes);
+            FAISS_THROW_FMT ("not implemented for  %" PRId64 " bits", ncodes);
             return 0;
     }
 }
@@ -722,8 +722,8 @@ template <class HammingComputer>
 static void hamming_dis_inner_loop (
         const uint8_t *ca,
         const uint8_t *cb,
-        size_t nb,
-        size_t code_size,
+        int64_t nb,
+        int64_t code_size,
         int k,
         hamdis_t * bh_val_,
         int64_t *     bh_ids_)
@@ -731,7 +731,7 @@ static void hamming_dis_inner_loop (
 
     HammingComputer hc (ca, code_size);
 
-    for (size_t j = 0; j < nb; j++) {
+    for (int64_t j = 0; j < nb; j++) {
         int ndiff = hc.hamming (cb);
         cb += code_size;
         if (ndiff < bh_val_[0]) {
@@ -745,8 +745,8 @@ void generalized_hammings_knn_hc (
         int_maxheap_array_t * ha,
         const uint8_t * a,
         const uint8_t * b,
-        size_t nb,
-        size_t code_size,
+        int64_t nb,
+        int64_t code_size,
         int ordered)
 {
     int na = ha->nh;

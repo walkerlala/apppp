@@ -73,7 +73,7 @@ HostTensor<T, Dim, true> toHost(T* src,
 
 /// Copies a device array's allocation to an address, if necessary
 template <typename T>
-inline void fromDevice(T* src, T* dst, size_t num, cudaStream_t stream) {
+inline void fromDevice(T* src, T* dst, int64_t num, cudaStream_t stream) {
   // It is possible that the array already represents memory at `p`,
   // in which case no copy is needed
   if (src == dst) {

@@ -20,8 +20,8 @@ unsigned int getBitfield(unsigned int val, int pos, int len) {
 }
 
 __device__ __forceinline__
-unsigned long getBitfield(unsigned long val, int pos, int len) {
-  unsigned long ret;
+unsigned int64_t getBitfield(unsigned int64_t val, int pos, int len) {
+  unsigned int64_t ret;
   asm("bfe.u64 %0, %1, %2, %3;" : "=l"(ret) : "l"(val), "r"(pos), "r"(len));
   return ret;
 }

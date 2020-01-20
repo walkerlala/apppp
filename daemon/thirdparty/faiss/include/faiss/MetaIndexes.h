@@ -10,6 +10,7 @@
 #ifndef META_INDEXES_H
 #define META_INDEXES_H
 
+#include <cinttypes>
 #include <vector>
 #include <unordered_map>
 #include <faiss/Index.h>
@@ -47,7 +48,7 @@ struct IndexIDMapTemplate : IndexT {
     void reset() override;
 
     /// remove ids adapted to IndexFlat
-    size_t remove_ids(const IDSelector& sel) override;
+    int64_t remove_ids(const IDSelector& sel) override;
 
     void range_search (idx_t n, const component_t *x, distance_t radius,
                        RangeSearchResult *result) const override;
@@ -77,7 +78,7 @@ struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
 
     void add_with_ids(idx_t n, const component_t* x, const idx_t* xids) override;
 
-    size_t remove_ids(const IDSelector& sel) override;
+    int64_t remove_ids(const IDSelector& sel) override;
 
     void reconstruct (idx_t key, component_t * recons) const override;
 

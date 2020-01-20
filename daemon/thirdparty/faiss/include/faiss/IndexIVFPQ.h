@@ -11,6 +11,7 @@
 #define FAISS_INDEX_IVFPQ_H
 
 
+#include <cinttypes>
 #include <vector>
 
 #include <faiss/IndexIVF.h>
@@ -20,7 +21,7 @@
 namespace faiss {
 
 struct IVFPQSearchParameters: IVFSearchParameters {
-    size_t scan_table_threshold;   ///< use table computation or on-the-fly?
+    int64_t scan_table_threshold;   ///< use table computation or on-the-fly?
     int polysemous_ht;             ///< Hamming thresh for polysemous filtering
     ~IVFPQSearchParameters () {}
 };
@@ -38,7 +39,7 @@ struct IndexIVFPQ: IndexIVF {
     PolysemousTraining *polysemous_training; ///< if NULL, use default
 
     // search-time parameters
-    size_t scan_table_threshold;   ///< use table computation or on-the-fly?
+    int64_t scan_table_threshold;   ///< use table computation or on-the-fly?
     int polysemous_ht;             ///< Hamming thresh for polysemous filtering
 
     /** Precompute table that speed up query preprocessing at some
@@ -50,15 +51,15 @@ struct IndexIVFPQ: IndexIVF {
      * =2: specific version for MultiIndexQuantizer (much more compact)
      */
     int use_precomputed_table;     ///< if by_residual, build precompute tables
-    static size_t precomputed_table_max_bytes;
+    static int64_t precomputed_table_max_bytes;
 
     /// if use_precompute_table
     /// size nlist * pq.M * pq.ksub
     std::vector <float> precomputed_table;
 
     IndexIVFPQ (
-            Index * quantizer, size_t d, size_t nlist,
-            size_t M, size_t nbits_per_idx);
+            Index * quantizer, int64_t d, int64_t nlist,
+            int64_t M, int64_t nbits_per_idx);
 
     void add_with_ids(idx_t n, const float* x, const idx_t* xids = nullptr)
         override;
@@ -99,7 +100,7 @@ struct IndexIVFPQ: IndexIVF {
      *                duplicates (max size ntotal)
      * @return n      number of groups found
      */
-    size_t find_duplicates (idx_t *ids, size_t *lims) const;
+    int64_t find_duplicates (idx_t *ids, int64_t *lims) const;
 
     // map a vector to a binary code knowning the index
     void encode (idx_t key, const float * x, uint8_t * code) const;
@@ -113,12 +114,12 @@ struct IndexIVFPQ: IndexIVF {
      * @param compute_keys  if false, assume keys are precomputed,
      *                      otherwise compute them
      */
-    void encode_multiple (size_t n, idx_t *keys,
+    void encode_multiple (int64_t n, idx_t *keys,
                           const float * x, uint8_t * codes,
                           bool compute_keys = false) const;
 
     /// inverse of encode_multiple
-    void decode_multiple (size_t n, const idx_t *keys,
+    void decode_multiple (int64_t n, const idx_t *keys,
                           const uint8_t * xcodes, float * x) const;
 
     InvertedListScanner *get_InvertedListScanner (bool store_pairs)
@@ -135,15 +136,15 @@ struct IndexIVFPQ: IndexIVF {
 /// statistics are robust to internal threading, but not if
 /// IndexIVFPQ::search_preassigned is called by multiple threads
 struct IndexIVFPQStats {
-    size_t nrefine;  // nb of refines (IVFPQR)
+    int64_t nrefine;  // nb of refines (IVFPQR)
 
-    size_t n_hamming_pass;
+    int64_t n_hamming_pass;
     // nb of passed Hamming distance tests (for polysemous)
 
     // timings measured with the CPU RTC
     // on all threads
-    size_t search_cycles;
-    size_t refine_cycles; // only for IVFPQR
+    int64_t search_cycles;
+    int64_t refine_cycles; // only for IVFPQR
 
     IndexIVFPQStats () {reset (); }
     void reset ();

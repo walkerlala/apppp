@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include <cinttypes>
 #include <string>
 #include <cstdio>
 #include <vector>
@@ -27,8 +28,8 @@ struct IOReader {
     std::string name;
 
     // fread
-    virtual size_t operator()(
-         void *ptr, size_t size, size_t nitems) = 0;
+    virtual int64_t operator()(
+         void *ptr, int64_t size, int64_t nitems) = 0;
 
     // return a file number that can be memory-mapped
     virtual int fileno ();
@@ -41,8 +42,8 @@ struct IOWriter {
     std::string name;
 
     // fwrite
-    virtual size_t operator()(
-         const void *ptr, size_t size, size_t nitems) = 0;
+    virtual int64_t operator()(
+         const void *ptr, int64_t size, int64_t nitems) = 0;
 
     // return a file number that can be memory-mapped
     virtual int fileno ();
@@ -53,13 +54,13 @@ struct IOWriter {
 
 struct VectorIOReader:IOReader {
     std::vector<uint8_t> data;
-    size_t rp = 0;
-    size_t operator()(void *ptr, size_t size, size_t nitems) override;
+    int64_t rp = 0;
+    int64_t operator()(void *ptr, int64_t size, int64_t nitems) override;
 };
 
 struct VectorIOWriter:IOWriter {
     std::vector<uint8_t> data;
-    size_t operator()(const void *ptr, size_t size, size_t nitems) override;
+    int64_t operator()(const void *ptr, int64_t size, int64_t nitems) override;
 };
 
 struct FileIOReader: IOReader {
@@ -72,7 +73,7 @@ struct FileIOReader: IOReader {
 
     ~FileIOReader() override;
 
-    size_t operator()(void *ptr, size_t size, size_t nitems) override;
+    int64_t operator()(void *ptr, int64_t size, int64_t nitems) override;
 
     int fileno() override;
 };
@@ -87,7 +88,7 @@ struct FileIOWriter: IOWriter {
 
     ~FileIOWriter() override;
 
-    size_t operator()(const void *ptr, size_t size, size_t nitems) override;
+    int64_t operator()(const void *ptr, int64_t size, int64_t nitems) override;
 
     int fileno() override;
 };

@@ -12,6 +12,7 @@
 #pragma once
 
 
+#include <cinttypes>
 
 namespace faiss {
 

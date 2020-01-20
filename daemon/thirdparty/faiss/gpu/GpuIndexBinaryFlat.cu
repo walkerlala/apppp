@@ -16,7 +16,7 @@
 namespace faiss { namespace gpu {
 
 /// Default CPU search size for which we use paged copies
-constexpr size_t kMinPageSize = (size_t) 256 * 1024 * 1024;
+constexpr int64_t kMinPageSize = (int64_t) 256 * 1024 * 1024;
 
 GpuIndexBinaryFlat::GpuIndexBinaryFlat(GpuResources* resources,
                                        const faiss::IndexBinaryFlat* index,
@@ -72,10 +72,10 @@ GpuIndexBinaryFlat::copyFrom(const faiss::IndexBinaryFlat* index) {
   // GPU code has 32 bit indices
   FAISS_THROW_IF_NOT_FMT(index->ntotal <=
                          (faiss::Index::idx_t) std::numeric_limits<int>::max(),
-                         "GPU index only supports up to %zu indices; "
-                         "attempting to copy CPU index with %zu parameters",
-                         (size_t) std::numeric_limits<int>::max(),
-                         (size_t) index->ntotal);
+                         "GPU index only supports up to  %" PRId64 " indices; "
+                         "attempting to copy CPU index with  %" PRId64 " parameters",
+                         (int64_t) std::numeric_limits<int>::max(),
+                         (int64_t) index->ntotal);
   this->ntotal = index->ntotal;
 
   delete data_;
@@ -122,8 +122,8 @@ GpuIndexBinaryFlat::add(faiss::IndexBinary::idx_t n,
   // number of vectors on a GPU
   FAISS_THROW_IF_NOT_FMT(this->ntotal + n <=
                          (faiss::Index::idx_t) std::numeric_limits<int>::max(),
-                         "GPU index only supports up to %zu indices",
-                         (size_t) std::numeric_limits<int>::max());
+                         "GPU index only supports up to  %" PRId64 " indices",
+                         (int64_t) std::numeric_limits<int>::max());
 
   data_->add((const unsigned char*) x,
              n,
@@ -152,8 +152,8 @@ GpuIndexBinaryFlat::search(faiss::IndexBinary::idx_t n,
 
   // For now, only support <= max int results
   FAISS_THROW_IF_NOT_FMT(n <= (Index::idx_t) std::numeric_limits<int>::max(),
-                         "GPU index only supports up to %zu indices",
-                         (size_t) std::numeric_limits<int>::max());
+                         "GPU index only supports up to  %" PRId64 " indices",
+                         (int64_t) std::numeric_limits<int>::max());
   FAISS_THROW_IF_NOT_FMT(k <= (Index::idx_t) getMaxKSelection(),
                          "GPU only supports k <= %d (requested %d)",
                          getMaxKSelection(),
@@ -188,7 +188,7 @@ GpuIndexBinaryFlat::search(faiss::IndexBinary::idx_t n,
     // -> GPU.
     // Currently, we don't handle the case where the output data won't
     // fit on the GPU (e.g., n * k is too large for the GPU memory).
-    size_t dataSize = (size_t) n * (this->d / 8) * sizeof(uint8_t);
+    int64_t dataSize = (int64_t) n * (this->d / 8) * sizeof(uint8_t);
 
     if (dataSize >= kMinPageSize) {
       searchFromCpuPaged_(n, x, k,
@@ -211,7 +211,7 @@ GpuIndexBinaryFlat::search(faiss::IndexBinary::idx_t n,
                                                      stream,
                                                      {(int) n, (int) k});
 
-  // Convert int to long
+  // Convert int to int64_t
   convertTensor<int, faiss::Index::idx_t, 2>(stream,
                                              outIntIndices,
                                              outIndices);
@@ -256,7 +256,7 @@ GpuIndexBinaryFlat::searchFromCpuPaged_(int n,
 
   // Just page without overlapping copy with compute (as GpuIndexFlat does)
   int batchSize = utils::nextHighestPowerOf2(
-    (int) ((size_t) kMinPageSize / vectorSize));
+    (int) ((int64_t) kMinPageSize / vectorSize));
 
   for (int cur = 0; cur < n; cur += batchSize) {
     int num = std::min(batchSize, n - cur);
@@ -265,7 +265,7 @@ GpuIndexBinaryFlat::searchFromCpuPaged_(int n,
     auto outIndicesSlice = outIndices.narrowOutermost(cur, num);
 
     searchNonPaged_(num,
-                    x + (size_t) cur * (this->d / 8),
+                    x + (int64_t) cur * (this->d / 8),
                     k,
                     outDistancesSlice.data(),
                     outIndicesSlice.data());

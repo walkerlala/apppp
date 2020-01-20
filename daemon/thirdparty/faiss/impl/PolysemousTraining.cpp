@@ -395,7 +395,7 @@ ReproduceDistancesObjective::ReproduceDistancesObjective (
 }
 
 void ReproduceDistancesObjective::compute_mean_stdev (
-          const double *tab, size_t n2,
+          const double *tab, int64_t n2,
           double *mean_out, double *stddev_out)
 {
     double sum = 0, sum2 = 0;
@@ -828,7 +828,7 @@ void PolysemousTraining::optimize_reproduce_distances (
 
 
 void PolysemousTraining::optimize_ranking (
-      ProductQuantizer &pq, size_t n, const float *x) const
+      ProductQuantizer &pq, int64_t n, const float *x) const
 {
 
     int dsub = pq.dsub;
@@ -846,7 +846,7 @@ void PolysemousTraining::optimize_ranking (
 
 #pragma omp parallel for
     for (int m = 0; m < pq.M; m++) {
-        size_t nq, nb;
+        int64_t nq, nb;
         std::vector <uint32_t> codes; // query codes, then db codes
         std::vector <float> gt_distances; // nq * nb matrix of distances
 
@@ -893,7 +893,7 @@ void PolysemousTraining::optimize_ranking (
         ScopeDeleter1<PermutationObjective> del (obj);
 
         if (verbose > 0) {
-            printf("   m=%d, nq=%ld, nb=%ld, intialize RankingScore "
+            printf("   m=%d, nq= %" PRId64 ", nb= %" PRId64 ", intialize RankingScore "
                    "in %.3f ms\n",
                    m, nq, nb, getmillisecs () - t0);
         }
@@ -935,7 +935,7 @@ void PolysemousTraining::optimize_ranking (
 
 
 void PolysemousTraining::optimize_pq_for_hamming (ProductQuantizer &pq,
-                                                size_t n, const float *x) const
+                                                int64_t n, const float *x) const
 {
     if (optimization_type == OT_None) {
 

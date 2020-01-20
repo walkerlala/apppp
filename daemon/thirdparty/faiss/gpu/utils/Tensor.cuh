@@ -61,7 +61,7 @@ struct DefaultPtrTraits {
    - arrays are allowed (e.g., no transpose). Strides are still
    - calculated, but innermost stride is assumed to be 1.
    - `IndexT` is the integer type used for size/stride arrays, and for
-   - all indexing math. Default is `int`, but for large tensors, `long`
+   - all indexing math. Default is `int`, but for large tensors, `int64_t`
    - can be used instead.
    - `PtrTraits` are traits applied to our data pointer (T*). By default,
    - this is just T*, but RestrictPtrTraits can be used to apply T*
@@ -231,11 +231,11 @@ class Tensor {
 
   /// Returns the total number of elements contained within our data
   /// (product of `getSize(i)`)
-  __host__ __device__ size_t numElements() const;
+  __host__ __device__ int64_t numElements() const;
 
   /// If we are contiguous, returns the total size in bytes of our
   /// data
-  __host__ __device__ size_t getSizeInBytes() const {
+  __host__ __device__ int64_t getSizeInBytes() const {
     return numElements() * sizeof(T);
   }
 

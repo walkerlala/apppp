@@ -25,7 +25,7 @@
 #pragma SWIG nowarn=512
 
 %include <stdint.i>
-typedef uint64_t size_t;
+typedef uint64_t int64_t;
 
 #define __restrict
 
@@ -181,9 +181,9 @@ namespace std {
         void push_back(T);
         void clear();
         T * data();
-        size_t size();
-        T at (size_t n) const;
-        void resize (size_t n);
+        int64_t size();
+        T at (int64_t n) const;
+        void resize (int64_t n);
         void swap (vector<T> & other);
     };
 };
@@ -314,7 +314,7 @@ void gpu_sync_all_devices()
 
 %include  <faiss/utils/extra_distances.h>
 
-%ignore faiss::ProductQuantizer::get_centroids(size_t,size_t) const;
+%ignore faiss::ProductQuantizer::get_centroids(int64_t,int64_t) const;
 
 %include  <faiss/impl/ProductQuantizer.h>
 
@@ -801,7 +801,7 @@ PyObject * rev_swig_ptr(ctype *src, npy_intp size) {
 }
 %}
 
-PyObject * rev_swig_ptr(ctype *src, size_t size);
+PyObject * rev_swig_ptr(ctype *src, int64_t size);
 
 %enddef
 
@@ -892,7 +892,7 @@ TYPE_CONVERSION (uint8_t, ByteTensor)
 
 void omp_set_num_threads (int num_threads);
 int omp_get_max_threads ();
-void *memcpy(void *dest, const void *src, size_t n);
+void *memcpy(void *dest, const void *src, int64_t n);
 
 
 /*******************************************************************
@@ -949,9 +949,9 @@ void ignore_SIGTTIN();
 struct MapLong2Long {
     std::unordered_map<int64_t, int64_t> map;
 
-    void add(size_t n, const int64_t *keys, const int64_t *vals) {
+    void add(int64_t n, const int64_t *keys, const int64_t *vals) {
         map.reserve(map.size() + n);
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             map[keys[i]] = vals[i];
         }
     }
@@ -964,8 +964,8 @@ struct MapLong2Long {
         }
     }
 
-    void search_multiple(size_t n, int64_t *keys, int64_t * vals) {
-        for (size_t i = 0; i < n; i++) {
+    void search_multiple(int64_t n, int64_t *keys, int64_t * vals) {
+        for (int64_t i = 0; i < n; i++) {
             vals[i] = search(keys[i]);
         }
     }

@@ -47,10 +47,10 @@ class GpuIndex : public faiss::Index {
 
   /// Set the minimum data size for searches (in MiB) for which we use
   /// CPU -> GPU paging
-  void setMinPagingSize(size_t size);
+  void setMinPagingSize(int64_t size);
 
   /// Returns the current minimum data size for paged searches
-  size_t getMinPagingSize() const;
+  int64_t getMinPagingSize() const;
 
   /// `x` can be resident on the CPU or any GPU; copies are performed
   /// as needed
@@ -142,7 +142,7 @@ private:
   const MemorySpace memorySpace_;
 
   /// Size above which we page copies from the CPU to GPU
-  size_t minPagedSize_;
+  int64_t minPagedSize_;
 };
 
 } } // namespace

@@ -16,6 +16,7 @@
 
 #include <vector>
 #include <stdint.h>
+#include <cinttypes>
 
 #include <faiss/Index.h>
 
@@ -147,7 +148,7 @@ struct PCAMatrix: LinearTransform {
     bool random_rotation;
 
     /// ratio between # training vectors and dimension
-    size_t max_points_per_d;
+    int64_t max_points_per_d;
 
     /// try to distribute output eigenvectors in this many bins
     int balanced_bins;
@@ -243,7 +244,7 @@ struct OPQMatrix: LinearTransform {
     int niter_pq_0; ///< same, for the first outer iteration
 
     /// if there are too many training points, resample
-    size_t max_train_points;
+    int64_t max_train_points;
     bool verbose;
 
     /// if non-NULL, use this product quantizer for training

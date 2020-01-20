@@ -144,7 +144,7 @@ void IndexLSH::search (
     int * idistances = new int [n * k];
     ScopeDeleter<int> del3 (idistances);
 
-    int_maxheap_array_t res = { size_t(n), size_t(k), labels, idistances};
+    int_maxheap_array_t res = { int64_t(n), int64_t(k), labels, idistances};
 
     hammings_knn_hc (&res, qcodes, codes.data(),
                      ntotal, bytes_per_vec, true);
@@ -176,7 +176,7 @@ void IndexLSH::reset() {
 }
 
 
-size_t IndexLSH::sa_code_size () const
+int64_t IndexLSH::sa_code_size () const
 {
     return bytes_per_vec;
 }

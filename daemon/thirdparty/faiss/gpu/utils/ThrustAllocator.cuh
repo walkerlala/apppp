@@ -19,7 +19,7 @@ class GpuResourcesThrustAllocator {
  public:
   typedef char value_type;
 
-  GpuResourcesThrustAllocator(void* mem, size_t size)
+  GpuResourcesThrustAllocator(void* mem, int64_t size)
       : start_((char*) mem),
         cur_((char*) mem),
         end_((char*) mem + size) {
@@ -48,7 +48,7 @@ class GpuResourcesThrustAllocator {
     }
   }
 
-  void deallocate(char* p, size_t size) {
+  void deallocate(char* p, int64_t size) {
     // Allocations could be returned out-of-order; ignore those we
     // didn't cudaMalloc
     auto it = mallocAllocs_.find(p);

@@ -11,6 +11,7 @@
 #define FAISS_INDEX_BINARY_IVF_H
 
 
+#include <cinttypes>
 #include <vector>
 
 #include <faiss/IndexBinary.h>
@@ -37,8 +38,8 @@ struct IndexBinaryIVF : IndexBinary {
     InvertedLists *invlists;
     bool own_invlists;
 
-    size_t nprobe;            ///< number of probes at query time
-    size_t max_codes;         ///< max nb of codes to visit to do a query
+    int64_t nprobe;            ///< number of probes at query time
+    int64_t max_codes;         ///< max nb of codes to visit to do a query
 
     /** Select between using a heap or counting to select the k smallest values
      * when scanning inverted lists.
@@ -50,7 +51,7 @@ struct IndexBinaryIVF : IndexBinary {
     std::vector<idx_t> direct_map;
 
     IndexBinary *quantizer;   ///< quantizer that maps vectors to inverted lists
-    size_t nlist;             ///< number of possible key values
+    int64_t nlist;             ///< number of possible key values
 
     bool own_fields;          ///< whether object owns the quantizer
 
@@ -62,7 +63,7 @@ struct IndexBinaryIVF : IndexBinary {
      * identifier. The pointer is borrowed: the quantizer should not
      * be deleted while the IndexBinaryIVF is in use.
      */
-    IndexBinaryIVF(IndexBinary *quantizer, size_t d, size_t nlist);
+    IndexBinaryIVF(IndexBinary *quantizer, int64_t d, int64_t nlist);
 
     IndexBinaryIVF();
 
@@ -151,14 +152,14 @@ struct IndexBinaryIVF : IndexBinary {
 
 
     /// Dataset manipulation functions
-    size_t remove_ids(const IDSelector& sel) override;
+    int64_t remove_ids(const IDSelector& sel) override;
 
     /** moves the entries from another dataset to self. On output,
      * other is empty. add_id is added to all moved ids (for
      * sequential ids, this would be this->ntotal */
     virtual void merge_from(IndexBinaryIVF& other, idx_t add_id);
 
-    size_t get_list_size(size_t list_no) const
+    int64_t get_list_size(int64_t list_no) const
     { return invlists->list_size(list_no); }
 
     /** intialize a direct map
@@ -195,11 +196,11 @@ struct BinaryInvertedListScanner {
      * @param labels     heap labels (size k)
      * @param k          heap size
      */
-    virtual size_t scan_codes (size_t n,
+    virtual int64_t scan_codes (int64_t n,
                                const uint8_t *codes,
                                const idx_t *ids,
                                int32_t *distances, idx_t *labels,
-                               size_t k) const = 0;
+                               int64_t k) const = 0;
 
     virtual ~BinaryInvertedListScanner () {}
 

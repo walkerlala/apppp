@@ -28,7 +28,7 @@ namespace faiss {
  ********************************************************/
 
 
-IndexPQ::IndexPQ (int d, size_t M, size_t nbits, MetricType metric):
+IndexPQ::IndexPQ (int d, int64_t M, int64_t nbits, MetricType metric):
     Index(d, metric), pq(d, M, nbits)
 {
     is_trained = false;
@@ -59,7 +59,7 @@ void IndexPQ::train (idx_t n, const float *x)
         if (ntrain_perm > n / 4)
             ntrain_perm = n / 4;
         if (verbose) {
-            printf ("PQ training on %ld points, remains %ld points: "
+            printf ("PQ training on  %" PRId64 " points, remains  %" PRId64 " points: "
                     "training polysemous on %s\n",
                     n - ntrain_perm, ntrain_perm,
                     ntrain_perm == 0 ? "centroids" : "these");
@@ -82,7 +82,7 @@ void IndexPQ::add (idx_t n, const float *x)
 }
 
 
-size_t IndexPQ::remove_ids (const IDSelector & sel)
+int64_t IndexPQ::remove_ids (const IDSelector & sel)
 {
     idx_t j = 0;
     for (idx_t i = 0; i < ntotal; i++) {
@@ -95,7 +95,7 @@ size_t IndexPQ::remove_ids (const IDSelector & sel)
             j++;
         }
     }
-    size_t nremove = ntotal - j;
+    int64_t nremove = ntotal - j;
     if (nremove > 0) {
         ntotal = j;
         codes.resize (ntotal * pq.code_size);
@@ -131,14 +131,14 @@ namespace {
 
 
 struct PQDis: DistanceComputer {
-    size_t d;
+    int64_t d;
     Index::idx_t nb;
     const uint8_t *codes;
-    size_t code_size;
+    int64_t code_size;
     const ProductQuantizer & pq;
     const float *sdc;
     std::vector<float> precomputed_table;
-    size_t ndis;
+    int64_t ndis;
 
     float operator () (idx_t i) override
     {
@@ -211,11 +211,11 @@ void IndexPQ::search (idx_t n, const float *x, idx_t k,
 
         if (metric_type == METRIC_L2) {
             float_maxheap_array_t res = {
-                size_t(n), size_t(k), labels, distances };
+                int64_t(n), int64_t(k), labels, distances };
             pq.search (x, n, codes.data(), ntotal, &res, true);
         } else {
             float_minheap_array_t res = {
-                size_t(n), size_t(k), labels, distances };
+                int64_t(n), int64_t(k), labels, distances };
             pq.search_ip (x, n, codes.data(), ntotal, &res, true);
         }
         indexPQ_stats.nq += n;
@@ -239,7 +239,7 @@ void IndexPQ::search (idx_t n, const float *x, idx_t k,
         } else {
             FAISS_THROW_IF_NOT (d == pq.nbits * pq.M);
             memset (q_codes, 0, n * pq.code_size);
-            for (size_t i = 0; i < n; i++) {
+            for (int64_t i = 0; i < n; i++) {
                 const float *xi = x + i * d;
                 uint8_t *code = q_codes + i * pq.code_size;
                 for (int j = 0; j < d; j++)
@@ -250,7 +250,7 @@ void IndexPQ::search (idx_t n, const float *x, idx_t k,
         if (search_type == ST_SDC)  {
 
             float_maxheap_array_t res = {
-                size_t(n),  size_t(k), labels, distances};
+                int64_t(n),  int64_t(k), labels, distances};
 
             pq.search_sdc (q_codes, n, codes.data(), ntotal, &res, true);
 
@@ -259,7 +259,7 @@ void IndexPQ::search (idx_t n, const float *x, idx_t k,
             ScopeDeleter<int> del (idistances);
 
             int_maxheap_array_t res = {
-                size_t (n), size_t (k), labels, idistances};
+                int64_t (n), int64_t (k), labels, idistances};
 
             if (search_type == ST_HE) {
 
@@ -297,21 +297,21 @@ IndexPQStats indexPQ_stats;
 
 
 template <class HammingComputer>
-static size_t polysemous_inner_loop (
+static int64_t polysemous_inner_loop (
         const IndexPQ & index,
         const float *dis_table_qi, const uint8_t *q_code,
-        size_t k, float *heap_dis, int64_t *heap_ids)
+        int64_t k, float *heap_dis, int64_t *heap_ids)
 {
 
     int M = index.pq.M;
     int code_size = index.pq.code_size;
     int ksub = index.pq.ksub;
-    size_t ntotal = index.ntotal;
+    int64_t ntotal = index.ntotal;
     int ht = index.polysemous_ht;
 
     const uint8_t *b_code = index.codes.data();
 
-    size_t n_pass_i = 0;
+    int64_t n_pass_i = 0;
 
     HammingComputer hc (q_code, code_size);
 
@@ -364,7 +364,7 @@ void IndexPQ::search_core_polysemous (idx_t n, const float *x, idx_t k,
         }
     }
 
-    size_t n_pass = 0;
+    int64_t n_pass = 0;
 
 #pragma omp parallel for reduction (+: n_pass)
     for (idx_t qi = 0; qi < n; qi++) {
@@ -408,7 +408,7 @@ void IndexPQ::search_core_polysemous (idx_t n, const float *x, idx_t k,
                         (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
                 } else {
                     FAISS_THROW_FMT(
-                         "code size %zd not supported for polysemous",
+                         "code size  %" PRId64 " not supported for polysemous",
                          pq.code_size);
                 }
                 break;
@@ -433,7 +433,7 @@ void IndexPQ::search_core_polysemous (idx_t n, const float *x, idx_t k,
                         (*this, dis_table_qi, q_code, k, heap_dis, heap_ids);
                 } else {
                     FAISS_THROW_FMT(
-                         "code size %zd not supported for polysemous",
+                         "code size  %" PRId64 " not supported for polysemous",
                          pq.code_size);
                 }
                 break;
@@ -451,7 +451,7 @@ void IndexPQ::search_core_polysemous (idx_t n, const float *x, idx_t k,
 
 
 /* The standalone codec interface (just remaps to the PQ functions) */
-size_t IndexPQ::sa_code_size () const
+int64_t IndexPQ::sa_code_size () const
 {
     return pq.code_size;
 }
@@ -514,7 +514,7 @@ void IndexPQ::hamming_distance_histogram (idx_t n, const float *x,
     }
     int nbits = pq.M * pq.nbits;
     memset (hist, 0, sizeof(*hist) * (nbits + 1));
-    size_t bs = 256;
+    int64_t bs = 256;
 
 #pragma omp parallel
     {
@@ -522,16 +522,16 @@ void IndexPQ::hamming_distance_histogram (idx_t n, const float *x,
         hamdis_t *distances = new hamdis_t [nb * bs];
         ScopeDeleter<hamdis_t> del (distances);
 #pragma omp for
-        for (size_t q0 = 0; q0 < n; q0 += bs) {
-            // printf ("dis stats: %ld/%ld\n", q0, n);
-            size_t q1 = q0 + bs;
+        for (int64_t q0 = 0; q0 < n; q0 += bs) {
+            // printf ("dis stats:  %" PRId64 "/ %" PRId64 "\n", q0, n);
+            int64_t q1 = q0 + bs;
             if (q1 > n) q1 = n;
 
             hammings (q_codes + q0 * pq.code_size, b_codes,
                       q1 - q0, nb,
                       pq.code_size, distances);
 
-            for (size_t i = 0; i < nb * (q1 - q0); i++)
+            for (int64_t i = 0; i < nb * (q1 - q0); i++)
                 histi [distances [i]]++;
         }
 #pragma omp critical
@@ -599,7 +599,7 @@ struct PreSortedArray {
 template <typename T>
 struct ArgSort {
     const T * x;
-    bool operator() (size_t i, size_t j) {
+    bool operator() (int64_t i, int64_t j) {
         return x[i] < x[j];
     }
 };
@@ -782,7 +782,7 @@ struct MinSumK {
      * terms involved in the sum.
      */
     typedef CMin<T, int64_t> HC;
-    size_t heap_capacity, heap_size;
+    int64_t heap_capacity, heap_size;
     T *bh_val;
     int64_t *bh_ids;
 
@@ -923,8 +923,8 @@ struct MinSumK {
 
 
 MultiIndexQuantizer::MultiIndexQuantizer (int d,
-                     size_t M,
-                     size_t nbits):
+                     int64_t M,
+                     int64_t nbits):
     Index(d, METRIC_L2), pq(d, M, nbits)
 {
     is_trained = false;
@@ -955,7 +955,7 @@ void MultiIndexQuantizer::search (idx_t n, const float *x, idx_t k,
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(i0 + bs, n);
             if (verbose) {
-                printf("MultiIndexQuantizer::search: %ld:%ld / %ld\n",
+                printf("MultiIndexQuantizer::search:  %" PRId64 ": %" PRId64 " /  %" PRId64 "\n",
                        i0, i1, n);
             }
             search (i1 - i0, x + i0 * d, k,
@@ -1057,7 +1057,7 @@ void MultiIndexQuantizer::reset ()
 
 
 MultiIndexQuantizer2::MultiIndexQuantizer2 (
-        int d, size_t M, size_t nbits,
+        int d, int64_t M, int64_t nbits,
         Index **indexes):
     MultiIndexQuantizer (d, M, nbits)
 {
@@ -1072,7 +1072,7 @@ MultiIndexQuantizer2::MultiIndexQuantizer2 (
 }
 
 MultiIndexQuantizer2::MultiIndexQuantizer2 (
-        int d, size_t nbits,
+        int d, int64_t nbits,
         Index *assign_index_0,
         Index *assign_index_1):
     MultiIndexQuantizer (d, 2, nbits)

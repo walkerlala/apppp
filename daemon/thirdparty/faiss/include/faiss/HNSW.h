@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <cinttypes>
 #include <vector>
 #include <unordered_set>
 #include <queue>
@@ -108,7 +109,7 @@ struct HNSW {
 
   /// offsets[i] is the offset in the neighbors array where vector i is stored
   /// size ntotal + 1
-  std::vector<size_t> offsets;
+  std::vector<int64_t> offsets;
 
   /// neighbors[offsets[i]:offsets[i+1]] is the list of neighbors of vector i
   /// for all levels. this is where all storage goes.
@@ -156,7 +157,7 @@ struct HNSW {
 
   /// range of entries in the neighbors table of vertex no at layer_no
   void neighbor_range(idx_t no, int layer_no,
-                      size_t * begin, size_t * end) const;
+                      int64_t * begin, int64_t * end) const;
 
   /// only mandatory parameter: nb of neighbors
   explicit HNSW(int M = 32);
@@ -165,7 +166,7 @@ struct HNSW {
   int random_level();
 
   /// add n random levels to table (for debugging...)
-  void fill_with_random_links(size_t n);
+  void fill_with_random_links(int64_t n);
 
   void add_links_starting_from(DistanceComputer& ptdis,
                                storage_idx_t pt_id,
@@ -205,7 +206,7 @@ struct HNSW {
   void clear_neighbor_tables(int level);
   void print_neighbor_stats(int level) const;
 
-  int prepare_level_tab(size_t n, bool preset_levels = false);
+  int prepare_level_tab(int64_t n, bool preset_levels = false);
 
   static void shrink_neighbor_list(
     DistanceComputer& qdis,
@@ -251,9 +252,9 @@ struct VisitedTable {
 
 
 struct HNSWStats {
-  size_t n1, n2, n3;
-  size_t ndis;
-  size_t nreorder;
+  int64_t n1, n2, n3;
+  int64_t ndis;
+  int64_t nreorder;
   bool view;
 
   HNSWStats() {

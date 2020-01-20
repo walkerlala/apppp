@@ -12,6 +12,7 @@
 #include <faiss/Index.h>
 
 #include <vector>
+#include <cinttypes>
 
 namespace faiss {
 
@@ -55,8 +56,8 @@ struct ClusteringParameters {
  */
 struct Clustering: ClusteringParameters {
     typedef Index::idx_t idx_t;
-    size_t d;              ///< dimension of the vectors
-    size_t k;              ///< nb of centroids
+    int64_t d;              ///< dimension of the vectors
+    int64_t k;              ///< nb of centroids
 
     /// centroids (k * d)
     std::vector<float> centroids;
@@ -89,7 +90,7 @@ struct Clustering: ClusteringParameters {
  * @param centroids output centroids (size k * d)
  * @return final quantization error
  */
-float kmeans_clustering (size_t d, size_t n, size_t k,
+float kmeans_clustering (int64_t d, int64_t n, int64_t k,
                          const float *x,
                          float *centroids);
 

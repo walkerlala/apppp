@@ -21,7 +21,7 @@ namespace faiss { namespace gpu {
 void newTestSeed();
 
 /// Uses an explicit seed for the test
-void setTestSeed(long seed);
+void setTestSeed(int64_t seed);
 
 /// Returns the relative error in difference between a and b
 /// (|a - b| / (0.5 * (|a| + |b|))
@@ -52,10 +52,10 @@ T randSelect(std::initializer_list<T> vals) {
 }
 
 /// Generates a collection of random vectors in the range [0, 1]
-std::vector<float> randVecs(size_t num, size_t dim);
+std::vector<float> randVecs(int64_t num, int64_t dim);
 
 /// Generates a collection of random bit vectors
-std::vector<unsigned char> randBinaryVecs(size_t num, size_t dim);
+std::vector<unsigned char> randBinaryVecs(int64_t num, int64_t dim);
 
 /// Compare two indices via query for similarity, with a user-specified set of
 /// query vectors

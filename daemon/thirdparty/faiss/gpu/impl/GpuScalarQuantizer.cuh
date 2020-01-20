@@ -69,7 +69,7 @@ struct CodecFloat {
 
   CodecFloat(int vecBytes) : bytesPerVec(vecBytes) { }
 
-  size_t getSmemSize(int dim) { return 0; }
+  int64_t getSmemSize(int dim) { return 0; }
   inline __device__ void setSmem(float* smem, int dim) { }
 
   inline __device__ void decode(void* data, int vec, int d,
@@ -113,7 +113,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_fp16, 1> {
 
   Codec(int vecBytes) : bytesPerVec(vecBytes) { }
 
-  size_t getSmemSize(int dim) { return 0; }
+  int64_t getSmemSize(int dim) { return 0; }
   inline __device__ void setSmem(float* smem, int dim) { }
 
   inline __device__ void decode(void* data, int vec, int d,
@@ -151,7 +151,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_fp16, 2> {
 
   Codec(int vecBytes) : bytesPerVec(vecBytes) { }
 
-  size_t getSmemSize(int dim) { return 0; }
+  int64_t getSmemSize(int dim) { return 0; }
   inline __device__ void setSmem(float* smem, int dim) { }
 
   inline __device__ void decode(void* data, int vec, int d,
@@ -218,7 +218,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_uniform, DimMultiple> {
       : bytesPerVec(vecBytes), vmin(min), vdiff(diff) {
   }
 
-  size_t getSmemSize(int dim) { return 0; }
+  int64_t getSmemSize(int dim) { return 0; }
   inline __device__ void setSmem(float* smem, int dim) { }
 
   inline __device__ float decodeHelper(uint8_t v) const {
@@ -314,7 +314,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit, DimMultiple> {
         smemVdiff(nullptr) {
   }
 
-  size_t getSmemSize(int dim) {
+  int64_t getSmemSize(int dim) {
     return sizeof(float) * dim * 2;
   }
 
@@ -423,7 +423,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_8bit_direct, 1> {
 
   Codec(int vecBytes) : bytesPerVec(vecBytes) { }
 
-  size_t getSmemSize(int dim) { return 0; }
+  int64_t getSmemSize(int dim) { return 0; }
   inline __device__ void setSmem(float* smem, int dim) { }
 
   inline __device__ void decode(void* data, int vec, int d,
@@ -469,7 +469,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit_uniform, 1> {
       : bytesPerVec(vecBytes), vmin(min), vdiff(diff) {
   }
 
-  size_t getSmemSize(int dim) { return 0; }
+  int64_t getSmemSize(int dim) { return 0; }
   inline __device__ void setSmem(float* smem, int dim) { }
 
   inline __device__ float decodeHelper(uint8_t v) const {
@@ -531,7 +531,7 @@ struct Codec<ScalarQuantizer::QuantizerType::QT_4bit, 1> {
         smemVdiff(nullptr) {
   }
 
-  size_t getSmemSize(int dim) {
+  int64_t getSmemSize(int dim) {
     return sizeof(float) * dim * 2;
   }
 

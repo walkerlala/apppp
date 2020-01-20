@@ -17,9 +17,9 @@
 
 namespace {
 
-const std::vector<uint64_t> random_vector(size_t s) {
+const std::vector<uint64_t> random_vector(int64_t s) {
   std::vector<uint64_t> v(s, 0);
-  for (size_t i = 0; i < s; ++i) {
+  for (int64_t i = 0; i < s; ++i) {
     v[i] = rand();
   }
 

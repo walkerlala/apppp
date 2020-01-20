@@ -86,11 +86,11 @@ int getMaxThreadsCurrentDevice() {
   return getMaxThreads(getCurrentDevice());
 }
 
-size_t getMaxSharedMemPerBlock(int device) {
+int64_t getMaxSharedMemPerBlock(int device) {
   return getDeviceProperties(device).sharedMemPerBlock;
 }
 
-size_t getMaxSharedMemPerBlockCurrentDevice() {
+int64_t getMaxSharedMemPerBlockCurrentDevice() {
   return getMaxSharedMemPerBlock(getCurrentDevice());
 }
 

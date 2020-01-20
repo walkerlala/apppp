@@ -35,11 +35,11 @@ int main ()
     int d = 128;
 
     // size of the database we plan to index
-    size_t nb = 1000 * 1000;
+    int64_t nb = 1000 * 1000;
 
     // make a set of nt training vectors in the unit cube
     // (could be the database)
-    size_t nt = 100 * 1000;
+    int64_t nt = 100 * 1000;
 
     //---------------------------------------------------------------
     // Define the core quantizer
@@ -57,13 +57,13 @@ int main ()
     // Use nhash=2 subquantizers used to define the product coarse quantizer
     // Number of bits: we will have 2^nbits_coarse centroids per subquantizer
     //                 meaning (2^12)^nhash distinct inverted lists
-    size_t nhash = 2;
-    size_t nbits_subq = int (log2 (nb+1) / 2);        // good choice in general
-    size_t ncentroids = 1 << (nhash * nbits_subq);  // total # of centroids
+    int64_t nhash = 2;
+    int64_t nbits_subq = int (log2 (nb+1) / 2);        // good choice in general
+    int64_t ncentroids = 1 << (nhash * nbits_subq);  // total # of centroids
 
     faiss::MultiIndexQuantizer coarse_quantizer (d, nhash, nbits_subq);
 
-    printf ("IMI (%ld,%ld): %ld virtual centroids (target: %ld base vectors)",
+    printf ("IMI ( %" PRId64 ", %" PRId64 "):  %" PRId64 " virtual centroids (target:  %" PRId64 " base vectors)",
             nhash, nbits_subq, ncentroids, nb);
 
     // the coarse quantizer should not be dealloced before the index
@@ -79,11 +79,11 @@ int main ()
 
 
     { // training
-        printf ("[%.3f s] Generating %ld vectors in %dD for training\n",
+        printf ("[%.3f s] Generating  %" PRId64 " vectors in %dD for training\n",
                 elapsed() - t0, nt, d);
 
         std::vector <float> trainvecs (nt * d);
-        for (size_t i = 0; i < nt * d; i++) {
+        for (int64_t i = 0; i < nt * d; i++) {
             trainvecs[i] = drand48();
         }
 
@@ -92,15 +92,15 @@ int main ()
         index.train (nt, trainvecs.data());
     }
 
-    size_t nq;
+    int64_t nq;
     std::vector<float> queries;
 
     { // populating the database
-        printf ("[%.3f s] Building a dataset of %ld vectors to index\n",
+        printf ("[%.3f s] Building a dataset of  %" PRId64 " vectors to index\n",
                 elapsed() - t0, nb);
 
         std::vector <float> database (nb * d);
-        for (size_t i = 0; i < nb * d; i++) {
+        for (int64_t i = 0; i < nb * d; i++) {
             database[i] = drand48();
         }
 
@@ -124,7 +124,7 @@ int main ()
     { // searching the database
         int k = 5;
         printf ("[%.3f s] Searching the %d nearest neighbors "
-                "of %ld vectors in the index\n",
+                "of  %" PRId64 " vectors in the index\n",
                 elapsed() - t0, k, nq);
 
         std::vector<faiss::Index::idx_t> nns (k * nq);

@@ -14,6 +14,7 @@
 #include <faiss/AutoTune.h>
 
 #include <cmath>
+#include <cinttypes>
 
 #include <faiss/FaissAssert.h>
 #include <faiss/utils/utils.h>
@@ -121,7 +122,7 @@ void OperatingPoints::clear ()
 
 /// add a performance measure
 bool OperatingPoints::add (double perf, double t, const std::string & key,
-                           size_t cno)
+                           int64_t cno)
 {
     OperatingPoint op = {perf, t, key, int64_t(cno)};
     all_pts.push_back (op);
@@ -233,7 +234,7 @@ void OperatingPoints::display (bool only_optimal) const
 {
     const std::vector<OperatingPoint> &pts =
         only_optimal ? optimal_pts : all_pts;
-    printf("Tested %ld operating points, %ld ones are optimal:\n",
+    printf("Tested  %zu operating points,  %zu ones are optimal:\n",
            all_pts.size(), optimal_pts.size());
 
     for (int i = 0; i < pts.size(); i++) {
@@ -247,7 +248,7 @@ void OperatingPoints::display (bool only_optimal) const
                 }
             }
         }
-        printf ("cno=%ld key=%s perf=%.4f t=%.3f %s\n",
+        printf ("cno= %" PRId64 " key=%s perf=%.4f t=%.3f %s\n",
                 op.cno, op.key.c_str(), op.perf, op.t, star);
     }
 
@@ -278,21 +279,21 @@ ParameterSpace::ParameterSpace (Index *index):
 }
 #endif
 
-size_t ParameterSpace::n_combinations () const
+int64_t ParameterSpace::n_combinations () const
 {
-    size_t n = 1;
+    int64_t n = 1;
     for (int i = 0; i < parameter_ranges.size(); i++)
         n *= parameter_ranges[i].values.size();
     return n;
 }
 
 /// get string representation of the combination
-std::string ParameterSpace::combination_name (size_t cno) const {
+std::string ParameterSpace::combination_name (int64_t cno) const {
     char buf[1000], *wp = buf;
     *wp = 0;
     for (int i = 0; i < parameter_ranges.size(); i++) {
         const ParameterRange & pr = parameter_ranges[i];
-        size_t j = cno % pr.values.size();
+        int64_t j = cno % pr.values.size();
         cno /= pr.values.size();
         wp += snprintf (
               wp, buf + 1000 - wp, "%s%s=%g", i == 0 ? "" : ",",
@@ -302,12 +303,12 @@ std::string ParameterSpace::combination_name (size_t cno) const {
 }
 
 
-bool ParameterSpace::combination_ge (size_t c1, size_t c2) const
+bool ParameterSpace::combination_ge (int64_t c1, int64_t c2) const
 {
     for (int i = 0; i < parameter_ranges.size(); i++) {
         int nval = parameter_ranges[i].values.size();
-        size_t j1 = c1 % nval;
-        size_t j2 = c2 % nval;
+        int64_t j1 = c1 % nval;
+        int64_t j2 = c2 % nval;
         if (!(j1 >= j2)) return false;
         c1 /= nval;
         c2 /= nval;
@@ -317,8 +318,7 @@ bool ParameterSpace::combination_ge (size_t c1, size_t c2) const
 
 
 
-#define DC(classname) \
-    const classname *ix = dynamic_cast<const classname *>(index)
+#define DC(classname) const classname *ix = dynamic_cast<const classname *>(index)
 
 static void init_pq_ParameterRange (const ProductQuantizer & pq,
                                     ParameterRange & pr)
@@ -366,7 +366,7 @@ void ParameterSpace::initialize (const Index * index)
         {
             ParameterRange & pr = add_range("nprobe");
             for (int i = 0; i < 13; i++) {
-                size_t nprobe = 1 << i;
+                int64_t nprobe = 1 << i;
                 if (nprobe >= ix->nlist) break;
                 pr.values.push_back (nprobe);
             }
@@ -421,12 +421,12 @@ void ParameterSpace::initialize (const Index * index)
 
 
 /// set a combination of parameters on an index
-void ParameterSpace::set_index_parameters (Index *index, size_t cno) const
+void ParameterSpace::set_index_parameters (Index *index, int64_t cno) const
 {
 
     for (int i = 0; i < parameter_ranges.size(); i++) {
         const ParameterRange & pr = parameter_ranges[i];
-        size_t j = cno % pr.values.size();
+        int64_t j = cno % pr.values.size();
         cno /= pr.values.size();
         double val = pr.values [j];
         set_index_parameter (index, pr.name, val);
@@ -540,7 +540,7 @@ void ParameterSpace::set_index_parameter (
     }
     if (name == "max_codes") {
         if (DC (IndexIVF)) {
-            ix->max_codes = std::isfinite(val) ? size_t(val) : 0;
+            ix->max_codes = std::isfinite(val) ? int64_t(val) : 0;
             return;
         }
     }
@@ -566,7 +566,7 @@ void ParameterSpace::set_index_parameter (
 
 void ParameterSpace::display () const
 {
-    printf ("ParameterSpace, %ld parameters, %ld combinations:\n",
+    printf ("ParameterSpace,  %zu parameters,  %" PRId64 " combinations:\n",
             parameter_ranges.size (), n_combinations ());
     for (int i = 0; i < parameter_ranges.size(); i++) {
         const ParameterRange & pr = parameter_ranges[i];
@@ -582,7 +582,7 @@ void ParameterSpace::display () const
 
 
 
-void ParameterSpace::update_bounds (size_t cno, const OperatingPoint & op,
+void ParameterSpace::update_bounds (int64_t cno, const OperatingPoint & op,
                                     double *upper_bound_perf,
                                     double *lower_bound_t) const
 {
@@ -597,18 +597,18 @@ void ParameterSpace::update_bounds (size_t cno, const OperatingPoint & op,
 
 
 void ParameterSpace::explore (Index *index,
-                              size_t nq, const float *xq,
+                              int64_t nq, const float *xq,
                               const AutoTuneCriterion & crit,
                               OperatingPoints * ops) const
 {
     FAISS_THROW_IF_NOT_MSG (nq == crit.nq,
                       "criterion does not have the same nb of queries");
 
-    size_t n_comb = n_combinations ();
+    int64_t n_comb = n_combinations ();
 
     if (n_experiments == 0) {
 
-        for (size_t cno = 0; cno < n_comb; cno++) {
+        for (int64_t cno = 0; cno < n_comb; cno++) {
             set_index_parameters (index, cno);
             std::vector<Index::idx_t> I(nq * crit.nnn);
             std::vector<float> D(nq * crit.nnn);
@@ -622,7 +622,7 @@ void ParameterSpace::explore (Index *index,
             bool keep = ops->add (perf, t_search, combination_name (cno), cno);
 
             if (verbose)
-                printf("  %ld/%ld: %s perf=%.3f t=%.3f s %s\n", cno, n_comb,
+                printf("   %" PRId64 "/ %" PRId64 ": %s perf=%.3f t=%.3f s %s\n", cno, n_comb,
                        combination_name (cno).c_str(), perf, t_search,
                        keep ? "*" : "");
         }
@@ -642,11 +642,11 @@ void ParameterSpace::explore (Index *index,
         for (int i = 2; i < perm.size(); i++) perm[i] ++;
     }
 
-    for (size_t xp = 0; xp < n_exp; xp++) {
-        size_t cno = perm[xp];
+    for (int64_t xp = 0; xp < n_exp; xp++) {
+        int64_t cno = perm[xp];
 
         if (verbose)
-            printf("  %ld/%d: cno=%ld %s ", xp, n_exp, cno,
+            printf("   %" PRId64 "/%d: cno= %" PRId64 " %s ", xp, n_exp, cno,
                    combination_name (cno).c_str());
 
         {
@@ -677,8 +677,8 @@ void ParameterSpace::explore (Index *index,
 
             if (thread_over_batches) {
 #pragma omp parallel for
-                for (size_t q0 = 0; q0 < nq; q0 += batchsize) {
-                    size_t q1 = q0 + batchsize;
+                for (int64_t q0 = 0; q0 < nq; q0 += batchsize) {
+                    int64_t q1 = q0 + batchsize;
                     if (q1 > nq) q1 = nq;
                     index->search (q1 - q0, xq + q0 * index->d,
                                    crit.nnn,
@@ -686,8 +686,8 @@ void ParameterSpace::explore (Index *index,
                                    I.data() + q0 * crit.nnn);
                 }
             } else {
-                for (size_t q0 = 0; q0 < nq; q0 += batchsize) {
-                    size_t q1 = q0 + batchsize;
+                for (int64_t q0 = 0; q0 < nq; q0 += batchsize) {
+                    int64_t q1 = q0 + batchsize;
                     if (q1 > nq) q1 = nq;
                     index->search (q1 - q0, xq + q0 * index->d,
                                    crit.nnn,

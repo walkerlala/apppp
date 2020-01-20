@@ -22,7 +22,7 @@
 
 
 #ifndef FINTEGER
-#define FINTEGER long
+#define FINTEGER int64_t
 #endif
 
 
@@ -64,7 +64,7 @@ namespace faiss {
 void fvec_inner_products_ny (float * ip,
                              const float * x,
                              const float * y,
-                             size_t d, size_t ny)
+                             int64_t d, int64_t ny)
 {
     // Not sure which one is fastest
 #if 0
@@ -76,7 +76,7 @@ void fvec_inner_products_ny (float * ip,
         sgemv_ ("T", &di, &nyi, &one, y, &di, x, &onei, &zero, ip, &onei);
     }
 #endif
-    for (size_t i = 0; i < ny; i++) {
+    for (int64_t i = 0; i < ny; i++) {
         ip[i] = fvec_inner_product (x, y, d);
         y += d;
     }
@@ -89,36 +89,36 @@ void fvec_inner_products_ny (float * ip,
 /* Compute the L2 norm of a set of nx vectors */
 void fvec_norms_L2 (float * __restrict nr,
                     const float * __restrict x,
-                    size_t d, size_t nx)
+                    int64_t d, int64_t nx)
 {
 
 #pragma omp parallel for
-    for (size_t i = 0; i < nx; i++) {
+    for (int64_t i = 0; i < nx; i++) {
         nr[i] = sqrtf (fvec_norm_L2sqr (x + i * d, d));
     }
 }
 
 void fvec_norms_L2sqr (float * __restrict nr,
                        const float * __restrict x,
-                       size_t d, size_t nx)
+                       int64_t d, int64_t nx)
 {
 #pragma omp parallel for
-    for (size_t i = 0; i < nx; i++)
+    for (int64_t i = 0; i < nx; i++)
         nr[i] = fvec_norm_L2sqr (x + i * d, d);
 }
 
 
 
-void fvec_renorm_L2 (size_t d, size_t nx, float * __restrict x)
+void fvec_renorm_L2 (int64_t d, int64_t nx, float * __restrict x)
 {
 #pragma omp parallel for
-    for (size_t i = 0; i < nx; i++) {
+    for (int64_t i = 0; i < nx; i++) {
         float * __restrict xi = x + i * d;
 
         float nr = fvec_norm_L2sqr (xi, d);
 
         if (nr > 0) {
-            size_t j;
+            int64_t j;
             const float inv_nr = 1.0 / sqrtf (nr);
             for (j = 0; j < d; j++)
                 xi[j] *= inv_nr;
@@ -146,19 +146,19 @@ void fvec_renorm_L2 (size_t d, size_t nx, float * __restrict x)
 /* Find the nearest neighbors for nx queries in a set of ny vectors */
 static void knn_inner_product_sse (const float * x,
                         const float * y,
-                        size_t d, size_t nx, size_t ny,
+                        int64_t d, int64_t nx, int64_t ny,
                         float_minheap_array_t * res)
 {
-    size_t k = res->k;
-    size_t check_period = InterruptCallback::get_period_hint (ny * d);
+    int64_t k = res->k;
+    int64_t check_period = InterruptCallback::get_period_hint (ny * d);
 
     check_period *= omp_get_max_threads();
 
-    for (size_t i0 = 0; i0 < nx; i0 += check_period) {
-        size_t i1 = std::min(i0 + check_period, nx);
+    for (int64_t i0 = 0; i0 < nx; i0 += check_period) {
+        int64_t i1 = std::min(i0 + check_period, nx);
 
 #pragma omp parallel for
-        for (size_t i = i0; i < i1; i++) {
+        for (int64_t i = i0; i < i1; i++) {
             const float * x_i = x + i * d;
             const float * y_j = y;
 
@@ -167,7 +167,7 @@ static void knn_inner_product_sse (const float * x,
 
             minheap_heapify (k, simi, idxi);
 
-            for (size_t j = 0; j < ny; j++) {
+            for (int64_t j = 0; j < ny; j++) {
                 float ip = fvec_inner_product (x_i, y_j, d);
 
                 if (ip > simi[0]) {
@@ -186,22 +186,22 @@ static void knn_inner_product_sse (const float * x,
 static void knn_L2sqr_sse (
                 const float * x,
                 const float * y,
-                size_t d, size_t nx, size_t ny,
+                int64_t d, int64_t nx, int64_t ny,
                 float_maxheap_array_t * res)
 {
-    size_t k = res->k;
+    int64_t k = res->k;
 
-    size_t check_period = InterruptCallback::get_period_hint (ny * d);
+    int64_t check_period = InterruptCallback::get_period_hint (ny * d);
     check_period *= omp_get_max_threads();
 
-    for (size_t i0 = 0; i0 < nx; i0 += check_period) {
-        size_t i1 = std::min(i0 + check_period, nx);
+    for (int64_t i0 = 0; i0 < nx; i0 += check_period) {
+        int64_t i1 = std::min(i0 + check_period, nx);
 
 #pragma omp parallel for
-        for (size_t i = i0; i < i1; i++) {
+        for (int64_t i = i0; i < i1; i++) {
             const float * x_i = x + i * d;
             const float * y_j = y;
-            size_t j;
+            int64_t j;
             float * simi = res->get_val(i);
             int64_t * idxi = res->get_ids (i);
 
@@ -227,7 +227,7 @@ static void knn_L2sqr_sse (
 static void knn_inner_product_blas (
         const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         float_minheap_array_t * res)
 {
     res->heapify ();
@@ -236,16 +236,16 @@ static void knn_inner_product_blas (
     if (nx == 0 || ny == 0) return;
 
     /* block sizes */
-    const size_t bs_x = 4096, bs_y = 1024;
-    // const size_t bs_x = 16, bs_y = 16;
+    const int64_t bs_x = 4096, bs_y = 1024;
+    // const int64_t bs_x = 16, bs_y = 16;
     std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
 
-    for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
-        size_t i1 = i0 + bs_x;
+    for (int64_t i0 = 0; i0 < nx; i0 += bs_x) {
+        int64_t i1 = i0 + bs_x;
         if(i1 > nx) i1 = nx;
 
-        for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
-            size_t j1 = j0 + bs_y;
+        for (int64_t j0 = 0; j0 < ny; j0 += bs_y) {
+            int64_t j1 = j0 + bs_y;
             if (j1 > ny) j1 = ny;
             /* compute the actual dot products */
             {
@@ -270,7 +270,7 @@ static void knn_inner_product_blas (
 template<class DistanceCorrection>
 static void knn_L2sqr_blas (const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         float_maxheap_array_t * res,
         const DistanceCorrection &corr)
 {
@@ -279,11 +279,11 @@ static void knn_L2sqr_blas (const float * x,
     // BLAS does not like empty matrices
     if (nx == 0 || ny == 0) return;
 
-    size_t k = res->k;
+    int64_t k = res->k;
 
     /* block sizes */
-    const size_t bs_x = 4096, bs_y = 1024;
-    // const size_t bs_x = 16, bs_y = 16;
+    const int64_t bs_x = 4096, bs_y = 1024;
+    // const int64_t bs_x = 16, bs_y = 16;
     float *ip_block = new float[bs_x * bs_y];
     float *x_norms = new float[nx];
     float *y_norms = new float[ny];
@@ -293,12 +293,12 @@ static void knn_L2sqr_blas (const float * x,
     fvec_norms_L2sqr (y_norms, y, d, ny);
 
 
-    for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
-        size_t i1 = i0 + bs_x;
+    for (int64_t i0 = 0; i0 < nx; i0 += bs_x) {
+        int64_t i1 = i0 + bs_x;
         if(i1 > nx) i1 = nx;
 
-        for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
-            size_t j1 = j0 + bs_y;
+        for (int64_t j0 = 0; j0 < ny; j0 += bs_y) {
+            int64_t j1 = j0 + bs_y;
             if (j1 > ny) j1 = ny;
             /* compute the actual dot products */
             {
@@ -312,12 +312,12 @@ static void knn_L2sqr_blas (const float * x,
 
             /* collect minima */
 #pragma omp parallel for
-            for (size_t i = i0; i < i1; i++) {
+            for (int64_t i = i0; i < i1; i++) {
                 float * __restrict simi = res->get_val(i);
                 int64_t * __restrict idxi = res->get_ids (i);
                 const float *ip_line = ip_block + (i - i0) * (j1 - j0);
 
-                for (size_t j = j0; j < j1; j++) {
+                for (int64_t j = j0; j < j1; j++) {
                     float ip = *ip_line++;
                     float dis = x_norms[i] + y_norms[j] - 2 * ip;
 
@@ -356,7 +356,7 @@ int distance_compute_blas_threshold = 20;
 
 void knn_inner_product (const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         float_minheap_array_t * res)
 {
     if (d % 4 == 0 && nx < distance_compute_blas_threshold) {
@@ -369,14 +369,14 @@ void knn_inner_product (const float * x,
 
 
 struct NopDistanceCorrection {
-  float operator()(float dis, size_t /*qno*/, size_t /*bno*/) const {
+  float operator()(float dis, int64_t /*qno*/, int64_t /*bno*/) const {
     return dis;
     }
 };
 
 void knn_L2sqr (const float * x,
                 const float * y,
-                size_t d, size_t nx, size_t ny,
+                int64_t d, int64_t nx, int64_t ny,
                 float_maxheap_array_t * res)
 {
     if (d % 4 == 0 && nx < distance_compute_blas_threshold) {
@@ -389,7 +389,7 @@ void knn_L2sqr (const float * x,
 
 struct BaseShiftDistanceCorrection {
     const float *base_shift;
-    float operator()(float dis, size_t /*qno*/, size_t bno) const {
+    float operator()(float dis, int64_t /*qno*/, int64_t bno) const {
       return dis - base_shift[bno];
     }
 };
@@ -397,7 +397,7 @@ struct BaseShiftDistanceCorrection {
 void knn_L2sqr_base_shift (
          const float * x,
          const float * y,
-         size_t d, size_t nx, size_t ny,
+         int64_t d, int64_t nx, int64_t ny,
          float_maxheap_array_t * res,
          const float *base_shift)
 {
@@ -417,14 +417,14 @@ void fvec_inner_products_by_idx (float * __restrict ip,
                                  const float * x,
                                  const float * y,
                                  const int64_t * __restrict ids, /* for y vecs */
-                                 size_t d, size_t nx, size_t ny)
+                                 int64_t d, int64_t nx, int64_t ny)
 {
 #pragma omp parallel for
-    for (size_t j = 0; j < nx; j++) {
+    for (int64_t j = 0; j < nx; j++) {
         const int64_t * __restrict idsj = ids + j * ny;
         const float * xj = x + j * d;
         float * __restrict ipj = ip + j * ny;
-        for (size_t i = 0; i < ny; i++) {
+        for (int64_t i = 0; i < ny; i++) {
             if (idsj[i] < 0)
                 continue;
             ipj[i] = fvec_inner_product (xj, y + d * idsj[i], d);
@@ -440,14 +440,14 @@ void fvec_L2sqr_by_idx (float * __restrict dis,
                         const float * x,
                         const float * y,
                         const int64_t * __restrict ids, /* ids of y vecs */
-                        size_t d, size_t nx, size_t ny)
+                        int64_t d, int64_t nx, int64_t ny)
 {
 #pragma omp parallel for
-    for (size_t j = 0; j < nx; j++) {
+    for (int64_t j = 0; j < nx; j++) {
         const int64_t * __restrict idsj = ids + j * ny;
         const float * xj = x + j * d;
         float * __restrict disj = dis + j * ny;
-        for (size_t i = 0; i < ny; i++) {
+        for (int64_t i = 0; i < ny; i++) {
             if (idsj[i] < 0)
                 continue;
             disj[i] = fvec_L2sqr (xj, y + d * idsj[i], d);
@@ -456,13 +456,13 @@ void fvec_L2sqr_by_idx (float * __restrict dis,
 }
 
 void pairwise_indexed_L2sqr (
-        size_t d, size_t n,
+        int64_t d, int64_t n,
         const float * x, const int64_t *ix,
         const float * y, const int64_t *iy,
         float *dis)
 {
 #pragma omp parallel for
-    for (size_t j = 0; j < n; j++) {
+    for (int64_t j = 0; j < n; j++) {
         if (ix[j] >= 0 && iy[j] >= 0) {
             dis[j] = fvec_L2sqr (x + d * ix[j], y + d * iy[j], d);
         }
@@ -470,13 +470,13 @@ void pairwise_indexed_L2sqr (
 }
 
 void pairwise_indexed_inner_product (
-        size_t d, size_t n,
+        int64_t d, int64_t n,
         const float * x, const int64_t *ix,
         const float * y, const int64_t *iy,
         float *dis)
 {
 #pragma omp parallel for
-    for (size_t j = 0; j < n; j++) {
+    for (int64_t j = 0; j < n; j++) {
         if (ix[j] >= 0 && iy[j] >= 0) {
             dis[j] = fvec_inner_product (x + d * ix[j], y + d * iy[j], d);
         }
@@ -489,16 +489,16 @@ void pairwise_indexed_inner_product (
 void knn_inner_products_by_idx (const float * x,
                                 const float * y,
                                 const int64_t * ids,
-                                size_t d, size_t nx, size_t ny,
+                                int64_t d, int64_t nx, int64_t ny,
                                 float_minheap_array_t * res)
 {
-    size_t k = res->k;
+    int64_t k = res->k;
 
 #pragma omp parallel for
-    for (size_t i = 0; i < nx; i++) {
+    for (int64_t i = 0; i < nx; i++) {
         const float * x_ = x + i * d;
         const int64_t * idsi = ids + i * ny;
-        size_t j;
+        int64_t j;
         float * __restrict simi = res->get_val(i);
         int64_t * __restrict idxi = res->get_ids (i);
         minheap_heapify (k, simi, idxi);
@@ -520,19 +520,19 @@ void knn_inner_products_by_idx (const float * x,
 void knn_L2sqr_by_idx (const float * x,
                        const float * y,
                        const int64_t * __restrict ids,
-                       size_t d, size_t nx, size_t ny,
+                       int64_t d, int64_t nx, int64_t ny,
                        float_maxheap_array_t * res)
 {
-    size_t k = res->k;
+    int64_t k = res->k;
 
 #pragma omp parallel for
-    for (size_t i = 0; i < nx; i++) {
+    for (int64_t i = 0; i < nx; i++) {
         const float * x_ = x + i * d;
         const int64_t * __restrict idsi = ids + i * ny;
         float * __restrict simi = res->get_val(i);
         int64_t * __restrict idxi = res->get_ids (i);
         maxheap_heapify (res->k, simi, idxi);
-        for (size_t j = 0; j < ny; j++) {
+        for (int64_t j = 0; j < ny; j++) {
             float disij = fvec_L2sqr (x_, y + d * idsi[j], d);
 
             if (disij < simi[0]) {
@@ -560,7 +560,7 @@ template <bool compute_l2>
 static void range_search_blas (
         const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         float radius,
         RangeSearchResult *result)
 {
@@ -569,8 +569,8 @@ static void range_search_blas (
     if (nx == 0 || ny == 0) return;
 
     /* block sizes */
-    const size_t bs_x = 4096, bs_y = 1024;
-    // const size_t bs_x = 16, bs_y = 16;
+    const int64_t bs_x = 4096, bs_y = 1024;
+    // const int64_t bs_x = 16, bs_y = 16;
     float *ip_block = new float[bs_x * bs_y];
     ScopeDeleter<float> del0(ip_block);
 
@@ -588,14 +588,14 @@ static void range_search_blas (
 
     std::vector <RangeSearchPartialResult *> partial_results;
 
-    for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
-        size_t j1 = j0 + bs_y;
+    for (int64_t j0 = 0; j0 < ny; j0 += bs_y) {
+        int64_t j1 = j0 + bs_y;
         if (j1 > ny) j1 = ny;
         RangeSearchPartialResult * pres = new RangeSearchPartialResult (result);
         partial_results.push_back (pres);
 
-        for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
-            size_t i1 = i0 + bs_x;
+        for (int64_t i0 = 0; i0 < nx; i0 += bs_x) {
+            int64_t i1 = i0 + bs_x;
             if(i1 > nx) i1 = nx;
 
             /* compute the actual dot products */
@@ -609,12 +609,12 @@ static void range_search_blas (
             }
 
 
-            for (size_t i = i0; i < i1; i++) {
+            for (int64_t i = i0; i < i1; i++) {
                 const float *ip_line = ip_block + (i - i0) * (j1 - j0);
 
                 RangeQueryResult & qres = pres->new_result (i);
 
-                for (size_t j = j0; j < j1; j++) {
+                for (int64_t j = j0; j < j1; j++) {
                     float ip = *ip_line++;
                     if (compute_l2) {
                         float dis =  x_norms[i] + y_norms[j] - 2 * ip;
@@ -639,7 +639,7 @@ static void range_search_blas (
 template <bool compute_l2>
 static void range_search_sse (const float * x,
                 const float * y,
-                size_t d, size_t nx, size_t ny,
+                int64_t d, int64_t nx, int64_t ny,
                 float radius,
                 RangeSearchResult *res)
 {
@@ -650,10 +650,10 @@ static void range_search_sse (const float * x,
         RangeSearchPartialResult pres (res);
 
 #pragma omp for
-        for (size_t i = 0; i < nx; i++) {
+        for (int64_t i = 0; i < nx; i++) {
             const float * x_ = x + i * d;
             const float * y_ = y;
-            size_t j;
+            int64_t j;
 
             RangeQueryResult & qres = pres.new_result (i);
 
@@ -688,7 +688,7 @@ static void range_search_sse (const float * x,
 void range_search_L2sqr (
         const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         float radius,
         RangeSearchResult *res)
 {
@@ -703,7 +703,7 @@ void range_search_L2sqr (
 void range_search_inner_product (
         const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         float radius,
         RangeSearchResult *res)
 {

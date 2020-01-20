@@ -36,7 +36,7 @@
 
 
 float * fvecs_read (const char *fname,
-                    size_t *d_out, size_t *n_out)
+                    int64_t *d_out, int64_t *n_out)
 {
     FILE *f = fopen(fname, "r");
     if(!f) {
@@ -50,25 +50,25 @@ float * fvecs_read (const char *fname,
     fseek(f, 0, SEEK_SET);
     struct stat st;
     fstat(fileno(f), &st);
-    size_t sz = st.st_size;
+    int64_t sz = st.st_size;
     assert(sz % ((d + 1) * 4) == 0 || !"weird file size");
-    size_t n = sz / ((d + 1) * 4);
+    int64_t n = sz / ((d + 1) * 4);
 
     *d_out = d; *n_out = n;
     float *x = new float[n * (d + 1)];
-    size_t nr = fread(x, sizeof(float), n * (d + 1), f);
+    int64_t nr = fread(x, sizeof(float), n * (d + 1), f);
     assert(nr == n * (d + 1) || !"could not read whole file");
 
     // shift array to remove row headers
-    for(size_t i = 0; i < n; i++)
+    for(int64_t i = 0; i < n; i++)
         memmove(x + i * d, x + 1 + i * (d + 1), d * sizeof(*x));
 
     fclose(f);
     return x;
 }
 
-// not very clean, but works as long as sizeof(int) == sizeof(float)
-int *ivecs_read(const char *fname, size_t *d_out, size_t *n_out)
+// not very clean, but works as int64_t as sizeof(int) == sizeof(float)
+int *ivecs_read(const char *fname, int64_t *d_out, int64_t *n_out)
 {
     return (int*)fvecs_read(fname, d_out, n_out);
 }
@@ -101,19 +101,19 @@ int main()
 
     faiss::Index * index;
 
-    size_t d;
+    int64_t d;
 
     {
         printf ("[%.3f s] Loading train set\n", elapsed() - t0);
 
-        size_t nt;
+        int64_t nt;
         float *xt = fvecs_read("sift1M/sift_learn.fvecs", &d, &nt);
 
-        printf ("[%.3f s] Preparing index \"%s\" d=%ld\n",
+        printf ("[%.3f s] Preparing index \"%s\" d= %" PRId64 "\n",
                 elapsed() - t0, index_key, d);
         index = faiss::index_factory(d, index_key);
 
-        printf ("[%.3f s] Training on %ld vectors\n", elapsed() - t0, nt);
+        printf ("[%.3f s] Training on  %" PRId64 " vectors\n", elapsed() - t0, nt);
 
         index->train(nt, xt);
         delete [] xt;
@@ -123,11 +123,11 @@ int main()
     {
         printf ("[%.3f s] Loading database\n", elapsed() - t0);
 
-        size_t nb, d2;
+        int64_t nb, d2;
         float *xb = fvecs_read("sift1M/sift_base.fvecs", &d2, &nb);
         assert(d == d2 || !"dataset does not have same dimension as train set");
 
-        printf ("[%.3f s] Indexing database, size %ld*%ld\n",
+        printf ("[%.3f s] Indexing database, size  %" PRId64 "* %" PRId64 "\n",
                 elapsed() - t0, nb, d);
 
         index->add(nb, xb);
@@ -135,27 +135,27 @@ int main()
         delete [] xb;
     }
 
-    size_t nq;
+    int64_t nq;
     float *xq;
 
     {
         printf ("[%.3f s] Loading queries\n", elapsed() - t0);
 
-        size_t d2;
+        int64_t d2;
         xq = fvecs_read("sift1M/sift_query.fvecs", &d2, &nq);
         assert(d == d2 || !"query does not have same dimension as train set");
 
     }
 
-    size_t k; // nb of results per query in the GT
+    int64_t k; // nb of results per query in the GT
     faiss::Index::idx_t *gt;  // nq * k matrix of ground-truth nearest-neighbors
 
     {
-        printf ("[%.3f s] Loading ground truth for %ld queries\n",
+        printf ("[%.3f s] Loading ground truth for  %" PRId64 " queries\n",
                 elapsed() - t0, nq);
 
-        // load ground-truth and convert int to long
-        size_t nq2;
+        // load ground-truth and convert int to int64_t
+        int64_t nq2;
         int *gt_int = ivecs_read("sift1M/sift_groundtruth.ivecs", &k, &nq2);
         assert(nq2 == nq || !"incorrect nb of ground truth entries");
 
@@ -172,7 +172,7 @@ int main()
     { // run auto-tuning
 
         printf ("[%.3f s] Preparing auto-tune criterion 1-recall at 1 "
-                "criterion, with k=%ld nq=%ld\n", elapsed() - t0, k, nq);
+                "criterion, with k= %" PRId64 " nq= %" PRId64 "\n", elapsed() - t0, k, nq);
 
         faiss::OneRecallAtRCriterion crit(nq, 1);
         crit.set_groundtruth (k, nullptr, gt);
@@ -183,7 +183,7 @@ int main()
         faiss::ParameterSpace params;
         params.initialize(index);
 
-        printf ("[%.3f s] Auto-tuning over %ld parameters (%ld combinations)\n",
+        printf ("[%.3f s] Auto-tuning over  %" PRId64 " parameters ( %" PRId64 " combinations)\n",
                 elapsed() - t0, params.parameter_ranges.size(),
                 params.n_combinations());
 
@@ -216,7 +216,7 @@ int main()
 
         params.set_index_parameters (index, selected_params.c_str());
 
-        printf ("[%.3f s] Perform a search on %ld queries\n",
+        printf ("[%.3f s] Perform a search on  %" PRId64 " queries\n",
                 elapsed() - t0, nq);
 
         // output buffers

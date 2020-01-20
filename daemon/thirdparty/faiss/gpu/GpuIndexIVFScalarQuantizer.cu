@@ -66,7 +66,7 @@ GpuIndexIVFScalarQuantizer::~GpuIndexIVFScalarQuantizer() {
 }
 
 void
-GpuIndexIVFScalarQuantizer::reserveMemory(size_t numVecs) {
+GpuIndexIVFScalarQuantizer::reserveMemory(int64_t numVecs) {
   reserveMemoryVecs_ = numVecs;
   if (index_) {
     index_->reserveMemory(numVecs);
@@ -107,15 +107,15 @@ GpuIndexIVFScalarQuantizer::copyFrom(
 
   InvertedLists* ivf = index->invlists;
 
-  for (size_t i = 0; i < ivf->nlist; ++i) {
+  for (int64_t i = 0; i < ivf->nlist; ++i) {
     auto numVecs = ivf->list_size(i);
 
     // GPU index can only support max int entries per list
     FAISS_THROW_IF_NOT_FMT(numVecs <=
-                           (size_t) std::numeric_limits<int>::max(),
+                           (int64_t) std::numeric_limits<int>::max(),
                            "GPU inverted list can only support "
-                           "%zu entries; %zu found",
-                           (size_t) std::numeric_limits<int>::max(),
+                           " %" PRId64 " entries;  %" PRId64 " found",
+                           (int64_t) std::numeric_limits<int>::max(),
                            numVecs);
 
     index_->addCodeVectorsFromCpu(
@@ -159,7 +159,7 @@ GpuIndexIVFScalarQuantizer::copyTo(
   }
 }
 
-size_t
+int64_t
 GpuIndexIVFScalarQuantizer::reclaimMemory() {
   if (index_) {
     DeviceScope scope(device_);
@@ -238,8 +238,8 @@ GpuIndexIVFScalarQuantizer::addImpl_(int n,
   // Data is already resident on the GPU
   Tensor<float, 2, true> data(const_cast<float*>(x), {n, (int) this->d});
 
-  static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
-  Tensor<long, 1, true> labels(const_cast<long*>(xids), {n});
+  static_assert(sizeof(int64_t) == sizeof(Index::idx_t), "size mismatch");
+  Tensor<int64_t, 1, true> labels(const_cast<int64_t*>(xids), {n});
 
   // Not all vectors may be able to be added (some may contain NaNs etc)
   index_->classifyAndAddVectors(data, labels);
@@ -263,8 +263,8 @@ GpuIndexIVFScalarQuantizer::searchImpl_(int n,
   Tensor<float, 2, true> queries(const_cast<float*>(x), {n, (int) this->d});
   Tensor<float, 2, true> outDistances(distances, {n, k});
 
-  static_assert(sizeof(long) == sizeof(Index::idx_t), "size mismatch");
-  Tensor<long, 2, true> outLabels(const_cast<long*>(labels), {n, k});
+  static_assert(sizeof(int64_t) == sizeof(Index::idx_t), "size mismatch");
+  Tensor<int64_t, 2, true> outLabels(const_cast<int64_t*>(labels), {n, k});
 
   index_->query(queries, nprobe, k, outDistances, outLabels);
 }

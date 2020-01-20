@@ -79,14 +79,14 @@ GpuIndexIVF::copyFrom(const faiss::IndexIVF* index) {
   FAISS_ASSERT(index->nlist > 0);
   FAISS_THROW_IF_NOT_FMT(index->nlist <=
                      (faiss::Index::idx_t) std::numeric_limits<int>::max(),
-                     "GPU index only supports %zu inverted lists",
-                     (size_t) std::numeric_limits<int>::max());
+                     "GPU index only supports  %" PRId64 " inverted lists",
+                     (int64_t) std::numeric_limits<int>::max());
   nlist = index->nlist;
 
   FAISS_THROW_IF_NOT_FMT(index->nprobe > 0 &&
                          index->nprobe <= getMaxKSelection(),
-                         "GPU index only supports nprobe <= %zu; passed %zu",
-                         (size_t) getMaxKSelection(),
+                         "GPU index only supports nprobe <=  %" PRId64 "; passed  %" PRId64 "",
+                         (int64_t) getMaxKSelection(),
                          index->nprobe);
   nprobe = index->nprobe;
 
@@ -224,7 +224,7 @@ GpuIndexIVF::trainQuantizer_(faiss::Index::idx_t n, const float* x) {
   }
 
   if (this->verbose) {
-    printf ("Training IVF quantizer on %ld vectors in %dD\n", n, d);
+    printf ("Training IVF quantizer on  %" PRId64 " vectors in %dD\n", n, d);
   }
 
   DeviceScope scope(device_);

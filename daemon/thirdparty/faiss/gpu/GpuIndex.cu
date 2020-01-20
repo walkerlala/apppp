@@ -19,22 +19,22 @@
 namespace faiss { namespace gpu {
 
 /// Default CPU search size for which we use paged copies
-constexpr size_t kMinPageSize = (size_t) 256 * 1024 * 1024;
+constexpr int64_t kMinPageSize = (int64_t) 256 * 1024 * 1024;
 
 /// Size above which we page copies from the CPU to GPU (non-paged
 /// memory usage)
-constexpr size_t kNonPinnedPageSize = (size_t) 256 * 1024 * 1024;
+constexpr int64_t kNonPinnedPageSize = (int64_t) 256 * 1024 * 1024;
 
 // Default size for which we page add or search
-constexpr size_t kAddPageSize = (size_t) 256 * 1024 * 1024;
+constexpr int64_t kAddPageSize = (int64_t) 256 * 1024 * 1024;
 
 // Or, maximum number of vectors to consider per page of add or search
-constexpr size_t kAddVecSize = (size_t) 512 * 1024;
+constexpr int64_t kAddVecSize = (int64_t) 512 * 1024;
 
 // Use a smaller search size, as precomputed code usage on IVFPQ
 // requires substantial amounts of memory
 // FIXME: parameterize based on algorithm need
-constexpr size_t kSearchVecSize = (size_t) 32 * 1024;
+constexpr int64_t kSearchVecSize = (int64_t) 32 * 1024;
 
 GpuIndex::GpuIndex(GpuResources* resources,
                    int dims,
@@ -70,11 +70,11 @@ GpuIndex::GpuIndex(GpuResources* resources,
 }
 
 void
-GpuIndex::setMinPagingSize(size_t size) {
+GpuIndex::setMinPagingSize(int64_t size) {
   minPagedSize_ = size;
 }
 
-size_t
+int64_t
 GpuIndex::getMinPagingSize() const {
   return minPagedSize_;
 }
@@ -121,24 +121,24 @@ GpuIndex::addPaged_(int n,
                     const float* x,
                     const Index::idx_t* ids) {
   if (n > 0) {
-    size_t totalSize = (size_t) n * this->d * sizeof(float);
+    int64_t totalSize = (int64_t) n * this->d * sizeof(float);
 
     if (totalSize > kAddPageSize || n > kAddVecSize) {
       // How many vectors fit into kAddPageSize?
-      size_t maxNumVecsForPageSize =
-        kAddPageSize / ((size_t) this->d * sizeof(float));
+      int64_t maxNumVecsForPageSize =
+        kAddPageSize / ((int64_t) this->d * sizeof(float));
 
       // Always add at least 1 vector, if we have huge vectors
-      maxNumVecsForPageSize = std::max(maxNumVecsForPageSize, (size_t) 1);
+      maxNumVecsForPageSize = std::max(maxNumVecsForPageSize, (int64_t) 1);
 
-      size_t tileSize = std::min((size_t) n, maxNumVecsForPageSize);
+      int64_t tileSize = std::min((int64_t) n, maxNumVecsForPageSize);
       tileSize = std::min(tileSize, kSearchVecSize);
 
-      for (size_t i = 0; i < (size_t) n; i += tileSize) {
-        size_t curNum = std::min(tileSize, n - i);
+      for (int64_t i = 0; i < (int64_t) n; i += tileSize) {
+        int64_t curNum = std::min(tileSize, n - i);
 
         addPage_(curNum,
-                 x + i * (size_t) this->d,
+                 x + i * (int64_t) this->d,
                  ids ? ids + i : nullptr);
       }
     } else {
@@ -229,7 +229,7 @@ GpuIndex::search(Index::idx_t n,
     // -> GPU.
     // Currently, we don't handle the case where the output data won't
     // fit on the GPU (e.g., n * k is too large for the GPU memory).
-    size_t dataSize = (size_t) n * this->d * sizeof(float);
+    int64_t dataSize = (int64_t) n * this->d * sizeof(float);
 
     if (dataSize >= minPagedSize_) {
       searchFromCpuPaged_(n, x, k,
@@ -286,7 +286,7 @@ GpuIndex::searchFromCpuPaged_(int n,
   if (!pinnedAlloc.first || pageSizeInVecs < 1) {
     // Just page without overlapping copy with compute
     int batchSize = utils::nextHighestPowerOf2(
-      (int) ((size_t) kNonPinnedPageSize /
+      (int) ((int64_t) kNonPinnedPageSize /
              (sizeof(float) * this->d)));
 
     for (int cur = 0; cur < n; cur += batchSize) {
@@ -296,7 +296,7 @@ GpuIndex::searchFromCpuPaged_(int n,
       auto outIndicesSlice = outIndices.narrowOutermost(cur, num);
 
       searchNonPaged_(num,
-                      x + (size_t) cur * this->d,
+                      x + (int64_t) cur * this->d,
                       k,
                       outDistancesSlice.data(),
                       outIndicesSlice.data());
@@ -322,11 +322,11 @@ GpuIndex::searchFromCpuPaged_(int n,
   auto defaultStream = resources_->getDefaultStream(device_);
   auto copyStream = resources_->getAsyncCopyStream(device_);
 
-  FAISS_ASSERT((size_t) pageSizeInVecs * this->d <=
-               (size_t) std::numeric_limits<int>::max());
+  FAISS_ASSERT((int64_t) pageSizeInVecs * this->d <=
+               (int64_t) std::numeric_limits<int>::max());
 
   float* bufPinnedA = (float*) pinnedAlloc.first;
-  float* bufPinnedB = bufPinnedA + (size_t) pageSizeInVecs * this->d;
+  float* bufPinnedB = bufPinnedA + (int64_t) pageSizeInVecs * this->d;
   float* bufPinned[2] = {bufPinnedA, bufPinnedB};
 
   // Reserve space on the GPU for the destination of the pinned buffer
@@ -376,7 +376,7 @@ GpuIndex::searchFromCpuPaged_(int n,
 
       CUDA_VERIFY(cudaMemcpyAsync(bufGpus[cur2BufIndex]->data(),
                                   bufPinned[cur2BufIndex],
-                                  (size_t) numToCopy * this->d * sizeof(float),
+                                  (int64_t) numToCopy * this->d * sizeof(float),
                                   cudaMemcpyHostToDevice,
                                   copyStream));
 
@@ -432,8 +432,8 @@ GpuIndex::searchFromCpuPaged_(int n,
       }
 
       memcpy(bufPinned[cur1BufIndex],
-             x + (size_t) cur1 * this->d,
-             (size_t) numToCopy * this->d * sizeof(float));
+             x + (int64_t) cur1 * this->d,
+             (int64_t) numToCopy * this->d * sizeof(float));
 
       // We pick up from here
       cur2 = cur1;

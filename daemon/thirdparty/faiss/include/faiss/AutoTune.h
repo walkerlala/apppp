@@ -10,6 +10,7 @@
 #ifndef FAISS_AUTO_TUNE_H
 #define FAISS_AUTO_TUNE_H
 
+#include <cinttypes>
 #include <vector>
 #include <unordered_map>
 #include <stdint.h>
@@ -108,7 +109,7 @@ struct OperatingPoints {
     void clear ();
 
     /// add a performance measure. Return whether it is an optimal point
-    bool add (double perf, double t, const std::string & key, size_t cno = 0);
+    bool add (double perf, double t, const std::string & key, int64_t cno = 0);
 
     /// get time required to obtain a given performance measure
     double t_for_perf (double perf) const;
@@ -143,7 +144,7 @@ struct ParameterSpace {
     int n_experiments;
 
     /// maximum number of queries to submit at a time.
-    size_t batchsize;
+    int64_t batchsize;
 
     /// use multithreading over batches (useful to benchmark
     /// independent single-searches)
@@ -156,13 +157,13 @@ struct ParameterSpace {
     ParameterSpace ();
 
     /// nb of combinations, = product of values sizes
-    size_t n_combinations () const;
+    int64_t n_combinations () const;
 
     /// returns whether combinations c1 >= c2 in the tuple sense
-    bool combination_ge (size_t c1, size_t c2) const;
+    bool combination_ge (int64_t c1, int64_t c2) const;
 
     /// get string representation of the combination
-    std::string combination_name (size_t cno) const;
+    std::string combination_name (int64_t cno) const;
 
     /// print a description on stdout
     void display () const;
@@ -174,7 +175,7 @@ struct ParameterSpace {
     virtual void initialize (const Index * index);
 
     /// set a combination of parameters on an index
-    void set_index_parameters (Index *index, size_t cno) const;
+    void set_index_parameters (Index *index, int64_t cno) const;
 
     /// set a combination of parameters described by a string
     void set_index_parameters (Index *index, const char *param_string) const;
@@ -185,7 +186,7 @@ struct ParameterSpace {
 
     /** find an upper bound on the performance and a lower bound on t
      * for configuration cno given another operating point op */
-    void update_bounds (size_t cno, const OperatingPoint & op,
+    void update_bounds (int64_t cno, const OperatingPoint & op,
                         double *upper_bound_perf,
                         double *lower_bound_t) const;
 
@@ -196,7 +197,7 @@ struct ParameterSpace {
      * @param ops     resulting operating points
      */
     void explore (Index *index,
-                  size_t nq, const float *xq,
+                  int64_t nq, const float *xq,
                   const AutoTuneCriterion & crit,
                   OperatingPoints * ops)  const;
 

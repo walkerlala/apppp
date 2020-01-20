@@ -46,7 +46,7 @@ int main() {
     index.add(nb, xb);
 
     {       // search xq
-        long *I = new long[k * nq];
+        int64_t *I = new int64_t[k * nq];
         float *D = new float[k * nq];
 
         index.search(nq, xq, k, D, I);
@@ -54,7 +54,7 @@ int main() {
         printf("I=\n");
         for(int i = nq - 5; i < nq; i++) {
             for(int j = 0; j < k; j++)
-                printf("%5ld ", I[i * k + j]);
+                printf("%" PRId64, I[i * k + j]);
             printf("\n");
         }
 
@@ -64,7 +64,7 @@ int main() {
         printf("I=\n");
         for(int i = nq - 5; i < nq; i++) {
             for(int j = 0; j < k; j++)
-                printf("%5ld ", I[i * k + j]);
+                printf("%" PRId64, I[i * k + j]);
             printf("\n");
         }
 

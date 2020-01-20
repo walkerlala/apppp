@@ -34,21 +34,21 @@ typedef Index::idx_t idx_t;
 int d = 32;
 
 // nb of training vectors
-size_t nt = 5000;
+int64_t nt = 5000;
 
 // size of the database points per window step
-size_t nb = 1000;
+int64_t nb = 1000;
 
 // nb of queries
-size_t nq = 200;
+int64_t nq = 200;
 
 int k = 10;
 
 
-std::vector<float> make_data(size_t n)
+std::vector<float> make_data(int64_t n)
 {
     std::vector <float> database (n * d);
-    for (size_t i = 0; i < n * d; i++) {
+    for (int64_t i = 0; i < n * d; i++) {
         database[i] = drand48();
     }
     return database;
@@ -125,7 +125,7 @@ void test_lowlevel_access (const char *index_key, MetricType metric) {
     for (int list_no = 0; list_no < index_ivf->nlist; list_no++) {
         InvertedLists::ScopedCodes ivf_codes (il, list_no);
         InvertedLists::ScopedIds ivf_ids (il, list_no);
-        size_t list_size = il->list_size (list_no);
+        int64_t list_size = il->list_size (list_no);
         for (int i = 0; i < list_size; i++) {
             const uint8_t *ref_code = ivf_codes.get() + i * il->code_size;
             const uint8_t *new_code =
@@ -269,11 +269,11 @@ int nbit = 256;
 
 // here d is used the number of ints -> d=32 means 128 bits
 
-std::vector<uint8_t> make_data_binary(size_t n)
+std::vector<uint8_t> make_data_binary(int64_t n)
 {
 
     std::vector <uint8_t> database (n * nbit / 8);
-    for (size_t i = 0; i < n * d; i++) {
+    for (int64_t i = 0; i < n * d; i++) {
         database[i] = lrand48();
     }
     return database;
@@ -376,7 +376,7 @@ void test_lowlevel_access_binary (const char *index_key) {
 
         printf("new before reroder: [");
         for (int j = 0; j < k; j++)
-            printf("%ld,%d ", I[j], D[j]);
+            printf(" %" PRId64 ",%d ", I[j], D[j]);
         printf("]\n");
 
         // re-order heap
@@ -384,10 +384,10 @@ void test_lowlevel_access_binary (const char *index_key) {
 
         printf("ref: [");
         for (int j = 0; j < k; j++)
-            printf("%ld,%d ", I_ref[j], D_ref[j]);
+            printf(" %" PRId64 ",%d ", I_ref[j], D_ref[j]);
         printf("]\nnew: [");
         for (int j = 0; j < k; j++)
-            printf("%ld,%d ", I[j], D[j]);
+            printf(" %" PRId64 ",%d ", I[j], D[j]);
         printf("]\n");
 
         // check that we have the same results as the reference search

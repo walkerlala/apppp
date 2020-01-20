@@ -26,9 +26,9 @@ namespace {
 
 // parameters to use for the test
 int d = 64;
-size_t nb = 1000;
-size_t nq = 100;
-size_t nt = 500;
+int64_t nb = 1000;
+int64_t nq = 100;
+int64_t nt = 500;
 int k = 10;
 int nlist = 40;
 
@@ -37,7 +37,7 @@ using namespace faiss;
 typedef faiss::Index::idx_t idx_t;
 
 
-std::vector<float> get_data (size_t nb, int seed) {
+std::vector<float> get_data (int64_t nb, int seed) {
     std::vector<float> x (nb * d);
     float_randn (x.data(), nb * d, seed);
     return x;
@@ -107,8 +107,8 @@ void test_index_type(const char *factory_string) {
         EXPECT_TRUE (Dref != Dnew);
 
         // range of inverted list indices to transfer
-        long i0 = sl * nlist / nslice;
-        long i1 = (sl + 1) * nlist / nslice;
+        int64_t i0 = sl * nlist / nslice;
+        int64_t i1 = (sl + 1) * nlist / nslice;
 
         std::vector<uint8_t> data_to_transfer;
         {

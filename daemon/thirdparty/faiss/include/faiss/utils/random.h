@@ -15,6 +15,7 @@
 
 #include <random>
 #include <stdint.h>
+#include <cinttypes>
 
 
 namespace faiss {
@@ -46,15 +47,15 @@ struct RandomGenerator {
 };
 
 /* Generate an array of uniform random floats / multi-threaded implementation */
-void float_rand (float * x, size_t n, int64_t seed);
-void float_randn (float * x, size_t n, int64_t seed);
-void int64_rand (int64_t * x, size_t n, int64_t seed);
-void byte_rand (uint8_t * x, size_t n, int64_t seed);
+void float_rand (float * x, int64_t n, int64_t seed);
+void float_randn (float * x, int64_t n, int64_t seed);
+void int64_rand (int64_t * x, int64_t n, int64_t seed);
+void byte_rand (uint8_t * x, int64_t n, int64_t seed);
 // max is actually the maximum value + 1
-void int64_rand_max (int64_t * x, size_t n, uint64_t max, int64_t seed);
+void int64_rand_max (int64_t * x, int64_t n, uint64_t max, int64_t seed);
 
 /* random permutation */
-void rand_perm (int * perm, size_t n, int64_t seed);
+void rand_perm (int * perm, int64_t n, int64_t seed);
 
 
 } // namespace faiss

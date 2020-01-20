@@ -9,6 +9,7 @@
 
 #include <faiss/HNSW.h>
 
+#include <cinttypes>
 #include <string>
 
 #include <faiss/AuxIndexStructures.h>
@@ -42,9 +43,9 @@ int HNSW::cum_nb_neighbors(int layer_no) const
 }
 
 void HNSW::neighbor_range(idx_t no, int layer_no,
-                          size_t * begin, size_t * end) const
+                          int64_t * begin, int64_t * end) const
 {
-  size_t o = offsets[no];
+  int64_t o = offsets[no];
   *begin = o + cum_nb_neighbors(layer_no);
   *end = o + cum_nb_neighbors(layer_no + 1);
 }
@@ -92,9 +93,9 @@ void HNSW::set_default_probas(int M, float levelMult)
 void HNSW::clear_neighbor_tables(int level)
 {
   for (int i = 0; i < levels.size(); i++) {
-    size_t begin, end;
+    int64_t begin, end;
     neighbor_range(i, level, &begin, &end);
-    for (size_t j = begin; j < end; j++) {
+    for (int64_t j = begin; j < end; j++) {
       neighbors[j] = -1;
     }
   }
@@ -117,29 +118,29 @@ void HNSW::print_neighbor_stats(int level) const
   FAISS_THROW_IF_NOT (level < cum_nneighbor_per_level.size());
   printf("stats on level %d, max %d neighbors per vertex:\n",
          level, nb_neighbors(level));
-  size_t tot_neigh = 0, tot_common = 0, tot_reciprocal = 0, n_node = 0;
+  int64_t tot_neigh = 0, tot_common = 0, tot_reciprocal = 0, n_node = 0;
 #pragma omp parallel for reduction(+: tot_neigh) reduction(+: tot_common) \
   reduction(+: tot_reciprocal) reduction(+: n_node)
   for (int i = 0; i < levels.size(); i++) {
     if (levels[i] > level) {
       n_node++;
-      size_t begin, end;
+      int64_t begin, end;
       neighbor_range(i, level, &begin, &end);
       std::unordered_set<int> neighset;
-      for (size_t j = begin; j < end; j++) {
+      for (int64_t j = begin; j < end; j++) {
         if (neighbors [j] < 0) break;
         neighset.insert(neighbors[j]);
       }
       int n_neigh = neighset.size();
       int n_common = 0;
       int n_reciprocal = 0;
-      for (size_t j = begin; j < end; j++) {
+      for (int64_t j = begin; j < end; j++) {
         storage_idx_t i2 = neighbors[j];
         if (i2 < 0) break;
         FAISS_ASSERT(i2 != i);
-        size_t begin2, end2;
+        int64_t begin2, end2;
         neighbor_range(i2, level, &begin2, &end2);
-        for (size_t j2 = begin2; j2 < end2; j2++) {
+        for (int64_t j2 = begin2; j2 < end2; j2++) {
           storage_idx_t i3 = neighbors[j2];
           if (i3 < 0) break;
           if (i3 == i) {
@@ -158,11 +159,11 @@ void HNSW::print_neighbor_stats(int level) const
     }
   }
   float normalizer = n_node;
-  printf("   nb of nodes at that level %ld\n", n_node);
-  printf("   neighbors per node: %.2f (%ld)\n",
+  printf("   nb of nodes at that level  %" PRIu64 "\n", n_node);
+  printf("   neighbors per node: %.2f ( %" PRId64 ")\n",
          tot_neigh / normalizer, tot_neigh);
   printf("   nb of reciprocal neighbors: %.2f\n", tot_reciprocal / normalizer);
-  printf("   nb of neighbors that are also neighbor-of-neighbors: %.2f (%ld)\n",
+  printf("   nb of neighbors that are also neighbor-of-neighbors: %.2f ( %" PRId64 ")\n",
          tot_common / normalizer, tot_common);
 
 
@@ -170,7 +171,7 @@ void HNSW::print_neighbor_stats(int level) const
 }
 
 
-void HNSW::fill_with_random_links(size_t n)
+void HNSW::fill_with_random_links(int64_t n)
 {
   int max_level = prepare_level_tab(n);
   RandomGenerator rng2(456);
@@ -182,16 +183,16 @@ void HNSW::fill_with_random_links(size_t n)
         elts.push_back(i);
       }
     }
-    printf ("linking %ld elements in level %d\n",
+    printf ("linking  %zu elements in level %d\n",
             elts.size(), level);
 
     if (elts.size() == 1) continue;
 
     for (int ii = 0; ii < elts.size(); ii++) {
       int i = elts[ii];
-      size_t begin, end;
+      int64_t begin, end;
       neighbor_range(i, 0, &begin, &end);
-      for (size_t j = begin; j < end; j++) {
+      for (int64_t j = begin; j < end; j++) {
         int other = 0;
         do {
           other = elts[rng2.rand_int(elts.size())];
@@ -204,9 +205,9 @@ void HNSW::fill_with_random_links(size_t n)
 }
 
 
-int HNSW::prepare_level_tab(size_t n, bool preset_levels)
+int HNSW::prepare_level_tab(int64_t n, bool preset_levels)
 {
-  size_t n0 = offsets.size() - 1;
+  int64_t n0 = offsets.size() - 1;
 
   if (preset_levels) {
     FAISS_ASSERT (n0 + n == levels.size());
@@ -312,11 +313,11 @@ void add_link(HNSW& hnsw,
               storage_idx_t src, storage_idx_t dest,
               int level)
 {
-  size_t begin, end;
+  int64_t begin, end;
   hnsw.neighbor_range(src, level, &begin, &end);
   if (hnsw.neighbors[end - 1] == -1) {
     // there is enough room, find a slot to add it
-    size_t i = end;
+    int64_t i = end;
     while(i > begin) {
       if (hnsw.neighbors[i - 1] != -1) break;
       i--;
@@ -330,7 +331,7 @@ void add_link(HNSW& hnsw,
   // copy to resultSet...
   std::priority_queue<NodeDistCloser> resultSet;
   resultSet.emplace(qdis.symmetric_dis(src, dest), dest);
-  for (size_t i = begin; i < end; i++) { // HERE WAS THE BUG
+  for (int64_t i = begin; i < end; i++) { // HERE WAS THE BUG
     storage_idx_t neigh = hnsw.neighbors[i];
     resultSet.emplace(qdis.symmetric_dis(src, neigh), neigh);
   }
@@ -338,7 +339,7 @@ void add_link(HNSW& hnsw,
   shrink_neighbor_list(qdis, resultSet, end - begin);
 
   // ...and back
-  size_t i = begin;
+  int64_t i = begin;
   while (resultSet.size()) {
     hnsw.neighbors[i++] = resultSet.top().id;
     resultSet.pop();
@@ -378,9 +379,9 @@ void search_neighbors_to_add(
     candidates.pop();
 
     // loop over neighbors
-    size_t begin, end;
+    int64_t begin, end;
     hnsw.neighbor_range(currNode, level, &begin, &end);
-    for(size_t i = begin; i < end; i++) {
+    for(int64_t i = begin; i < end; i++) {
       storage_idx_t nodeId = hnsw.neighbors[i];
       if (nodeId < 0) break;
       if (vt.get(nodeId)) continue;
@@ -418,9 +419,9 @@ void greedy_update_nearest(const HNSW& hnsw,
   for(;;) {
     storage_idx_t prev_nearest = nearest;
 
-    size_t begin, end;
+    int64_t begin, end;
     hnsw.neighbor_range(nearest, level, &begin, &end);
-    for(size_t i = begin; i < end; i++) {
+    for(int64_t i = begin; i < end; i++) {
       storage_idx_t v = hnsw.neighbors[i];
       if (v < 0) break;
       float dis = qdis(v);
@@ -563,10 +564,10 @@ int HNSW::search_from_candidates(
       }
     }
 
-    size_t begin, end;
+    int64_t begin, end;
     neighbor_range(v0, level, &begin, &end);
 
-    for (size_t j = begin; j < end; j++) {
+    for (int64_t j = begin; j < end; j++) {
       int v1 = neighbors[j];
       if (v1 < 0) break;
       if (vt.get(v1)) {
@@ -635,10 +636,10 @@ std::priority_queue<HNSW::Node> HNSW::search_from_candidate_unbounded(
 
     candidates.pop();
 
-    size_t begin, end;
+    int64_t begin, end;
     neighbor_range(v0, 0, &begin, &end);
 
-    for (size_t j = begin; j < end; ++j) {
+    for (int64_t j = begin; j < end; ++j) {
       int v1 = neighbors[j];
 
       if (v1 < 0) {

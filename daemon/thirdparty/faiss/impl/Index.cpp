@@ -48,7 +48,7 @@ void Index::add_with_ids(
   FAISS_THROW_MSG ("add_with_ids not implemented for this type of index");
 }
 
-size_t Index::remove_ids(const IDSelector& /*sel*/) {
+int64_t Index::remove_ids(const IDSelector& /*sel*/) {
   FAISS_THROW_MSG ("remove_ids not implemented for this type of index");
   return -1;
 }
@@ -88,7 +88,7 @@ void Index::search_and_reconstruct (idx_t n, const float *x, idx_t k,
 void Index::compute_residual (const float * x,
                               float * residual, idx_t key) const {
   reconstruct (key, residual);
-  for (size_t i = 0; i < d; i++) {
+  for (int64_t i = 0; i < d; i++) {
     residual[i] = x[i] - residual[i];
   }
 }
@@ -104,7 +104,7 @@ void Index::compute_residual_n (idx_t n, const float* xs,
 
 
 
-size_t Index::sa_code_size () const
+int64_t Index::sa_code_size () const
 {
     FAISS_THROW_MSG ("standalone codec not implemented for this type of index");
 }
@@ -127,7 +127,7 @@ namespace {
 
 // storage that explicitly reconstructs vectors before computing distances
 struct GenericDistanceComputer : DistanceComputer {
-  size_t d;
+  int64_t d;
   const Index& storage;
   std::vector<float> buf;
   const float *q;

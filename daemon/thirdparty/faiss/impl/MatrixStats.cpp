@@ -65,7 +65,7 @@ void MatrixStats::do_comment (const char *fmt, ...)
 
     /* Determine required size */
     va_start(ap, fmt);
-    size_t size = vsnprintf(buf, nbuf, fmt, ap);
+    int64_t size = vsnprintf(buf, nbuf, fmt, ap);
     va_end(ap);
 
     nbuf -= size;
@@ -74,7 +74,7 @@ void MatrixStats::do_comment (const char *fmt, ...)
 
 
 
-MatrixStats::MatrixStats (size_t n, size_t d, const float *x):
+MatrixStats::MatrixStats (int64_t n, int64_t d, const float *x):
     n(n), d(d),
     n_collision(0), n_valid(0), n0(0),
     min_norm2(HUGE_VAL), max_norm2(0)
@@ -83,7 +83,7 @@ MatrixStats::MatrixStats (size_t n, size_t d, const float *x):
     buf = comment_buf.data ();
     nbuf = comment_buf.size();
 
-    do_comment ("analyzing %ld vectors of size %ld\n", n, d);
+    do_comment ("analyzing  %" PRId64 " vectors of size  %" PRId64 "\n", n, d);
 
     if (d > 1024) {
         do_comment (
@@ -91,13 +91,13 @@ MatrixStats::MatrixStats (size_t n, size_t d, const float *x):
            "please consider dimensionality reducution (with PCAMatrix)\n");
     }
 
-    size_t nbytes = sizeof (x[0]) * d;
+    int64_t nbytes = sizeof (x[0]) * d;
     per_dim_stats.resize (d);
 
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         const float *xi = x + d * i;
         double sum2 = 0;
-        for (size_t j = 0; j < d; j++) {
+        for (int64_t j = 0; j < d; j++) {
             per_dim_stats[j].add (xi[j]);
             sum2 += xi[j] * (double)xi[j];
         }
@@ -133,7 +133,7 @@ MatrixStats::MatrixStats (size_t n, size_t d, const float *x):
     if (n_valid == n) {
         do_comment ("no NaN or Infs in data\n");
     } else {
-        do_comment ("%ld vectors contain NaN or Inf "
+        do_comment (" %" PRId64 " vectors contain NaN or Inf "
                  "(or have too large components), "
                  "expect bad results with indexing!\n", n - n_valid);
     }
@@ -142,12 +142,12 @@ MatrixStats::MatrixStats (size_t n, size_t d, const float *x):
     if (occurrences.size() == n) {
         do_comment ("all vectors are distinct\n");
     } else {
-        do_comment ("%ld vectors are distinct (%.2f%%)\n",
+        do_comment (" %" PRId64 " vectors are distinct (%.2f%%)\n",
                  occurrences.size(),
                  occurrences.size() * 100.0 / n);
 
         if (n_collision > 0) {
-            do_comment ("%ld collisions in hash table, "
+            do_comment (" %" PRId64 " collisions in hash table, "
                      "counts may be invalid\n", n_collision);
         }
 
@@ -158,13 +158,13 @@ MatrixStats::MatrixStats (size_t n, size_t d, const float *x):
                 max = it->second;
             }
         }
-        do_comment ("vector %ld has %ld copies\n", max.first, max.count);
+        do_comment ("vector  %" PRId64 " has  %" PRId64 " copies\n", max.first, max.count);
     }
 
     { // norm stats
         min_norm2 = sqrt (min_norm2);
         max_norm2 = sqrt (max_norm2);
-        do_comment ("range of L2 norms=[%g, %g] (%ld null vectors)\n",
+        do_comment ("range of L2 norms=[%g, %g] ( %" PRId64 " null vectors)\n",
                  min_norm2, max_norm2, n0);
 
         if (max_norm2 < min_norm2 * 1.0001) {
@@ -182,9 +182,9 @@ MatrixStats::MatrixStats (size_t n, size_t d, const float *x):
 
         double max_std = 0, min_std = HUGE_VAL;
 
-        size_t n_dangerous_range = 0, n_0_range = 0, n0 = 0;
+        int64_t n_dangerous_range = 0, n_0_range = 0, n0 = 0;
 
-        for (size_t j = 0; j < d; j++) {
+        for (int64_t j = 0; j < d; j++) {
             PerDimStats &st = per_dim_stats[j];
             st.compute_mean_std ();
             n0 += st.n0;
@@ -211,14 +211,14 @@ MatrixStats::MatrixStats (size_t n, size_t d, const float *x):
         if (n_0_range == 0) {
             do_comment ("no constant dimensions\n");
         } else {
-            do_comment ("%ld dimensions are constant: they can be removed\n",
+            do_comment (" %" PRId64 " dimensions are constant: they can be removed\n",
                      n_0_range);
         }
 
         if (n_dangerous_range == 0) {
             do_comment ("no dimension has a too large mean\n");
         } else {
-            do_comment ("%ld dimensions are too large "
+            do_comment (" %" PRId64 " dimensions are too large "
                      "wrt. their variance, may loose precision "
                      "in IndexFlatL2 (use CenteringTransform)\n",
                      n_dangerous_range);
@@ -226,9 +226,9 @@ MatrixStats::MatrixStats (size_t n, size_t d, const float *x):
 
         do_comment ("stddevs per dimension are in [%g %g]\n", min_std, max_std);
 
-        size_t n_small_var = 0;
+        int64_t n_small_var = 0;
 
-        for (size_t j = 0; j < d; j++) {
+        for (int64_t j = 0; j < d; j++) {
             const PerDimStats &st = per_dim_stats[j];
             if (st.stddev < max_std * 1e-4) {
                 n_small_var++;
@@ -236,7 +236,7 @@ MatrixStats::MatrixStats (size_t n, size_t d, const float *x):
         }
 
         if (n_small_var > 0) {
-            do_comment ("%ld dimensions have negligible stddev wrt. "
+            do_comment (" %" PRId64 " dimensions have negligible stddev wrt. "
                      "the largest dimension, they could be ignored",
                      n_small_var);
         }

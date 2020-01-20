@@ -13,6 +13,7 @@
 #define FAISS_INDEX_IO_H
 
 
+#include <cinttypes>
 #include <cstdio>
 
 /** I/O functions can read/write to a filename, a file handle or to an

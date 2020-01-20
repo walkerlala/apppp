@@ -98,7 +98,7 @@ void IndexPreTransform::train (idx_t n, const float *x)
             VectorTransform *ltrans = chain [i];
             if (!ltrans->is_trained) {
                 if (verbose) {
-                    printf("   Training chain component %d/%zd\n",
+                    printf("   Training chain component %d/ %zu\n",
                            i, chain.size());
                     if (OPQMatrix *opqm = dynamic_cast<OPQMatrix*>(ltrans)) {
                         opqm->verbose = true;
@@ -114,7 +114,7 @@ void IndexPreTransform::train (idx_t n, const float *x)
         }
         if (i == last_untrained) break;
         if (verbose) {
-            printf("   Applying transform %d/%zd\n",
+            printf("   Applying transform %d/ %zu\n",
                    i, chain.size());
         }
 
@@ -205,8 +205,8 @@ void IndexPreTransform::reset () {
     ntotal = 0;
 }
 
-size_t IndexPreTransform::remove_ids (const IDSelector & sel) {
-    size_t nremove = index->remove_ids (sel);
+int64_t IndexPreTransform::remove_ids (const IDSelector & sel) {
+    int64_t nremove = index->remove_ids (sel);
     ntotal = index->ntotal;
     return nremove;
 }
@@ -253,7 +253,7 @@ void IndexPreTransform::search_and_reconstruct (
     reverse_chain (n * k, recons_temp, recons);
 }
 
-size_t IndexPreTransform::sa_code_size () const
+int64_t IndexPreTransform::sa_code_size () const
 {
     return index->sa_code_size ();
 }

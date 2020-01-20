@@ -41,9 +41,9 @@ int main(int argc, char** argv) {
   cudaProfilerStop();
 
   auto seed = FLAGS_seed != -1L ? FLAGS_seed : time(nullptr);
-  printf("using seed %ld\n", seed);
+  printf("using seed  %" PRId64 "\n", seed);
 
-  std::vector<float> vecs((size_t) FLAGS_num * FLAGS_dim);
+  std::vector<float> vecs((int64_t) FLAGS_num * FLAGS_dim);
   faiss::float_rand(vecs.data(), vecs.size(), seed);
 
   printf("K-means metric %s dim %d centroids %d num train %d niter %d\n",

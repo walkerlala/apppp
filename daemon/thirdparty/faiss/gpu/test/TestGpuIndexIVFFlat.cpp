@@ -502,8 +502,8 @@ TEST(TestGpuIndexIVFFlat, UnifiedMemory) {
   // Unfortunately it would take forever to add 24 GB in IVFPQ data,
   // so just perform a small test with data allocated in the unified
   // memory address space
-  size_t numAdd = 10000;
-  size_t numTrain = numCentroids * 40;
+  int64_t numAdd = 10000;
+  int64_t numTrain = numCentroids * 40;
   int numQuery = 10;
   int k = 10;
   int nprobe = 8;

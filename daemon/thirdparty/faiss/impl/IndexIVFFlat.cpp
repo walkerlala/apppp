@@ -27,7 +27,7 @@ namespace faiss {
  ******************************************/
 
 IndexIVFFlat::IndexIVFFlat (Index * quantizer,
-                            size_t d, size_t nlist, MetricType metric):
+                            int64_t d, int64_t nlist, MetricType metric):
     IndexIVF (quantizer, d, nlist, sizeof(float) * d, metric)
 {
     code_size = sizeof(float) * d;
@@ -59,14 +59,14 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const int64_t *xids,
         idx = idx0;
     }
     int64_t n_add = 0;
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         int64_t id = xids ? xids[i] : ntotal + i;
         int64_t list_no = idx [i];
 
         if (list_no < 0)
             continue;
         const float *xi = x + i * d;
-        size_t offset = invlists->add_entry (
+        int64_t offset = invlists->add_entry (
               list_no, id, (const uint8_t*) xi);
 
         if (maintain_direct_map)
@@ -74,7 +74,7 @@ void IndexIVFFlat::add_core (idx_t n, const float * x, const int64_t *xids,
         n_add++;
     }
     if (verbose) {
-        printf("IndexIVFFlat::add_core: added %ld / %ld vectors\n",
+        printf("IndexIVFFlat::add_core: added  %" PRId64 " /  %" PRId64 " vectors\n",
                n_add, n);
     }
     ntotal += n;
@@ -88,8 +88,8 @@ void IndexIVFFlat::encode_vectors(idx_t n, const float* x,
     if (!include_listnos) {
         memcpy (codes, x, code_size * n);
     } else {
-        size_t coarse_size = coarse_code_size ();
-        for (size_t i = 0; i < n; i++) {
+        int64_t coarse_size = coarse_code_size ();
+        for (int64_t i = 0; i < n; i++) {
             int64_t list_no = list_nos [i];
             uint8_t *code = codes + i * (code_size + coarse_size);
             const float *xi = x + i * d;
@@ -107,8 +107,8 @@ void IndexIVFFlat::encode_vectors(idx_t n, const float* x,
 void IndexIVFFlat::sa_decode (idx_t n, const uint8_t *bytes,
                                       float *x) const
 {
-    size_t coarse_size = coarse_code_size ();
-    for (size_t i = 0; i < n; i++) {
+    int64_t coarse_size = coarse_code_size ();
+    for (int64_t i = 0; i < n; i++) {
         const uint8_t *code = bytes + i * (code_size + coarse_size);
         float *xi = x + i * d;
         memcpy (xi, code + coarse_size, code_size);
@@ -121,10 +121,10 @@ namespace {
 
 template<MetricType metric, class C>
 struct IVFFlatScanner: InvertedListScanner {
-    size_t d;
+    int64_t d;
     bool store_pairs;
 
-    IVFFlatScanner(size_t d, bool store_pairs):
+    IVFFlatScanner(int64_t d, bool store_pairs):
         d(d), store_pairs(store_pairs) {}
 
     const float *xi;
@@ -144,15 +144,15 @@ struct IVFFlatScanner: InvertedListScanner {
         return dis;
     }
 
-    size_t scan_codes (size_t list_size,
+    int64_t scan_codes (int64_t list_size,
                        const uint8_t *codes,
                        const idx_t *ids,
                        float *simi, idx_t *idxi,
-                       size_t k) const override
+                       int64_t k) const override
     {
         const float *list_vecs = (const float*)codes;
-        size_t nup = 0;
-        for (size_t j = 0; j < list_size; j++) {
+        int64_t nup = 0;
+        for (int64_t j = 0; j < list_size; j++) {
             const float * yj = list_vecs + d * j;
             float dis = metric == METRIC_INNER_PRODUCT ?
                 fvec_inner_product (xi, yj, d) : fvec_L2sqr (xi, yj, d);
@@ -166,14 +166,14 @@ struct IVFFlatScanner: InvertedListScanner {
         return nup;
     }
 
-    void scan_codes_range (size_t list_size,
+    void scan_codes_range (int64_t list_size,
                            const uint8_t *codes,
                            const idx_t *ids,
                            float radius,
                            RangeQueryResult & res) const override
     {
         const float *list_vecs = (const float*)codes;
-        for (size_t j = 0; j < list_size; j++) {
+        for (int64_t j = 0; j < list_size; j++) {
             const float * yj = list_vecs + d * j;
             float dis = metric == METRIC_INNER_PRODUCT ?
                 fvec_inner_product (xi, yj, d) : fvec_L2sqr (xi, yj, d);
@@ -217,7 +217,7 @@ void IndexIVFFlat::update_vectors (int n, idx_t *new_ids, const float *x)
     std::vector<idx_t> assign (n);
     quantizer->assign (n, x, assign.data());
 
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         idx_t id = new_ids[i];
         FAISS_THROW_IF_NOT_MSG (0 <= id && id < ntotal,
                                 "id to update out of range");
@@ -225,7 +225,7 @@ void IndexIVFFlat::update_vectors (int n, idx_t *new_ids, const float *x)
             int64_t dm = direct_map[id];
             int64_t ofs = dm & 0xffffffff;
             int64_t il = dm >> 32;
-            size_t l = invlists->list_size (il);
+            int64_t l = invlists->list_size (il);
             if (ofs != l - 1) { // move l - 1 to ofs
                 int64_t id2 = invlists->get_single_id (il, l - 1);
                 direct_map[id2] = (il << 32) | ofs;
@@ -236,7 +236,7 @@ void IndexIVFFlat::update_vectors (int n, idx_t *new_ids, const float *x)
         }
         { // insert new one
             int64_t il = assign[i];
-            size_t l = invlists->list_size (il);
+            int64_t l = invlists->list_size (il);
             int64_t dm = (il << 32) | l;
             direct_map[id] = dm;
             invlists->add_entry (il, id, (const uint8_t*)(x + i * d));
@@ -256,7 +256,7 @@ void IndexIVFFlat::reconstruct_from_offset (int64_t list_no, int64_t offset,
  ******************************************/
 
 IndexIVFFlatDedup::IndexIVFFlatDedup (
-            Index * quantizer, size_t d, size_t nlist_,
+            Index * quantizer, int64_t d, int64_t nlist_,
             MetricType metric_type):
     IndexIVFFlat (quantizer, d, nlist_, metric_type)
 {}
@@ -281,8 +281,8 @@ void IndexIVFFlatDedup::train(idx_t n, const float* x)
         }
     }
     if (verbose) {
-        printf ("IndexIVFFlatDedup::train: train on %ld points after dedup "
-                "(was %ld points)\n", n2, n);
+        printf ("IndexIVFFlatDedup::train: train on  %" PRId64 " points after dedup "
+                "(was  %" PRId64 " points)\n", n2, n);
     }
     IndexIVFFlat::train (n2, x2);
 }
@@ -304,7 +304,7 @@ void IndexIVFFlatDedup::add_with_ids(
 
     int64_t n_add = 0, n_dup = 0;
     // TODO make a omp loop with this
-    for (size_t i = 0; i < na; i++) {
+    for (int64_t i = 0; i < na; i++) {
         idx_t id = xids ? xids[i] : ntotal + i;
         int64_t list_no = idx [i];
 
@@ -338,8 +338,8 @@ void IndexIVFFlatDedup::add_with_ids(
         n_add++;
     }
     if (verbose) {
-        printf("IndexIVFFlat::add_with_ids: added %ld / %ld vectors"
-               " (out of which %ld are duplicates)\n",
+        printf("IndexIVFFlat::add_with_ids: added  %" PRId64 " /  %" PRId64 " vectors"
+               " (out of which  %" PRId64 " are duplicates)\n",
                n_add, na, n_dup);
     }
     ntotal += n_add;
@@ -400,7 +400,7 @@ void IndexIVFFlatDedup::search_preassigned (
 }
 
 
-size_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel)
+int64_t IndexIVFFlatDedup::remove_ids(const IDSelector& sel)
 {
     std::unordered_map<idx_t, idx_t> replace;
     std::vector<std::pair<idx_t, idx_t> > toadd;

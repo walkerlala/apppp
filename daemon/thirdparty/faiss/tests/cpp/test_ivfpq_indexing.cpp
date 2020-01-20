@@ -21,11 +21,11 @@ TEST(IVFPQ, accuracy) {
     int d = 64;
 
     // size of the database we plan to index
-    size_t nb = 1000;
+    int64_t nb = 1000;
 
     // make a set of nt training vectors in the unit cube
     // (could be the database)
-    size_t nt = 1500;
+    int64_t nt = 1500;
 
     // make the index object and train it
     faiss::IndexFlatL2 coarse_quantizer (d);
@@ -44,7 +44,7 @@ TEST(IVFPQ, accuracy) {
     { // training
 
         std::vector <float> trainvecs (nt * d);
-        for (size_t i = 0; i < nt * d; i++) {
+        for (int64_t i = 0; i < nt * d; i++) {
             trainvecs[i] = drand48();
         }
         index.verbose = true;
@@ -54,7 +54,7 @@ TEST(IVFPQ, accuracy) {
     { // populating the database
 
         std::vector <float> database (nb * d);
-        for (size_t i = 0; i < nb * d; i++) {
+        for (int64_t i = 0; i < nb * d; i++) {
             database[i] = drand48();
         }
 
@@ -68,7 +68,7 @@ TEST(IVFPQ, accuracy) {
     { // searching the database
 
         std::vector <float> queries (nq * d);
-        for (size_t i = 0; i < nq * d; i++) {
+        for (int64_t i = 0; i < nq * d; i++) {
             queries[i] = drand48();
         }
 

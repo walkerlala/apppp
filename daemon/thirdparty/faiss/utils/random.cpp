@@ -52,47 +52,47 @@ double RandomGenerator::rand_double ()
 
 /* Generate a set of random floating point values such that x[i] in [0,1]
    multi-threading. For this reason, we rely on re-entreant functions.  */
-void float_rand (float * x, size_t n, int64_t seed)
+void float_rand (float * x, int64_t n, int64_t seed)
 {
     // only try to parallelize on large enough arrays
-    const size_t nblock = n < 1024 ? 1 : 1024;
+    const int64_t nblock = n < 1024 ? 1 : 1024;
 
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
 #pragma omp parallel for
-    for (size_t j = 0; j < nblock; j++) {
+    for (int64_t j = 0; j < nblock; j++) {
 
         RandomGenerator rng (a0 + j * b0);
 
-        const size_t istart = j * n / nblock;
-        const size_t iend = (j + 1) * n / nblock;
+        const int64_t istart = j * n / nblock;
+        const int64_t iend = (j + 1) * n / nblock;
 
-        for (size_t i = istart; i < iend; i++)
+        for (int64_t i = istart; i < iend; i++)
             x[i] = rng.rand_float ();
     }
 }
 
 
-void float_randn (float * x, size_t n, int64_t seed)
+void float_randn (float * x, int64_t n, int64_t seed)
 {
     // only try to parallelize on large enough arrays
-    const size_t nblock = n < 1024 ? 1 : 1024;
+    const int64_t nblock = n < 1024 ? 1 : 1024;
 
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
 #pragma omp parallel for
-    for (size_t j = 0; j < nblock; j++) {
+    for (int64_t j = 0; j < nblock; j++) {
         RandomGenerator rng (a0 + j * b0);
 
         double a = 0, b = 0, s = 0;
         int state = 0;  /* generate two number per "do-while" loop */
 
-        const size_t istart = j * n / nblock;
-        const size_t iend = (j + 1) * n / nblock;
+        const int64_t istart = j * n / nblock;
+        const int64_t iend = (j + 1) * n / nblock;
 
-        for (size_t i = istart; i < iend; i++) {
+        for (int64_t i = istart; i < iend; i++) {
             /* Marsaglia's method (see Knuth) */
             if (state == 0) {
                 do {
@@ -111,54 +111,54 @@ void float_randn (float * x, size_t n, int64_t seed)
 
 
 /* Integer versions */
-void int64_rand (int64_t * x, size_t n, int64_t seed)
+void int64_rand (int64_t * x, int64_t n, int64_t seed)
 {
     // only try to parallelize on large enough arrays
-    const size_t nblock = n < 1024 ? 1 : 1024;
+    const int64_t nblock = n < 1024 ? 1 : 1024;
 
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
 #pragma omp parallel for
-    for (size_t j = 0; j < nblock; j++) {
+    for (int64_t j = 0; j < nblock; j++) {
 
         RandomGenerator rng (a0 + j * b0);
 
-        const size_t istart = j * n / nblock;
-        const size_t iend = (j + 1) * n / nblock;
-        for (size_t i = istart; i < iend; i++)
+        const int64_t istart = j * n / nblock;
+        const int64_t iend = (j + 1) * n / nblock;
+        for (int64_t i = istart; i < iend; i++)
             x[i] = rng.rand_int64 ();
     }
 }
 
-void int64_rand_max (int64_t * x, size_t n, uint64_t max, int64_t seed)
+void int64_rand_max (int64_t * x, int64_t n, uint64_t max, int64_t seed)
 {
     // only try to parallelize on large enough arrays
-    const size_t nblock = n < 1024 ? 1 : 1024;
+    const int64_t nblock = n < 1024 ? 1 : 1024;
 
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
 #pragma omp parallel for
-    for (size_t j = 0; j < nblock; j++) {
+    for (int64_t j = 0; j < nblock; j++) {
 
         RandomGenerator rng (a0 + j * b0);
 
-        const size_t istart = j * n / nblock;
-        const size_t iend = (j + 1) * n / nblock;
-        for (size_t i = istart; i < iend; i++)
+        const int64_t istart = j * n / nblock;
+        const int64_t iend = (j + 1) * n / nblock;
+        for (int64_t i = istart; i < iend; i++)
             x[i] = rng.rand_int64 () % max;
     }
 }
 
 
-void rand_perm (int *perm, size_t n, int64_t seed)
+void rand_perm (int *perm, int64_t n, int64_t seed)
 {
-    for (size_t i = 0; i < n; i++) perm[i] = i;
+    for (int64_t i = 0; i < n; i++) perm[i] = i;
 
     RandomGenerator rng (seed);
 
-    for (size_t i = 0; i + 1 < n; i++) {
+    for (int64_t i = 0; i + 1 < n; i++) {
         int i2 = i + rng.rand_int (n - i);
         std::swap(perm[i], perm[i2]);
     }
@@ -167,23 +167,23 @@ void rand_perm (int *perm, size_t n, int64_t seed)
 
 
 
-void byte_rand (uint8_t * x, size_t n, int64_t seed)
+void byte_rand (uint8_t * x, int64_t n, int64_t seed)
 {
     // only try to parallelize on large enough arrays
-    const size_t nblock = n < 1024 ? 1 : 1024;
+    const int64_t nblock = n < 1024 ? 1 : 1024;
 
     RandomGenerator rng0 (seed);
     int a0 = rng0.rand_int (), b0 = rng0.rand_int ();
 
 #pragma omp parallel for
-    for (size_t j = 0; j < nblock; j++) {
+    for (int64_t j = 0; j < nblock; j++) {
 
         RandomGenerator rng (a0 + j * b0);
 
-        const size_t istart = j * n / nblock;
-        const size_t iend = (j + 1) * n / nblock;
+        const int64_t istart = j * n / nblock;
+        const int64_t iend = (j + 1) * n / nblock;
 
-        size_t i;
+        int64_t i;
         for (i = istart; i < iend; i++)
             x[i] = rng.rand_int64 ();
     }

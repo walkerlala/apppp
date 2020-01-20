@@ -46,7 +46,7 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
   ~GpuIndexIVFScalarQuantizer() override;
 
   /// Reserve GPU memory in our inverted lists for this number of vectors
-  void reserveMemory(size_t numVecs);
+  void reserveMemory(int64_t numVecs);
 
   /// Initialize ourselves from the given CPU index; will overwrite
   /// all data in ourselves
@@ -58,7 +58,7 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
 
   /// After adding vectors, one can call this to reclaim device memory
   /// to exactly the amount needed. Returns space reclaimed in bytes
-  size_t reclaimMemory();
+  int64_t reclaimMemory();
 
   void reset() override;
 
@@ -91,7 +91,7 @@ class GpuIndexIVFScalarQuantizer : public GpuIndexIVF {
   GpuIndexIVFScalarQuantizerConfig ivfSQConfig_;
 
   /// Desired inverted list memory reservation
-  size_t reserveMemoryVecs_;
+  int64_t reserveMemoryVecs_;
 
   /// Instance that we own; contains the inverted list
   IVFFlat* index_;

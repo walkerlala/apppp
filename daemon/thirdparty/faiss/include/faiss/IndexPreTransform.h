@@ -10,6 +10,7 @@
 #pragma once
 
 
+#include <cinttypes>
 
 #include <faiss/Index.h>
 #include <faiss/VectorTransform.h>
@@ -44,7 +45,7 @@ struct IndexPreTransform: Index {
 
     /** removes IDs from the index. Not supported by all indexes.
      */
-    size_t remove_ids(const IDSelector& sel) override;
+    int64_t remove_ids(const IDSelector& sel) override;
 
     void search(
         idx_t n,
@@ -78,7 +79,7 @@ struct IndexPreTransform: Index {
 
 
     /* standalone codec interface */
-    size_t sa_code_size () const override;
+    int64_t sa_code_size () const override;
     void sa_encode (idx_t n, const float *x,
                           uint8_t *bytes) const override;
     void sa_decode (idx_t n, const uint8_t *bytes,

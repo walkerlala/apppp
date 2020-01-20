@@ -38,23 +38,23 @@ int IOWriter::fileno ()
 
 
 
-size_t VectorIOWriter::operator()(
-                const void *ptr, size_t size, size_t nitems)
+int64_t VectorIOWriter::operator()(
+                const void *ptr, int64_t size, int64_t nitems)
 {
-    size_t bytes = size * nitems;
+    int64_t bytes = size * nitems;
     if (bytes > 0) {
-        size_t o = data.size();
+        int64_t o = data.size();
         data.resize(o + bytes);
         memcpy (&data[o], ptr, size * nitems);
     }
     return nitems;
 }
 
-size_t VectorIOReader::operator()(
-                  void *ptr, size_t size, size_t nitems)
+int64_t VectorIOReader::operator()(
+                  void *ptr, int64_t size, int64_t nitems)
 {
     if (rp >= data.size()) return 0;
-    size_t nremain = (data.size() - rp) / size;
+    int64_t nremain = (data.size() - rp) / size;
     if (nremain < nitems) nitems = nremain;
     if (size * nitems > 0) {
         memcpy (ptr, &data[rp], size * nitems);
@@ -93,7 +93,7 @@ FileIOReader::~FileIOReader()  {
     }
 }
 
-size_t FileIOReader::operator()(void *ptr, size_t size, size_t nitems) {
+int64_t FileIOReader::operator()(void *ptr, int64_t size, int64_t nitems) {
     return fread(ptr, size, nitems, f);
 }
 
@@ -124,7 +124,7 @@ FileIOWriter::~FileIOWriter()  {
     }
 }
 
-size_t FileIOWriter::operator()(const void *ptr, size_t size, size_t nitems) {
+int64_t FileIOWriter::operator()(const void *ptr, int64_t size, int64_t nitems) {
     return fwrite(ptr, size, nitems, f);
 }
 

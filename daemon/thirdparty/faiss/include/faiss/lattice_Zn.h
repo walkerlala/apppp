@@ -12,6 +12,7 @@
 #include <vector>
 #include <stddef.h>
 #include <stdint.h>
+#include <cinttypes>
 
 namespace faiss {
 
@@ -69,18 +70,18 @@ struct EnumeratedVectors {
     virtual void decode(uint64_t code, float *c) const = 0;
 
     // call encode on nc vectors
-    void encode_multi (size_t nc, const float *c,
+    void encode_multi (int64_t nc, const float *c,
                        uint64_t * codes) const;
 
     // call decode on nc codes
-    void decode_multi (size_t nc, const uint64_t * codes,
+    void decode_multi (int64_t nc, const uint64_t * codes,
                        float *c) const;
 
     // find the nearest neighbor of each xq
     // (decodes and computes distances)
-    void find_nn (size_t n, const uint64_t * codes,
-                  size_t nq, const float *xq,
-                  long *idx, float *dis);
+    void find_nn (int64_t n, const uint64_t * codes,
+                  int64_t nq, const float *xq,
+                  int64_t *idx, float *dis);
 
     virtual ~EnumeratedVectors() {}
 
@@ -103,9 +104,9 @@ struct Repeats {
     Repeats(int dim = 0, const float *c = nullptr);
 
     // count number of possible codes for this atom
-    long count() const;
+    int64_t count() const;
 
-    long encode(const float *c) const;
+    int64_t encode(const float *c) const;
 
     void decode(uint64_t code, float *c) const;
 };
@@ -126,7 +127,7 @@ struct ZnSphereCodec: ZnSphereSearch, EnumeratedVectors {
 
     std::vector<CodeSegment> code_segments;
     uint64_t nv;
-    size_t code_size;
+    int64_t code_size;
 
     ZnSphereCodec(int dim, int r2);
 

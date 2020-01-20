@@ -30,10 +30,10 @@ enum MemorySpace {
 
 /// Allocates CUDA memory for a given memory space (void pointer)
 /// Throws a FaissException if we are unable to allocate the memory
-void allocMemorySpaceV(MemorySpace space, void** p, size_t size);
+void allocMemorySpaceV(MemorySpace space, void** p, int64_t size);
 
 template <typename T>
-inline void allocMemorySpace(MemorySpace space, T** p, size_t size) {
+inline void allocMemorySpace(MemorySpace space, T** p, int64_t size) {
   allocMemorySpaceV(space, (void**)(void*) p, size);
 }
 

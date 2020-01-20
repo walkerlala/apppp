@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <cinttypes>
 #include <faiss/HNSW.h>
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/utils/utils.h>

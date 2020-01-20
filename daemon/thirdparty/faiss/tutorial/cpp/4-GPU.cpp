@@ -43,12 +43,12 @@ int main() {
 
     printf("is_trained = %s\n", index_flat.is_trained ? "true" : "false");
     index_flat.add(nb, xb);  // add vectors to the index
-    printf("ntotal = %ld\n", index_flat.ntotal);
+    printf("ntotal =  %" PRId64 "\n", index_flat.ntotal);
 
     int k = 4;
 
     {       // search xq
-        long *I = new long[k * nq];
+        int64_t *I = new int64_t[k * nq];
         float *D = new float[k * nq];
 
         index_flat.search(nq, xq, k, D, I);
@@ -84,10 +84,10 @@ int main() {
     index_ivf.add(nb, xb);  // add vectors to the index
 
     printf("is_trained = %s\n", index_ivf.is_trained ? "true" : "false");
-    printf("ntotal = %ld\n", index_ivf.ntotal);
+    printf("ntotal =  %" PRId64 "\n", index_ivf.ntotal);
 
     {       // search xq
-        long *I = new long[k * nq];
+        int64_t *I = new int64_t[k * nq];
         float *D = new float[k * nq];
 
         index_ivf.search(nq, xq, k, D, I);

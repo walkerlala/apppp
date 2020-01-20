@@ -35,8 +35,8 @@ namespace faiss {
  * IndexIVFPQ implementation
  ******************************************/
 
-IndexIVFPQ::IndexIVFPQ (Index * quantizer, size_t d, size_t nlist,
-                        size_t M, size_t nbits_per_idx):
+IndexIVFPQ::IndexIVFPQ (Index * quantizer, int64_t d, int64_t nlist,
+                        int64_t M, int64_t nbits_per_idx):
     IndexIVF (quantizer, d, nlist, 0, METRIC_L2),
     pq (d, M, nbits_per_idx)
 {
@@ -69,7 +69,7 @@ void IndexIVFPQ::train_residual_o (idx_t n, const float *x, float *residuals_2)
     const float * x_in = x;
 
     x = fvecs_maybe_subsample (
-         d, (size_t*)&n, pq.cp.max_points_per_centroid * pq.ksub,
+         d, (int64_t*)&n, pq.cp.max_points_per_centroid * pq.ksub,
          x, verbose, pq.cp.seed);
 
     ScopeDeleter<float> del_x (x_in == x ? nullptr : x);
@@ -91,7 +91,7 @@ void IndexIVFPQ::train_residual_o (idx_t n, const float *x, float *residuals_2)
         trainset = x;
     }
     if (verbose)
-        printf ("training %zdx%zd product quantizer on %ld vectors in %dD\n",
+        printf ("training  %" PRId64 "x %" PRId64 " product quantizer on  %" PRId64 " vectors in %dD\n",
                 pq.M, pq.ksub, n, d);
     pq.verbose = verbose;
     pq.train (n, trainset);
@@ -147,7 +147,7 @@ void IndexIVFPQ::encode (idx_t key, const float * x, uint8_t * code) const
     else pq.compute_code (x, code);
 }
 
-void IndexIVFPQ::encode_multiple (size_t n, idx_t *keys,
+void IndexIVFPQ::encode_multiple (int64_t n, idx_t *keys,
                                   const float * x, uint8_t * xcodes,
                                   bool compute_keys) const
 {
@@ -157,16 +157,16 @@ void IndexIVFPQ::encode_multiple (size_t n, idx_t *keys,
     encode_vectors (n, x, keys, xcodes);
 }
 
-void IndexIVFPQ::decode_multiple (size_t n, const idx_t *keys,
+void IndexIVFPQ::decode_multiple (int64_t n, const idx_t *keys,
                                   const uint8_t * xcodes, float * x) const
 {
     pq.decode (xcodes, x, n);
     if (by_residual) {
         std::vector<float> centroid (d);
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             quantizer->reconstruct (keys[i], centroid.data());
             float *xi = x + i * d;
-            for (size_t j = 0; j < d; j++) {
+            for (int64_t j = 0; j < d; j++) {
                 xi [j] += centroid [j];
             }
         }
@@ -191,10 +191,10 @@ static float * compute_residuals (
         Index::idx_t n, const float* x,
         const Index::idx_t *list_nos)
 {
-    size_t d = quantizer->d;
+    int64_t d = quantizer->d;
     float *residuals = new float [n * d];
     // TODO: parallelize?
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         if (list_nos[i] < 0)
             memset (residuals + i * d, 0, sizeof(*residuals) * d);
         else
@@ -218,7 +218,7 @@ void IndexIVFPQ::encode_vectors(idx_t n, const float* x,
     }
 
     if (include_listnos) {
-        size_t coarse_size = coarse_code_size();
+        int64_t coarse_size = coarse_code_size();
         for (idx_t i = n - 1; i >= 0; i--) {
             uint8_t * code = codes + i * (coarse_size + code_size);
             memmove (code + coarse_size,
@@ -233,21 +233,21 @@ void IndexIVFPQ::encode_vectors(idx_t n, const float* x,
 void IndexIVFPQ::sa_decode (idx_t n, const uint8_t *codes,
                             float *x) const
 {
-    size_t coarse_size = coarse_code_size ();
+    int64_t coarse_size = coarse_code_size ();
 
 #pragma omp parallel
     {
         std::vector<float> residual (d);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             const uint8_t *code = codes + i * (code_size + coarse_size);
             int64_t list_no = decode_listno (code);
             float *xi = x + i * d;
             pq.decode (code + coarse_size, xi);
             if (by_residual) {
                 quantizer->reconstruct (list_no, residual.data());
-                for (size_t j = 0; j < d; j++) {
+                for (int64_t j = 0; j < d; j++) {
                     xi[j] += residual[j];
                 }
             }
@@ -265,7 +265,7 @@ void IndexIVFPQ::add_core_o (idx_t n, const float * x, const idx_t *xids,
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(i0 + bs, n);
             if (verbose) {
-                printf("IndexIVFPQ::add_core_o: adding %ld:%ld / %ld\n",
+                printf("IndexIVFPQ::add_core_o: adding  %" PRId64 ": %" PRId64 " /  %" PRId64 "\n",
                        i0, i1, n);
             }
             add_core_o (i1 - i0, x + i0 * d,
@@ -309,8 +309,8 @@ void IndexIVFPQ::add_core_o (idx_t n, const float * x, const idx_t *xids,
 
     double t2 = getmillisecs ();
     // TODO: parallelize?
-    size_t n_ignore = 0;
-    for (size_t i = 0; i < n; i++) {
+    int64_t n_ignore = 0;
+    for (int64_t i = 0; i < n; i++) {
         idx_t key = idx[i];
         if (key < 0) {
             n_ignore ++;
@@ -321,7 +321,7 @@ void IndexIVFPQ::add_core_o (idx_t n, const float * x, const idx_t *xids,
         idx_t id = xids ? xids[i] : ntotal + i;
 
         uint8_t *code = xcodes + i * code_size;
-        size_t offset = invlists->add_entry (key, id, code);
+        int64_t offset = invlists->add_entry (key, id, code);
 
         if (residuals_2) {
             float *res2 = residuals_2 + i * d;
@@ -340,7 +340,7 @@ void IndexIVFPQ::add_core_o (idx_t n, const float * x, const idx_t *xids,
     if(verbose) {
         char comment[100] = {0};
         if (n_ignore > 0)
-            snprintf (comment, 100, "(%ld vectors ignored)", n_ignore);
+            snprintf (comment, 100, "( %" PRId64 " vectors ignored)", n_ignore);
         printf(" add_core times: %.3f %.3f %.3f %s\n",
                t1 - t0, t2 - t1, t3 - t2, comment);
     }
@@ -369,7 +369,7 @@ void IndexIVFPQ::reconstruct_from_offset (int64_t list_no, int64_t offset,
 
 
 /// 2G by default, accommodates tables up to PQ32 w/ 65536 centroids
-size_t IndexIVFPQ::precomputed_table_max_bytes = ((size_t)1) << 31;
+int64_t IndexIVFPQ::precomputed_table_max_bytes = ((int64_t)1) << 31;
 
 /** Precomputed tables for residuals
  *
@@ -419,12 +419,12 @@ void IndexIVFPQ::precompute_table ()
         if (miq && pq.M % miq->pq.M == 0)
             use_precomputed_table = 2;
         else {
-            size_t table_size = pq.M * pq.ksub * nlist * sizeof(float);
+            int64_t table_size = pq.M * pq.ksub * nlist * sizeof(float);
             if (table_size > precomputed_table_max_bytes) {
                 if (verbose) {
                     printf(
                        "IndexIVFPQ::precompute_table: not precomputing table, "
-                       "it would be too big: %ld bytes (max %ld)\n",
+                       "it would be too big:  %" PRId64 " bytes (max  %" PRId64 ")\n",
                        table_size, precomputed_table_max_bytes);
                     use_precomputed_table = 0;
                 }
@@ -451,7 +451,7 @@ void IndexIVFPQ::precompute_table ()
         precomputed_table.resize (nlist * pq.M * pq.ksub);
         std::vector<float> centroid (d);
 
-        for (size_t i = 0; i < nlist; i++) {
+        for (int64_t i = 0; i < nlist; i++) {
             quantizer->reconstruct (i, centroid.data());
 
             float *tab = &precomputed_table[i * pq.M * pq.ksub];
@@ -471,7 +471,7 @@ void IndexIVFPQ::precompute_table ()
         std::vector<float> centroids (d * cpq.ksub, NAN);
 
         for (int m = 0; m < cpq.M; m++) {
-            for (size_t i = 0; i < cpq.ksub; i++) {
+            for (int64_t i = 0; i < cpq.ksub; i++) {
                 memcpy (centroids.data() + i * d + m * cpq.dsub,
                         cpq.get_centroids (m, i),
                         sizeof (*centroids.data()) * cpq.dsub);
@@ -481,7 +481,7 @@ void IndexIVFPQ::precompute_table ()
         pq.compute_inner_prod_tables (cpq.ksub, centroids.data (),
                                       precomputed_table.data ());
 
-        for (size_t i = 0; i < cpq.ksub; i++) {
+        for (int64_t i = 0; i < cpq.ksub; i++) {
             float *tab = &precomputed_table[i * pq.M * pq.ksub];
             fvec_madd (pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
         }
@@ -697,7 +697,7 @@ struct QueryTables {
             const float *qtab = sim_table_2; // query-specific table
             float *ltab = sim_table; // (output) list-specific table
 
-            long k = key;
+            int64_t k = key;
             for (int cm = 0; cm < cpq.M; cm++) {
                 // compute PQ index
                 int ki = k & ((uint64_t(1) << cpq.nbits) - 1);
@@ -753,7 +753,7 @@ struct QueryTables {
             const ProductQuantizer &cpq = miq->pq;
             int Mf = pq.M / cpq.M;
 
-            long k = key;
+            int64_t k = key;
             int m0 = 0;
             for (int cm = 0; cm < cpq.M; cm++) {
                 int ki = k & ((uint64_t(1) << cpq.nbits) - 1);
@@ -793,11 +793,11 @@ struct KnnSearchResults {
     const idx_t *ids;
 
     // heap params
-    size_t k;
+    int64_t k;
     float * heap_sim;
     idx_t * heap_ids;
 
-    size_t nup;
+    int64_t nup;
 
     inline void add (idx_t j, float dis) {
         if (C::cmp (heap_sim[0], dis)) {
@@ -839,7 +839,7 @@ struct IVFPQScannerT: QueryTables {
 
     const uint8_t * list_codes;
     const IDType * list_ids;
-    size_t list_size;
+    int64_t list_size;
 
     IVFPQScannerT (const IndexIVFPQ & ivfpq, const IVFSearchParameters *params):
         QueryTables (ivfpq, params)
@@ -868,15 +868,15 @@ struct IVFPQScannerT: QueryTables {
 
     /// version of the scan where we use precomputed tables
     template<class SearchResultType>
-    void scan_list_with_table (size_t ncode, const uint8_t *codes,
+    void scan_list_with_table (int64_t ncode, const uint8_t *codes,
                                SearchResultType & res) const
     {
-        for (size_t j = 0; j < ncode; j++) {
+        for (int64_t j = 0; j < ncode; j++) {
 
             float dis = dis0;
             const float *tab = sim_table;
 
-            for (size_t m = 0; m < pq.M; m++) {
+            for (int64_t m = 0; m < pq.M; m++) {
                 dis += tab[*codes++];
                 tab += pq.ksub;
             }
@@ -889,15 +889,15 @@ struct IVFPQScannerT: QueryTables {
     /// tables are not precomputed, but pointers are provided to the
     /// relevant X_c|x_r tables
     template<class SearchResultType>
-    void scan_list_with_pointer (size_t ncode, const uint8_t *codes,
+    void scan_list_with_pointer (int64_t ncode, const uint8_t *codes,
                                  SearchResultType & res) const
     {
-        for (size_t j = 0; j < ncode; j++) {
+        for (int64_t j = 0; j < ncode; j++) {
 
             float dis = dis0;
             const float *tab = sim_table_2;
 
-            for (size_t m = 0; m < pq.M; m++) {
+            for (int64_t m = 0; m < pq.M; m++) {
                 int ci = *codes++;
                 dis += sim_table_ptrs [m][ci] - 2 * tab [ci];
                 tab += pq.ksub;
@@ -909,7 +909,7 @@ struct IVFPQScannerT: QueryTables {
 
     /// nothing is precomputed: access residuals on-the-fly
     template<class SearchResultType>
-    void scan_on_the_fly_dist (size_t ncode, const uint8_t *codes,
+    void scan_on_the_fly_dist (int64_t ncode, const uint8_t *codes,
                                  SearchResultType &res) const
     {
         const float *dvec;
@@ -927,7 +927,7 @@ struct IVFPQScannerT: QueryTables {
             dis0 = 0;
         }
 
-        for (size_t j = 0; j < ncode; j++) {
+        for (int64_t j = 0; j < ncode; j++) {
 
             pq.decode (codes, decoded_vec);
             codes += pq.code_size;
@@ -948,17 +948,17 @@ struct IVFPQScannerT: QueryTables {
 
     template <class HammingComputer, class SearchResultType>
     void scan_list_polysemous_hc (
-             size_t ncode, const uint8_t *codes,
+             int64_t ncode, const uint8_t *codes,
              SearchResultType & res) const
     {
         int ht = ivfpq.polysemous_ht;
-        size_t n_hamming_pass = 0, nup = 0;
+        int64_t n_hamming_pass = 0, nup = 0;
 
         int code_size = pq.code_size;
 
         HammingComputer hc (q_code.data(), code_size);
 
-        for (size_t j = 0; j < ncode; j++) {
+        for (int64_t j = 0; j < ncode; j++) {
             const uint8_t *b_code = codes;
             int hd = hc.hamming (b_code);
             if (hd < ht) {
@@ -967,7 +967,7 @@ struct IVFPQScannerT: QueryTables {
                 float dis = dis0;
                 const float *tab = sim_table;
 
-                for (size_t m = 0; m < pq.M; m++) {
+                for (int64_t m = 0; m < pq.M; m++) {
                     dis += tab[*b_code++];
                     tab += pq.ksub;
                 }
@@ -984,7 +984,7 @@ struct IVFPQScannerT: QueryTables {
 
     template<class SearchResultType>
     void scan_list_polysemous (
-             size_t ncode, const uint8_t *codes,
+             int64_t ncode, const uint8_t *codes,
              SearchResultType &res) const
     {
         switch (pq.code_size) {
@@ -1049,18 +1049,18 @@ struct IVFPQScanner:
         float dis = this->dis0;
         const float *tab = this->sim_table;
 
-        for (size_t m = 0; m < this->pq.M; m++) {
+        for (int64_t m = 0; m < this->pq.M; m++) {
             dis += tab[*code++];
             tab += this->pq.ksub;
         }
         return dis;
     }
 
-    size_t scan_codes (size_t ncode,
+    int64_t scan_codes (int64_t ncode,
                        const uint8_t *codes,
                        const idx_t *ids,
                        float *heap_sim, idx_t *heap_ids,
-                       size_t k) const override
+                       int64_t k) const override
     {
         KnnSearchResults<C> res = {
             /* key */      this->key,
@@ -1086,7 +1086,7 @@ struct IVFPQScanner:
         return res.nup;
     }
 
-    void scan_codes_range (size_t ncode,
+    void scan_codes_range (int64_t ncode,
                            const uint8_t *codes,
                            const idx_t *ids,
                            float radius,
@@ -1157,7 +1157,7 @@ IndexIVFPQ::IndexIVFPQ ()
 
 struct CodeCmp {
     const uint8_t *tab;
-    size_t code_size;
+    int64_t code_size;
     bool operator () (int a, int b) const {
         return cmp (a, b) > 0;
     }
@@ -1168,12 +1168,12 @@ struct CodeCmp {
 };
 
 
-size_t IndexIVFPQ::find_duplicates (idx_t *dup_ids, size_t *lims) const
+int64_t IndexIVFPQ::find_duplicates (idx_t *dup_ids, int64_t *lims) const
 {
-    size_t ngroup = 0;
+    int64_t ngroup = 0;
     lims[0] = 0;
-    for (size_t list_no = 0; list_no < nlist; list_no++) {
-        size_t n = invlists->list_size (list_no);
+    for (int64_t list_no = 0; list_no < nlist; list_no++) {
+        int64_t n = invlists->list_size (list_no);
         std::vector<int> ord (n);
         for (int i = 0; i < n; i++) ord[i] = i;
         InvertedLists::ScopedCodes codes (invlists, list_no);

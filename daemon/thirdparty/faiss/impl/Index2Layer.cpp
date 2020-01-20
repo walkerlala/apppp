@@ -9,6 +9,7 @@
 
 #include <faiss/Index2Layer.h>
 
+#include <cinttypes>
 #include <cmath>
 #include <cstdio>
 #include <cassert>
@@ -49,7 +50,7 @@ using idx_t = Index::idx_t;
  *************************************/
 
 
-Index2Layer::Index2Layer (Index * quantizer, size_t nlist,
+Index2Layer::Index2Layer (Index * quantizer, int64_t nlist,
                           int M, int nbit,
                           MetricType metric):
     Index (quantizer->d, metric),
@@ -78,7 +79,7 @@ Index2Layer::~Index2Layer ()
 void Index2Layer::train(idx_t n, const float* x)
 {
     if (verbose) {
-        printf ("training level-1 quantizer %ld vectors in %dD\n",
+        printf ("training level-1 quantizer  %" PRId64 " vectors in %dD\n",
                 n, d);
     }
 
@@ -91,7 +92,7 @@ void Index2Layer::train(idx_t n, const float* x)
     const float * x_in = x;
 
     x = fvecs_maybe_subsample (
-         d, (size_t*)&n, pq.cp.max_points_per_centroid * pq.ksub,
+         d, (int64_t*)&n, pq.cp.max_points_per_centroid * pq.ksub,
          x, verbose, pq.cp.seed);
 
     ScopeDeleter<float> del_x (x_in == x ? nullptr : x);
@@ -105,7 +106,7 @@ void Index2Layer::train(idx_t n, const float* x)
     }
 
     if (verbose)
-        printf ("training %zdx%zd product quantizer on %ld vectors in %dD\n",
+        printf ("training  %" PRId64 "x %" PRId64 " product quantizer on  %" PRId64 " vectors in %dD\n",
                 pq.M, pq.ksub, n, d);
     pq.verbose = verbose;
     pq.train (n, residuals.data());
@@ -120,7 +121,7 @@ void Index2Layer::add(idx_t n, const float* x)
         for (idx_t i0 = 0; i0 < n; i0 += bs) {
             idx_t i1 = std::min(i0 + bs, n);
             if (verbose) {
-                printf("Index2Layer::add: adding %ld:%ld / %ld\n",
+                printf("Index2Layer::add: adding  %" PRId64 ": %" PRId64 " /  %" PRId64 "\n",
                        i0, i1, n);
             }
             add (i1 - i0, x + i0 * d);
@@ -229,7 +230,7 @@ namespace {
 
 
 struct Distance2Level : DistanceComputer {
-    size_t d;
+    int64_t d;
     const Index2Layer& storage;
     std::vector<float> buf;
     const float *q;
@@ -273,7 +274,7 @@ struct DistanceXPQ4 : Distance2Level {
     float operator () (idx_t i) override {
 #ifdef __SSE__
         const uint8_t *code = storage.codes.data() + i * storage.code_size;
-        long key = 0;
+        int64_t key = 0;
         memcpy (&key, code, storage.code_size_1);
         code += storage.code_size_1;
 
@@ -321,7 +322,7 @@ struct Distance2xXPQ4 : Distance2Level {
 
     float operator () (idx_t i) override {
         const uint8_t *code = storage.codes.data() + i * storage.code_size;
-        long key01 = 0;
+        int64_t key01 = 0;
         memcpy (&key01, code, storage.code_size_1);
         code += storage.code_size_1;
 #ifdef __SSE__
@@ -333,7 +334,7 @@ struct Distance2xXPQ4 : Distance2Level {
         __m128 accu = _mm_setzero_ps();
 
         for (int mi_m = 0; mi_m < 2; mi_m++) {
-            long l1_idx = key01 & ((1L << mi_nbits) - 1);
+            int64_t l1_idx = key01 & ((1L << mi_nbits) - 1);
             const __m128 * pq_l1 = pq_l1_t + M_2 * l1_idx;
 
             for (int m = 0; m < M_2; m++) {
@@ -383,7 +384,7 @@ DistanceComputer * Index2Layer::get_distance_computer() const {
 
 
 /* The standalone codec interface */
-size_t Index2Layer::sa_code_size () const
+int64_t Index2Layer::sa_code_size () const
 {
     return code_size;
 }
@@ -417,13 +418,13 @@ void Index2Layer::sa_decode (idx_t n, const uint8_t *bytes, float *x) const
         std::vector<float> residual (d);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             const uint8_t *code = bytes + i * code_size;
             int64_t list_no = q1.decode_listno (code);
             float *xi = x + i * d;
             pq.decode (code + code_size_1, xi);
             q1.quantizer->reconstruct (list_no, residual.data());
-            for (size_t j = 0; j < d; j++) {
+            for (int64_t j = 0; j < d; j++) {
                 xi[j] += residual[j];
             }
         }

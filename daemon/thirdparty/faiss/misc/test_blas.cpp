@@ -9,7 +9,7 @@
 #include <cstdlib>
 
 #undef FINTEGER
-#define FINTEGER long
+#define FINTEGER int64_t
 
 
 extern "C" {
@@ -60,8 +60,8 @@ int main() {
         printf("\n");
     }
 
-    long info = 0x64bL << 32;
-    long mi = 0x64bL << 32 | m;
+    int64_t info = 0x64bL << 32;
+    int64_t mi = 0x64bL << 32 | m;
     float *tau = new float[m];
     FINTEGER lwork = -1;
 

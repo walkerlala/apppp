@@ -11,6 +11,7 @@
 #define FAISS_INDEX_IVFSH_H
 
 
+#include <cinttypes>
 #include <vector>
 
 #include <faiss/IndexIVF.h>
@@ -47,7 +48,7 @@ struct IndexIVFSpectralHash: IndexIVF {
     // size nlist * nbit or 0 if Thresh_global
     std::vector<float> trained;
 
-    IndexIVFSpectralHash (Index * quantizer, size_t d, size_t nlist,
+    IndexIVFSpectralHash (Index * quantizer, int64_t d, int64_t nlist,
                           int nbit, float period);
 
     IndexIVFSpectralHash ();

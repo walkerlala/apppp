@@ -41,7 +41,7 @@ class GpuResources {
   virtual DeviceMemory& getMemoryManager(int device) = 0;
 
   /// Returns the available CPU pinned memory buffer
-  virtual std::pair<void*, size_t> getPinnedMemory() = 0;
+  virtual std::pair<void*, int64_t> getPinnedMemory() = 0;
 
   /// Returns the stream on which we perform async CPU <-> GPU copies
   virtual cudaStream_t getAsyncCopyStream(int device) = 0;

@@ -16,7 +16,7 @@
 
 namespace faiss { namespace gpu {
 
-StackDeviceMemory::Stack::Stack(int d, size_t sz)
+StackDeviceMemory::Stack::Stack(int d, int64_t sz)
     : device_(d),
       isOwner_(true),
       start_(nullptr),
@@ -35,7 +35,7 @@ StackDeviceMemory::Stack::Stack(int d, size_t sz)
   end_ = start_ + size_;
 }
 
-StackDeviceMemory::Stack::Stack(int d, void* p, size_t sz, bool isOwner)
+StackDeviceMemory::Stack::Stack(int d, void* p, int64_t sz, bool isOwner)
     : device_(d),
       isOwner_(isOwner),
       start_((char*) p),
@@ -56,13 +56,13 @@ StackDeviceMemory::Stack::~Stack() {
   }
 }
 
-size_t
+int64_t
 StackDeviceMemory::Stack::getSizeAvailable() const {
   return (end_ - head_);
 }
 
 char*
-StackDeviceMemory::Stack::getAlloc(size_t size,
+StackDeviceMemory::Stack::getAlloc(int64_t size,
                                    cudaStream_t stream) {
   if (size > (end_ - head_)) {
     // Too large for our stack
@@ -71,7 +71,7 @@ StackDeviceMemory::Stack::getAlloc(size_t size,
     if (cudaMallocWarning_) {
       // Print our requested size before we attempt the allocation
       fprintf(stderr, "WARN: increase temp memory to avoid cudaMalloc, "
-              "or decrease query/add size (alloc %zu B, highwater %zu B)\n",
+              "or decrease query/add size (alloc  %" PRId64 " B, highwater  %" PRId64 " B)\n",
               size, highWaterMalloc_);
     }
 
@@ -123,14 +123,14 @@ StackDeviceMemory::Stack::getAlloc(size_t size,
     FAISS_ASSERT(head_ <= end_);
 
     highWaterMemoryUsed_ = std::max(highWaterMemoryUsed_,
-                                    (size_t) (head_ - start_));
+                                    (int64_t) (head_ - start_));
     return startAlloc;
   }
 }
 
 void
 StackDeviceMemory::Stack::returnAlloc(char* p,
-                                      size_t size,
+                                      int64_t size,
                                       cudaStream_t stream) {
   if (p < start_ || p >= end_) {
     // This is not on our stack; it was a one-off allocation
@@ -156,14 +156,14 @@ StackDeviceMemory::Stack::toString() const {
 
   s << "SDM device " << device_ << ": Total memory " << size_ << " ["
     << (void*) start_ << ", " << (void*) end_ << ")\n";
-  s << "     Available memory " << (size_t) (end_ - head_)
+  s << "     Available memory " << (int64_t) (end_ - head_)
     << " [" << (void*) head_ << ", " << (void*) end_ << ")\n";
   s << "     High water temp alloc " << highWaterMemoryUsed_ << "\n";
   s << "     High water cudaMalloc " << highWaterMalloc_ << "\n";
 
   int i = lastUsers_.size();
   for (auto it = lastUsers_.rbegin(); it != lastUsers_.rend(); ++it) {
-    s << i-- << ": size " << (size_t) (it->end_ - it->start_)
+    s << i-- << ": size " << (int64_t) (it->end_ - it->start_)
       << " stream " << it->stream_
       << " [" << (void*) it->start_ << ", " << (void*) it->end_ << ")\n";
   }
@@ -171,18 +171,18 @@ StackDeviceMemory::Stack::toString() const {
   return s.str();
 }
 
-size_t
+int64_t
 StackDeviceMemory::Stack::getHighWaterCudaMalloc() const {
   return highWaterMalloc_;
 }
 
-StackDeviceMemory::StackDeviceMemory(int device, size_t allocPerDevice)
+StackDeviceMemory::StackDeviceMemory(int device, int64_t allocPerDevice)
     : device_(device),
       stack_(device, allocPerDevice) {
 }
 
 StackDeviceMemory::StackDeviceMemory(int device,
-                                     void* p, size_t size, bool isOwner)
+                                     void* p, int64_t size, bool isOwner)
     : device_(device),
       stack_(device, p, size, isOwner) {
 }
@@ -201,10 +201,10 @@ StackDeviceMemory::getDevice() const {
 }
 
 DeviceMemoryReservation
-StackDeviceMemory::getMemory(cudaStream_t stream, size_t size) {
+StackDeviceMemory::getMemory(cudaStream_t stream, int64_t size) {
   // We guarantee 16 byte alignment for allocations, so bump up `size`
   // to the next highest multiple of 16
-  size = utils::roundUp(size, (size_t) 16);
+  size = utils::roundUp(size, (int64_t) 16);
 
   return DeviceMemoryReservation(this,
                                  device_,
@@ -213,7 +213,7 @@ StackDeviceMemory::getMemory(cudaStream_t stream, size_t size) {
                                  stream);
 }
 
-size_t
+int64_t
 StackDeviceMemory::getSizeAvailable() const {
   return stack_.getSizeAvailable();
 }
@@ -223,7 +223,7 @@ StackDeviceMemory::toString() const {
   return stack_.toString();
 }
 
-size_t
+int64_t
 StackDeviceMemory::getHighWaterCudaMalloc() const {
   return stack_.getHighWaterCudaMalloc();
 }

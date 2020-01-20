@@ -23,7 +23,7 @@ DeviceMemoryReservation::DeviceMemoryReservation()
 DeviceMemoryReservation::DeviceMemoryReservation(DeviceMemory* state,
                                              int device,
                                              void* p,
-                                             size_t size,
+                                             int64_t size,
                                              cudaStream_t stream)
     : state_(state),
       device_(device),

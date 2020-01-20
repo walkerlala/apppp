@@ -174,7 +174,7 @@ runIVFFlatScanTile(Tensor<float, 2, true>& queries,
                    Tensor<float, 3, true>& residualBase,
                    GpuScalarQuantizer* scalarQ,
                    Tensor<float, 2, true>& outDistances,
-                   Tensor<long, 2, true>& outIndices,
+                   Tensor<int64_t, 2, true>& outIndices,
                    cudaStream_t stream) {
   int dim = queries.getSize(1);
 
@@ -356,7 +356,7 @@ runIVFFlatScan(Tensor<float, 2, true>& queries,
                // output
                Tensor<float, 2, true>& outDistances,
                // output
-               Tensor<long, 2, true>& outIndices,
+               Tensor<int64_t, 2, true>& outIndices,
                GpuResources* res) {
   constexpr int kMinQueryTileSize = 8;
   constexpr int kMaxQueryTileSize = 128;
@@ -378,18 +378,18 @@ runIVFFlatScan(Tensor<float, 2, true>& queries,
 
   // How much temporary storage is available?
   // If possible, we'd like to fit within the space available.
-  size_t sizeAvailable = mem.getSizeAvailable();
+  int64_t sizeAvailable = mem.getSizeAvailable();
 
   // We run two passes of heap selection
   // This is the size of the first-level heap passes
   constexpr int kNProbeSplit = 8;
   int pass2Chunks = std::min(nprobe, kNProbeSplit);
 
-  size_t sizeForFirstSelectPass =
+  int64_t sizeForFirstSelectPass =
     pass2Chunks * k * (sizeof(float) + sizeof(int));
 
   // How much temporary storage we need per each query
-  size_t sizePerQuery =
+  int64_t sizePerQuery =
     2 * // # streams
     ((nprobe * sizeof(int) + sizeof(int)) + // prefixSumOffsets
      nprobe * maxListLength * sizeof(float) + // allDistances

@@ -10,6 +10,7 @@
 #ifndef INDEX_LSH_H
 #define INDEX_LSH_H
 
+#include <cinttypes>
 #include <vector>
 
 #include <faiss/Index.h>
@@ -70,7 +71,7 @@ struct IndexLSH:Index {
     IndexLSH ();
 
     /* standalone codec interface */
-    size_t sa_code_size () const override;
+    int64_t sa_code_size () const override;
 
     void sa_encode (idx_t n, const float *x,
                           uint8_t *bytes) const override;

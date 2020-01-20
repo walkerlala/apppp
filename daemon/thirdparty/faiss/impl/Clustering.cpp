@@ -14,6 +14,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <cinttypes>
 
 #include <faiss/utils/utils.h>
 #include <faiss/utils/random.h>
@@ -70,7 +71,7 @@ void Clustering::post_process_centroids ()
     }
 
     if (int_centroids) {
-        for (size_t i = 0; i < centroids.size(); i++)
+        for (int64_t i = 0; i < centroids.size(); i++)
             centroids[i] = roundf (centroids[i]);
     }
 }
@@ -78,14 +79,14 @@ void Clustering::post_process_centroids ()
 
 void Clustering::train (idx_t nx, const float *x_in, Index & index) {
     FAISS_THROW_IF_NOT_FMT (nx >= k,
-             "Number of training points (%ld) should be at least "
-             "as large as number of clusters (%ld)", nx, k);
+             "Number of training points ( %" PRId64 ") should be at least "
+             "as large as number of clusters ( %" PRId64 ")", nx, k);
 
     double t0 = getmillisecs();
 
     // yes it is the user's responsibility, but it may spare us some
     // hard-to-debug reports.
-    for (size_t i = 0; i < nx * d; i++) {
+    for (int64_t i = 0; i < nx * d; i++) {
       FAISS_THROW_IF_NOT_MSG (finite (x_in[i]),
                         "input contains NaN's or Inf's");
     }
@@ -95,7 +96,7 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
 
     if (nx > k * max_points_per_centroid) {
         if (verbose)
-            printf("Sampling a subset of %ld / %ld for training\n",
+            printf("Sampling a subset of  %" PRId64 " /  %" PRId64 " for training\n",
                    k * max_points_per_centroid, nx);
         std::vector<int> perm (nx);
         rand_perm (perm.data (), nx, seed);
@@ -107,15 +108,15 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
         del1.set (x);
     } else if (nx < k * min_points_per_centroid) {
         fprintf (stderr,
-                 "WARNING clustering %ld points to %ld centroids: "
-                 "please provide at least %ld training points\n",
+                 "WARNING clustering  %" PRId64 " points to  %" PRId64 " centroids: "
+                 "please provide at least  %" PRId64 " training points\n",
                  nx, k, idx_t(k) * min_points_per_centroid);
     }
 
 
     if (nx == k) {
         if (verbose) {
-            printf("Number of training points (%ld) same as number of "
+            printf("Number of training points ( %" PRId64 ") same as number of "
                    "clusters, just copying\n", nx);
         }
         // this is a corner case, just copy training set to clusters
@@ -128,7 +129,7 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
 
 
     if (verbose)
-        printf("Clustering %d points in %ldD to %ld clusters, "
+        printf("Clustering %d points in  %" PRId64 "D to  %" PRId64 " clusters, "
                "redo %d times, %d iterations\n",
                int(nx), d, k, nredo, niter);
 
@@ -148,10 +149,10 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
        centroids.size() % d == 0,
        "size of provided input centroids not a multiple of dimension");
 
-    size_t n_input_centroids = centroids.size() / d;
+    int64_t n_input_centroids = centroids.size() / d;
 
     if (verbose && n_input_centroids > 0) {
-        printf ("  Using %zd centroids provided as input (%sfrozen)\n",
+        printf ("  Using  %" PRId64 " centroids provided as input (%sfrozen)\n",
                 n_input_centroids, frozen_centroids ? "" : "not ");
     }
 
@@ -245,7 +246,7 @@ void Clustering::train (idx_t nx, const float *x_in, Index & index) {
 
 }
 
-float kmeans_clustering (size_t d, size_t n, size_t k,
+float kmeans_clustering (int64_t d, int64_t n, int64_t k,
                          const float *x,
                          float *centroids)
 {

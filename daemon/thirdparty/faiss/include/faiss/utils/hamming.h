@@ -25,6 +25,7 @@
 #define FAISS_hamming_h
 
 
+#include <cinttypes>
 #include <stdint.h>
 
 #include <faiss/utils/Heap.h>
@@ -40,7 +41,7 @@ namespace faiss {
  **************************************************/
 
 
-void bitvec_print (const uint8_t * b, size_t d);
+void bitvec_print (const uint8_t * b, int64_t d);
 
 
 /* Functions for casting vectors of regular types to compact bits.
@@ -53,17 +54,17 @@ void bitvec_print (const uint8_t * b, size_t d);
 void fvecs2bitvecs (
         const float * x,
         uint8_t * b,
-        size_t d,
-        size_t n);
+        int64_t d,
+        int64_t n);
 
 void bitvecs2fvecs (
         const uint8_t * b,
         float * x,
-        size_t d,
-        size_t n);
+        int64_t d,
+        int64_t n);
 
 
-void fvec2bitvec (const float * x, uint8_t * b, size_t d);
+void fvec2bitvec (const float * x, uint8_t * b, int64_t d);
 
 /***********************************************
  * Generic reader/writer for bit strings
@@ -72,8 +73,8 @@ void fvec2bitvec (const float * x, uint8_t * b, size_t d);
 
 struct BitstringWriter {
     uint8_t *code;
-    size_t code_size;
-    size_t i; // current bit offset
+    int64_t code_size;
+    int64_t i; // current bit offset
 
     // code_size in bytes
     BitstringWriter(uint8_t *code, int code_size);
@@ -84,8 +85,8 @@ struct BitstringWriter {
 
 struct BitstringReader {
     const uint8_t *code;
-    size_t code_size;
-    size_t i;
+    int64_t code_size;
+    int64_t i;
 
     // code_size in bytes
     BitstringReader(const uint8_t *code, int code_size);
@@ -100,7 +101,7 @@ struct BitstringReader {
 
 
 
-extern size_t hamming_batch_size;
+extern int64_t hamming_batch_size;
 
 inline int popcount64(uint64_t x) {
     return __builtin_popcountl(x);
@@ -117,8 +118,8 @@ inline int popcount64(uint64_t x) {
 void hammings (
         const uint8_t * a,
         const uint8_t * b,
-        size_t na, size_t nb,
-        size_t nbytespercode,
+        int64_t na, int64_t nb,
+        int64_t nbytespercode,
         hamdis_t * dis);
 
 
@@ -136,8 +137,8 @@ void hammings_knn_hc (
         int_maxheap_array_t * ha,
         const uint8_t * a,
         const uint8_t * b,
-        size_t nb,
-        size_t ncodes,
+        int64_t nb,
+        int64_t ncodes,
         int ordered);
 
 /* Legacy alias to hammings_knn_hc. */
@@ -145,8 +146,8 @@ void hammings_knn (
   int_maxheap_array_t * ha,
   const uint8_t * a,
   const uint8_t * b,
-  size_t nb,
-  size_t ncodes,
+  int64_t nb,
+  int64_t ncodes,
   int ordered);
 
 /** Return the k smallest Hamming distances for a set of binary query vectors,
@@ -164,10 +165,10 @@ void hammings_knn (
 void hammings_knn_mc (
   const uint8_t * a,
   const uint8_t * b,
-  size_t na,
-  size_t nb,
-  size_t k,
-  size_t ncodes,
+  int64_t na,
+  int64_t nb,
+  int64_t k,
+  int64_t ncodes,
   int32_t *distances,
   int64_t *labels);
 
@@ -176,38 +177,38 @@ void hammings_knn_mc (
 void hamming_count_thres (
         const uint8_t * bs1,
         const uint8_t * bs2,
-        size_t n1,
-        size_t n2,
+        int64_t n1,
+        int64_t n2,
         hamdis_t ht,
-        size_t ncodes,
-        size_t * nptr);
+        int64_t ncodes,
+        int64_t * nptr);
 
 /* Return all Hamming distances/index passing a thres. Pre-allocation of output
    is required. Use hamming_count_thres to determine the proper size. */
-size_t match_hamming_thres (
+int64_t match_hamming_thres (
         const uint8_t * bs1,
         const uint8_t * bs2,
-        size_t n1,
-        size_t n2,
+        int64_t n1,
+        int64_t n2,
         hamdis_t ht,
-        size_t ncodes,
+        int64_t ncodes,
         int64_t * idx,
         hamdis_t * dis);
 
 /* Cross-matching in a set of vectors */
 void crosshamming_count_thres (
         const uint8_t * dbs,
-        size_t n,
+        int64_t n,
         hamdis_t ht,
-        size_t ncodes,
-        size_t * nptr);
+        int64_t ncodes,
+        int64_t * nptr);
 
 
 /* compute the Hamming distances between two codewords of nwords*64 bits */
 hamdis_t hamming (
         const uint64_t * bs1,
         const uint64_t * bs2,
-        size_t nwords);
+        int64_t nwords);
 
 
 

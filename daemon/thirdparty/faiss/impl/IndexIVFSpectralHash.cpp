@@ -24,7 +24,7 @@ namespace faiss {
 
 
 IndexIVFSpectralHash::IndexIVFSpectralHash (
-        Index * quantizer, size_t d, size_t nlist,
+        Index * quantizer, int64_t d, int64_t nlist,
         int nbit, float period):
     IndexIVF (quantizer, d, nlist, (nbit + 7) / 8, METRIC_L2),
     nbit (nbit), period (period), threshold_type (Thresh_global)
@@ -52,7 +52,7 @@ IndexIVFSpectralHash::~IndexIVFSpectralHash ()
 namespace {
 
 
-float median (size_t n, float *x) {
+float median (int64_t n, float *x) {
     std::sort(x, x + n);
     if (n % 2 == 1) {
         return x [n / 2];
@@ -81,7 +81,7 @@ void IndexIVFSpectralHash::train_residual (idx_t n, const float *x)
         trained.resize(nlist * nbit);
         vt->apply_noalloc (nlist, centroids.data(), trained.data());
         if (threshold_type == Thresh_centroid_half) {
-            for (size_t i = 0; i < nlist * nbit; i++) {
+            for (int64_t i = 0; i < nlist * nbit; i++) {
                 trained[i] -= 0.25 * period;
             }
         }
@@ -93,15 +93,15 @@ void IndexIVFSpectralHash::train_residual (idx_t n, const float *x)
     std::unique_ptr<idx_t []> idx (new idx_t [n]);
     quantizer->assign (n, x, idx.get());
 
-    std::vector<size_t> sizes(nlist + 1);
-    for (size_t i = 0; i < n; i++) {
+    std::vector<int64_t> sizes(nlist + 1);
+    for (int64_t i = 0; i < n; i++) {
         FAISS_THROW_IF_NOT (idx[i] >= 0);
         sizes[idx[i]]++;
     }
 
-    size_t ofs = 0;
+    int64_t ofs = 0;
     for (int j = 0; j < nlist; j++) {
-        size_t o0 = ofs;
+        int64_t o0 = ofs;
         ofs += sizes[j];
         sizes[j] = o0;
     }
@@ -112,9 +112,9 @@ void IndexIVFSpectralHash::train_residual (idx_t n, const float *x)
     // transpose + reorder
     std::unique_ptr<float []> xo (new float[n * nbit]);
 
-    for (size_t i = 0; i < n; i++) {
-        size_t idest = sizes[idx[i]]++;
-        for (size_t j = 0; j < nbit; j++) {
+    for (int64_t i = 0; i < n; i++) {
+        int64_t idest = sizes[idx[i]]++;
+        for (int64_t j = 0; j < nbit; j++) {
             xo[idest + n * j] = xt[i * nbit + j];
         }
     }
@@ -123,8 +123,8 @@ void IndexIVFSpectralHash::train_residual (idx_t n, const float *x)
     // compute medians
 #pragma omp for
     for (int i = 0; i < nlist; i++) {
-        size_t i0 = i == 0 ? 0 : sizes[i - 1];
-        size_t i1 = sizes[i];
+        int64_t i0 = i == 0 ? 0 : sizes[i - 1];
+        int64_t i1 = sizes[i];
         for (int j = 0; j < nbit; j++) {
             float *xoi = xo.get() + i0 + n * j;
             if (i0 == i1) { // nothing to train
@@ -141,12 +141,12 @@ void IndexIVFSpectralHash::train_residual (idx_t n, const float *x)
 
 namespace {
 
-void binarize_with_freq(size_t nbit, float freq,
+void binarize_with_freq(int64_t nbit, float freq,
                         const float *x, const float *c,
                         uint8_t *codes)
 {
     memset (codes, 0, (nbit + 7) / 8);
-    for (size_t i = 0; i < nbit; i++) {
+    for (int64_t i = 0; i < nbit; i++) {
         float xf = (x[i] - c[i]);
         int xi = int(floor(xf * freq));
         int bit = xi & 1;
@@ -178,7 +178,7 @@ void IndexIVFSpectralHash::encode_vectors(idx_t n, const float* x_in,
 
         // each thread takes care of a subset of lists
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             int64_t list_no = list_nos [i];
 
             if (list_no >= 0) {
@@ -204,8 +204,8 @@ struct IVFScanner: InvertedListScanner {
 
     // copied from index structure
     const IndexIVFSpectralHash *index;
-    size_t code_size;
-    size_t nbit;
+    int64_t code_size;
+    int64_t nbit;
     bool store_pairs;
 
     float period, freq;
@@ -257,14 +257,14 @@ struct IVFScanner: InvertedListScanner {
         return hc.hamming (code);
     }
 
-    size_t scan_codes (size_t list_size,
+    int64_t scan_codes (int64_t list_size,
                        const uint8_t *codes,
                        const idx_t *ids,
                        float *simi, idx_t *idxi,
-                       size_t k) const override
+                       int64_t k) const override
     {
-        size_t nup = 0;
-        for (size_t j = 0; j < list_size; j++) {
+        int64_t nup = 0;
+        for (int64_t j = 0; j < list_size; j++) {
 
             float dis = hc.hamming (codes);
 
@@ -279,13 +279,13 @@ struct IVFScanner: InvertedListScanner {
         return nup;
     }
 
-    void scan_codes_range (size_t list_size,
+    void scan_codes_range (int64_t list_size,
                            const uint8_t *codes,
                            const idx_t *ids,
                            float radius,
                            RangeQueryResult & res) const override
     {
-        for (size_t j = 0; j < list_size; j++) {
+        for (int64_t j = 0; j < list_size; j++) {
             float dis = hc.hamming (codes);
             if (dis < radius) {
                 int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];

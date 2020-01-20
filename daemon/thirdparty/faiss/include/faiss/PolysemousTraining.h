@@ -11,6 +11,7 @@
 #define FAISS_POLYSEMOUS_TRAINING_INCLUDED
 
 
+#include <cinttypes>
 #include <faiss/ProductQuantizer.h>
 
 
@@ -80,7 +81,7 @@ struct ReproduceDistancesObjective : PermutationObjective {
            const double *target_dis_in,
            double dis_weight_factor);
 
-    static void compute_mean_stdev (const double *tab, size_t n2,
+    static void compute_mean_stdev (const double *tab, int64_t n2,
                                     double *mean_out, double *stddev_out);
 
     void set_affine_target_dis (const double *source_dis_in);
@@ -142,10 +143,10 @@ struct PolysemousTraining: SimulatedAnnealingParameters {
     /// reorder the centroids so that the Hamming distace becomes a
     /// good approximation of the SDC distance (called by train)
     void optimize_pq_for_hamming (ProductQuantizer & pq,
-                                  size_t n, const float *x) const;
+                                  int64_t n, const float *x) const;
 
     /// called by optimize_pq_for_hamming
-    void optimize_ranking (ProductQuantizer &pq, size_t n, const float *x) const;
+    void optimize_ranking (ProductQuantizer &pq, int64_t n, const float *x) const;
     /// called by optimize_pq_for_hamming
     void optimize_reproduce_distances (ProductQuantizer &pq) const;
 

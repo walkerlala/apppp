@@ -13,6 +13,7 @@
 /** In this file are the implementations of extra metrics beyond L2
  *  and inner product */
 
+#include <cinttypes>
 #include <stdint.h>
 
 #include <faiss/Index.h>
@@ -36,7 +37,7 @@ void pairwise_extra_distances (
 void knn_extra_metrics (
         const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         MetricType mt, float metric_arg,
         float_maxheap_array_t * res);
 
@@ -44,9 +45,9 @@ void knn_extra_metrics (
 /** get a DistanceComputer that refers to this type of distance and
  *  indexes a flat array of size nb */
 DistanceComputer *get_extra_distance_computer (
-        size_t d,
+        int64_t d,
         MetricType mt, float metric_arg,
-        size_t nb, const float *xb);
+        int64_t nb, const float *xb);
 
 }
 

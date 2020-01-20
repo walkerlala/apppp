@@ -23,9 +23,9 @@ namespace faiss {
  ******************************************/
 
 IndexIVFPQR::IndexIVFPQR (
-            Index * quantizer, size_t d, size_t nlist,
-            size_t M, size_t nbits_per_idx,
-            size_t M_refine, size_t nbits_per_idx_refine):
+            Index * quantizer, int64_t d, int64_t nlist,
+            int64_t M, int64_t nbits_per_idx,
+            int64_t M_refine, int64_t nbits_per_idx_refine):
     IndexIVFPQ (quantizer, d, nlist, M, nbits_per_idx),
     refine_pq (d, M_refine, nbits_per_idx_refine),
     k_factor (4)
@@ -59,7 +59,7 @@ void IndexIVFPQR::train_residual (idx_t n, const float *x)
     train_residual_o (n, x, residual_2);
 
     if (verbose)
-        printf ("training %zdx%zd 2nd level PQ quantizer on %ld %dD-vectors\n",
+        printf ("training  %" PRId64 "x %" PRId64 " 2nd level PQ quantizer on  %" PRId64 " %dD-vectors\n",
                 refine_pq.M, refine_pq.ksub, n, d);
 
     refine_pq.cp.max_points_per_centroid = 1000;
@@ -105,7 +105,7 @@ void IndexIVFPQR::search_preassigned (idx_t n, const float *x, idx_t k,
 {
     uint64_t t0;
     TIC;
-    size_t k_coarse = long(k * k_factor);
+    int64_t k_coarse = int64_t(k * k_factor);
     idx_t *coarse_labels = new idx_t [k_coarse * n];
     ScopeDeleter<idx_t> del1 (coarse_labels);
     { // query with quantizer levels 1 and 2.
@@ -124,7 +124,7 @@ void IndexIVFPQR::search_preassigned (idx_t n, const float *x, idx_t k,
     TIC;
 
     // 3rd level refinement
-    size_t n_refine = 0;
+    int64_t n_refine = 0;
 #pragma omp parallel reduction(+ : n_refine)
     {
         // tmp buffers
@@ -211,7 +211,7 @@ void IndexIVFPQR::merge_from (IndexIVF &other_in, idx_t add_id)
     other->refine_codes.clear();
 }
 
-size_t IndexIVFPQR::remove_ids(const IDSelector& /*sel*/) {
+int64_t IndexIVFPQR::remove_ids(const IDSelector& /*sel*/) {
   FAISS_THROW_MSG("not implemented");
   return 0;
 }

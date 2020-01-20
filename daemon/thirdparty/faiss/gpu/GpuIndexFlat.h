@@ -74,7 +74,7 @@ class GpuIndexFlat : public GpuIndex {
   void copyTo(faiss::IndexFlat* index) const;
 
   /// Returns the number of vectors we contain
-  size_t getNumVecs() const;
+  int64_t getNumVecs() const;
 
   /// Clears all vectors from this index
   void reset() override;

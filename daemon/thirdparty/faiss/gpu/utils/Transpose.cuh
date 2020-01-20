@@ -121,10 +121,10 @@ void runTransposeAny(Tensor<T, Dim, true>& in,
     FAISS_ASSERT(out.getSize(i) == outSize[i]);
   }
 
-  size_t totalSize = in.numElements();
-  size_t block = std::min((size_t) getMaxThreadsCurrentDevice(), totalSize);
+  int64_t totalSize = in.numElements();
+  int64_t block = std::min((int64_t) getMaxThreadsCurrentDevice(), totalSize);
 
-  if (totalSize <= (size_t) std::numeric_limits<int>::max()) {
+  if (totalSize <= (int64_t) std::numeric_limits<int>::max()) {
     // div/mod seems faster with unsigned types
     auto inInfo = getTensorInfo<T, unsigned int, Dim>(in);
     auto outInfo = getTensorInfo<T, unsigned int, Dim>(out);
@@ -132,20 +132,20 @@ void runTransposeAny(Tensor<T, Dim, true>& in,
     std::swap(inInfo.sizes[dim1], inInfo.sizes[dim2]);
     std::swap(inInfo.strides[dim1], inInfo.strides[dim2]);
 
-    auto grid = std::min(utils::divUp(totalSize, block), (size_t) 4096);
+    auto grid = std::min(utils::divUp(totalSize, block), (int64_t) 4096);
 
     transposeAny<T, unsigned int, Dim, -1>
       <<<grid, block, 0, stream>>>(inInfo, outInfo, totalSize);
   } else {
-    auto inInfo = getTensorInfo<T, unsigned long, Dim>(in);
-    auto outInfo = getTensorInfo<T, unsigned long, Dim>(out);
+    auto inInfo = getTensorInfo<T, unsigned int64_t, Dim>(in);
+    auto outInfo = getTensorInfo<T, unsigned int64_t, Dim>(out);
 
     std::swap(inInfo.sizes[dim1], inInfo.sizes[dim2]);
     std::swap(inInfo.strides[dim1], inInfo.strides[dim2]);
 
-    auto grid = std::min(utils::divUp(totalSize, block), (size_t) 4096);
+    auto grid = std::min(utils::divUp(totalSize, block), (int64_t) 4096);
 
-    transposeAny<T, unsigned long, Dim, -1>
+    transposeAny<T, unsigned int64_t, Dim, -1>
       <<<grid, block, 0, stream>>>(inInfo, outInfo, totalSize);
   }
   CUDA_TEST_ERROR();

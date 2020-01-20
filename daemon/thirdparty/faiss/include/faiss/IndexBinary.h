@@ -10,6 +10,7 @@
 #ifndef FAISS_INDEX_BINARY_H
 #define FAISS_INDEX_BINARY_H
 
+#include <cinttypes>
 #include <cstdio>
 #include <typeinfo>
 #include <string>
@@ -123,7 +124,7 @@ struct IndexBinary {
 
   /** Removes IDs from the index. Not supported by all indexes.
    */
-  virtual size_t remove_ids(const IDSelector& sel);
+  virtual int64_t remove_ids(const IDSelector& sel);
 
   /** Reconstruct a stored vector.
    *

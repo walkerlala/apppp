@@ -30,19 +30,19 @@ typedef Index::idx_t idx_t;
 int d = 32;
 
 // nb of training vectors
-size_t nt = 5000;
+int64_t nt = 5000;
 
 // size of the database points per window step
-size_t nb = 1000;
+int64_t nb = 1000;
 
 // nb of queries
-size_t nq = 200;
+int64_t nq = 200;
 
 
-std::vector<float> make_data(size_t n)
+std::vector<float> make_data(int64_t n)
 {
     std::vector <float> database (n * d);
-    for (size_t i = 0; i < n * d; i++) {
+    for (int64_t i = 0; i < n * d; i++) {
         database[i] = drand48();
     }
     return database;
@@ -82,50 +82,50 @@ struct EncapsulateInvertedLists: InvertedLists {
         il(il)
     {}
 
-    static void * memdup (const void *m, size_t size) {
+    static void * memdup (const void *m, int64_t size) {
         if (size == 0) return nullptr;
         return memcpy (malloc(size), m, size);
     }
 
-    size_t list_size(size_t list_no) const override {
+    int64_t list_size(int64_t list_no) const override {
         return il->list_size (list_no);
     }
 
-    const uint8_t * get_codes (size_t list_no) const override {
+    const uint8_t * get_codes (int64_t list_no) const override {
         return (uint8_t*)memdup (il->get_codes(list_no),
                                  list_size(list_no) * code_size);
     }
 
-    const idx_t * get_ids (size_t list_no) const override {
+    const idx_t * get_ids (int64_t list_no) const override {
         return (idx_t*)memdup (il->get_ids(list_no),
                                list_size(list_no) * sizeof(idx_t));
     }
 
-    void release_codes (size_t, const uint8_t *codes) const override {
+    void release_codes (int64_t, const uint8_t *codes) const override {
         free ((void*)codes);
     }
 
-    void release_ids (size_t, const idx_t *ids) const override {
+    void release_ids (int64_t, const idx_t *ids) const override {
         free ((void*)ids);
     }
 
-    const uint8_t * get_single_code (size_t list_no, size_t offset)
+    const uint8_t * get_single_code (int64_t list_no, int64_t offset)
         const override {
         return (uint8_t*)memdup (il->get_single_code(list_no, offset),
                                  code_size);
     }
 
-    size_t add_entries(size_t, size_t, const idx_t*, const uint8_t*) override {
+    int64_t add_entries(int64_t, int64_t, const idx_t*, const uint8_t*) override {
       assert(!"not implemented");
       return 0;
     }
 
-    void update_entries(size_t, size_t, size_t, const idx_t*, const uint8_t*)
+    void update_entries(int64_t, int64_t, int64_t, const idx_t*, const uint8_t*)
         override {
       assert(!"not implemented");
     }
 
-    void resize(size_t, size_t) override {
+    void resize(int64_t, int64_t) override {
       assert(!"not implemented");
     }
 

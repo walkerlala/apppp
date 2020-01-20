@@ -357,23 +357,23 @@ template <typename T, int Dim, bool InnerContig,
 template <typename NewIndexT>
 __host__ bool
 Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::canUseIndexType() const {
-  static_assert(sizeof(size_t) >= sizeof(IndexT),
+  static_assert(sizeof(int64_t) >= sizeof(IndexT),
                 "index size too large");
-  static_assert(sizeof(size_t) >= sizeof(NewIndexT),
+  static_assert(sizeof(int64_t) >= sizeof(NewIndexT),
                 "new index size too large");
 
   // Find maximum offset that can be calculated
   // FIXME: maybe also consider offset in bytes? multiply by sizeof(T)?
-  size_t maxOffset = 0;
+  int64_t maxOffset = 0;
 
   for (int i = 0; i < Dim; ++i) {
-    size_t curMaxOffset = (size_t) size_[i] * (size_t) stride_[i];
+    int64_t curMaxOffset = (int64_t) size_[i] * (int64_t) stride_[i];
     if (curMaxOffset > maxOffset) {
       maxOffset = curMaxOffset;
     }
   }
 
-  if (maxOffset > (size_t) std::numeric_limits<NewIndexT>::max()) {
+  if (maxOffset > (int64_t) std::numeric_limits<NewIndexT>::max()) {
     return false;
   }
 
@@ -382,12 +382,12 @@ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::canUseIndexType() const {
 
 template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
-__host__ __device__ size_t
+__host__ __device__ int64_t
 Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::numElements() const {
-  size_t size = (size_t) getSize(0);
+  int64_t size = (int64_t) getSize(0);
 
   for (int i = 1; i < Dim; ++i) {
-    size *= (size_t) getSize(i);
+    size *= (int64_t) getSize(i);
   }
 
   return size;
@@ -397,7 +397,7 @@ template <typename T, int Dim, bool InnerContig,
           typename IndexT, template <typename U> class PtrTraits>
 __host__ __device__ bool
 Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::isContiguous() const {
-  long prevSize = 1;
+  int64_t prevSize = 1;
 
   for (int i = Dim - 1; i >= 0; --i) {
     if (getSize(i) != (IndexT) 1) {
@@ -674,7 +674,7 @@ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::narrow(int dim,
                    (start + size) <= size_[dim]);
 
   if (start > 0) {
-    newData += (size_t) start * stride_[dim];
+    newData += (int64_t) start * stride_[dim];
   }
 
   IndexT newSize[Dim];
@@ -703,8 +703,8 @@ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::view(
 
   // The total size of the new view must be the same as the total size
   // of the old view
-  size_t curSize = numElements();
-  size_t newSize = 1;
+  int64_t curSize = numElements();
+  int64_t newSize = 1;
 
   for (auto s : sizes) {
     newSize *= s;

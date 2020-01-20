@@ -10,6 +10,7 @@
 #pragma once
 
 #include <vector>
+#include <cinttypes>
 
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexIVF.h>
@@ -35,15 +36,15 @@ struct Index2Layer: Index {
     std::vector<uint8_t> codes;
 
     /// size of the code for the first level (ceil(log8(q1.nlist)))
-    size_t code_size_1;
+    int64_t code_size_1;
 
     /// size of the code for the second level
-    size_t code_size_2;
+    int64_t code_size_2;
 
     /// code_size_1 + code_size_2
-    size_t code_size;
+    int64_t code_size;
 
-    Index2Layer (Index * quantizer, size_t nlist,
+    Index2Layer (Index * quantizer, int64_t nlist,
                  int M, int nbit = 8,
                  MetricType metric = METRIC_L2);
 
@@ -75,7 +76,7 @@ struct Index2Layer: Index {
 
 
     /* The standalone codec interface */
-    size_t sa_code_size () const override;
+    int64_t sa_code_size () const override;
     void sa_encode (idx_t n, const float *x, uint8_t *bytes) const override;
     void sa_decode (idx_t n, const uint8_t *bytes, float *x) const override;
 

@@ -77,7 +77,7 @@ void IndexScalarQuantizer::search(
         ScopeDeleter1<InvertedListScanner> del(scanner);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             float * D = distances + k * i;
             idx_t * I = labels + k * i;
             // re-order heap
@@ -122,7 +122,7 @@ void IndexScalarQuantizer::reconstruct_n(
              idx_t i0, idx_t ni, float* recons) const
 {
     std::unique_ptr<ScalarQuantizer::Quantizer> squant(sq.select_quantizer ());
-    for (size_t i = 0; i < ni; i++) {
+    for (int64_t i = 0; i < ni; i++) {
         squant->decode_vector(&codes[(i + i0) * code_size], recons + i * d);
     }
 }
@@ -133,7 +133,7 @@ void IndexScalarQuantizer::reconstruct(idx_t key, float* recons) const
 }
 
 /* Codec interface */
-size_t IndexScalarQuantizer::sa_code_size () const
+int64_t IndexScalarQuantizer::sa_code_size () const
 {
     return sq.code_size;
 }
@@ -159,7 +159,7 @@ void IndexScalarQuantizer::sa_decode (idx_t n, const uint8_t *bytes,
  ********************************************************************/
 
 IndexIVFScalarQuantizer::IndexIVFScalarQuantizer (
-            Index *quantizer, size_t d, size_t nlist,
+            Index *quantizer, int64_t d, int64_t nlist,
             ScalarQuantizer::QuantizerType qtype,
             MetricType metric, bool encode_residual)
     : IndexIVF(quantizer, d, nlist, 0, metric),
@@ -189,7 +189,7 @@ void IndexIVFScalarQuantizer::encode_vectors(idx_t n, const float* x,
                                              bool include_listnos) const
 {
     std::unique_ptr<ScalarQuantizer::Quantizer> squant (sq.select_quantizer ());
-    size_t coarse_size = include_listnos ? coarse_code_size () : 0;
+    int64_t coarse_size = include_listnos ? coarse_code_size () : 0;
     memset(codes, 0, (code_size + coarse_size) * n);
 
 #pragma omp parallel if(n > 1)
@@ -197,7 +197,7 @@ void IndexIVFScalarQuantizer::encode_vectors(idx_t n, const float* x,
         std::vector<float> residual (d);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             int64_t list_no = list_nos [i];
             if (list_no >= 0) {
                 const float *xi = x + i * d;
@@ -220,21 +220,21 @@ void IndexIVFScalarQuantizer::sa_decode (idx_t n, const uint8_t *codes,
                                                  float *x) const
 {
     std::unique_ptr<ScalarQuantizer::Quantizer> squant (sq.select_quantizer ());
-    size_t coarse_size = coarse_code_size ();
+    int64_t coarse_size = coarse_code_size ();
 
 #pragma omp parallel if(n > 1)
     {
         std::vector<float> residual (d);
 
 #pragma omp for
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             const uint8_t *code = codes + i * (code_size + coarse_size);
             int64_t list_no = decode_listno (code);
             float *xi = x + i * d;
             squant->decode_vector (code + coarse_size, xi);
             if (by_residual) {
                 quantizer->reconstruct (list_no, residual.data());
-                for (size_t j = 0; j < d; j++) {
+                for (int64_t j = 0; j < d; j++) {
                     xi[j] += residual[j];
                 }
             }
@@ -250,7 +250,7 @@ void IndexIVFScalarQuantizer::add_with_ids
     FAISS_THROW_IF_NOT (is_trained);
     std::unique_ptr<int64_t []> idx (new int64_t [n]);
     quantizer->assign (n, x, idx.get());
-    size_t nadd = 0;
+    int64_t nadd = 0;
     std::unique_ptr<ScalarQuantizer::Quantizer> squant(sq.select_quantizer ());
 
 #pragma omp parallel reduction(+: nadd)
@@ -261,7 +261,7 @@ void IndexIVFScalarQuantizer::add_with_ids
         int rank = omp_get_thread_num();
 
         // each thread takes care of a subset of lists
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < n; i++) {
             int64_t list_no = idx [i];
             if (list_no >= 0 && list_no % nt == rank) {
                 int64_t id = xids ? xids[i] : ntotal + i;

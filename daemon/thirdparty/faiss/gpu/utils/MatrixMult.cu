@@ -252,9 +252,9 @@ runBatchMatrixMult(Tensor<float, 3, true>& c, bool transC,
   HostTensor<float*, 1, true> hostB({b.getSize(0)});
   HostTensor<float*, 1, true> hostC({c.getSize(0)});
 
-  size_t aOffset = a.getStride(0);
-  size_t bOffset = b.getStride(0);
-  size_t cOffset = c.getStride(0);
+  int64_t aOffset = a.getStride(0);
+  int64_t bOffset = b.getStride(0);
+  int64_t cOffset = c.getStride(0);
 
   for (int i = 0; i < a.getSize(0); ++i) {
     hostA[i] = transC ? a.data() + i * aOffset : b.data() + i * bOffset;

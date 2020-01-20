@@ -124,11 +124,11 @@ struct IDTranslatedSelector: IDSelector {
 }
 
 template <typename IndexT>
-size_t IndexIDMapTemplate<IndexT>::remove_ids (const IDSelector & sel)
+int64_t IndexIDMapTemplate<IndexT>::remove_ids (const IDSelector & sel)
 {
     // remove in sub-index first
     IDTranslatedSelector sel2 (id_map, sel);
-    size_t nremove = index->remove_ids (sel2);
+    int64_t nremove = index->remove_ids (sel2);
 
     int64_t j = 0;
     for (idx_t i = 0; i < this->ntotal; i++) {
@@ -167,9 +167,9 @@ void IndexIDMap2Template<IndexT>::add_with_ids
     (idx_t n, const typename IndexT::component_t* x,
      const typename IndexT::idx_t* xids)
 {
-    size_t prev_ntotal = this->ntotal;
+    int64_t prev_ntotal = this->ntotal;
     IndexIDMapTemplate<IndexT>::add_with_ids (n, x, xids);
-    for (size_t i = prev_ntotal; i < this->ntotal; i++) {
+    for (int64_t i = prev_ntotal; i < this->ntotal; i++) {
         rev_map [this->id_map [i]] = i;
     }
 }
@@ -178,17 +178,17 @@ template <typename IndexT>
 void IndexIDMap2Template<IndexT>::construct_rev_map ()
 {
     rev_map.clear ();
-    for (size_t i = 0; i < this->ntotal; i++) {
+    for (int64_t i = 0; i < this->ntotal; i++) {
         rev_map [this->id_map [i]] = i;
     }
 }
 
 
 template <typename IndexT>
-size_t IndexIDMap2Template<IndexT>::remove_ids(const IDSelector& sel)
+int64_t IndexIDMap2Template<IndexT>::remove_ids(const IDSelector& sel)
 {
     // This is quite inefficient
-    size_t nremove = IndexIDMapTemplate<IndexT>::remove_ids (sel);
+    int64_t nremove = IndexIDMapTemplate<IndexT>::remove_ids (sel);
     construct_rev_map ();
     return nremove;
 }
@@ -200,7 +200,7 @@ void IndexIDMap2Template<IndexT>::reconstruct
     try {
         this->index->reconstruct (rev_map.at (key), recons);
     } catch (const std::out_of_range& e) {
-        FAISS_THROW_FMT ("key %ld not found", key);
+        FAISS_THROW_FMT ("key  %" PRId64 " not found", key);
     }
 }
 
@@ -275,7 +275,7 @@ void IndexSplitVectors::search (
         float *distances1 = no == 0 ? distances : all_distances + no * k * n;
         idx_t *labels1 = no == 0 ? labels : all_labels + no * k * n;
         if (index->verbose)
-            printf ("begin query shard %d on %ld points\n", no, n);
+            printf ("begin query shard %d on  %" PRId64 " points\n", no, n);
         const Index * sub_index = index->sub_indexes[no];
         int64_t sub_d = sub_index->d, d = index->d;
         idx_t ofs = 0;

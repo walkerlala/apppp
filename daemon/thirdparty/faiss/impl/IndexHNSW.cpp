@@ -68,16 +68,16 @@ namespace {
 
 
 void hnsw_add_vertices(IndexHNSW &index_hnsw,
-                       size_t n0,
-                       size_t n, const float *x,
+                       int64_t n0,
+                       int64_t n, const float *x,
                        bool verbose,
                        bool preset_levels = false) {
-    size_t d = index_hnsw.d;
+    int64_t d = index_hnsw.d;
     HNSW & hnsw = index_hnsw.hnsw;
-    size_t ntotal = n0 + n;
+    int64_t ntotal = n0 + n;
     double t0 = getmillisecs();
     if (verbose) {
-        printf("hnsw_add_vertices: adding %ld elements on top of %ld "
+        printf("hnsw_add_vertices: adding  %" PRId64 " elements on top of  %" PRId64 " "
                "(preset_levels=%d)\n",
                n, n0, int(preset_levels));
     }
@@ -155,7 +155,7 @@ void hnsw_add_vertices(IndexHNSW &index_hnsw,
                     index_hnsw.storage->get_distance_computer();
                 ScopeDeleter1<DistanceComputer> del(dis);
                 int prev_display = verbose && omp_get_thread_num() == 0 ? 0 : -1;
-                size_t counter = 0;
+                int64_t counter = 0;
 
 #pragma omp  for schedule(dynamic)
                 for (int i = i0; i < i1; i++) {
@@ -247,7 +247,7 @@ void IndexHNSW::search (idx_t n, const float *x, idx_t k,
 {
     FAISS_THROW_IF_NOT_MSG(storage,
        "Please use IndexHSNWFlat (or variants) instead of IndexHNSW directly");
-    size_t nreorder = 0;
+    int64_t nreorder = 0;
 
     idx_t check_period = InterruptCallback::get_period_hint (
           hnsw.max_level * d * hnsw.efSearch);
@@ -329,12 +329,12 @@ void IndexHNSW::shrink_level_0_neighbors(int new_size)
 #pragma omp for
         for (idx_t i = 0; i < ntotal; i++) {
 
-            size_t begin, end;
+            int64_t begin, end;
             hnsw.neighbor_range(i, 0, &begin, &end);
 
             std::priority_queue<NodeDistFarther> initial_list;
 
-            for (size_t j = begin; j < end; j++) {
+            for (int64_t j = begin; j < end; j++) {
                 int v1 = hnsw.neighbors[j];
                 if (v1 < 0) break;
                 initial_list.emplace(dis->symmetric_dis(i, v1), v1);
@@ -346,7 +346,7 @@ void IndexHNSW::shrink_level_0_neighbors(int new_size)
             HNSW::shrink_neighbor_list(*dis, initial_list,
                                        shrunk_list, new_size);
 
-            for (size_t j = begin; j < end; j++) {
+            for (int64_t j = begin; j < end; j++) {
                 if (j - begin < shrunk_list.size())
                     hnsw.neighbors[j] = shrunk_list[j - begin].id;
                 else
@@ -443,7 +443,7 @@ void IndexHNSW::init_level_0_from_knngraph(
 
         std::priority_queue<NodeDistFarther> initial_list;
 
-        for (size_t j = 0; j < k; j++) {
+        for (int64_t j = 0; j < k; j++) {
             int v1 = I[i * k + j];
             if (v1 == i) continue;
             if (v1 < 0) break;
@@ -453,10 +453,10 @@ void IndexHNSW::init_level_0_from_knngraph(
         std::vector<NodeDistFarther> shrunk_list;
         HNSW::shrink_neighbor_list(*qdis, initial_list, shrunk_list, dest_size);
 
-        size_t begin, end;
+        int64_t begin, end;
         hnsw.neighbor_range(i, 0, &begin, &end);
 
-        for (size_t j = begin; j < end; j++) {
+        for (int64_t j = begin; j < end; j++) {
             if (j - begin < shrunk_list.size())
                 hnsw.neighbors[j] = shrunk_list[j - begin].id;
             else
@@ -516,7 +516,7 @@ void IndexHNSW::reorder_links()
 #pragma omp parallel
     {
         std::vector<float> distances (M);
-        std::vector<size_t> order (M);
+        std::vector<int64_t> order (M);
         std::vector<storage_idx_t> tmp (M);
         DistanceComputer *dis = storage->get_distance_computer();
         ScopeDeleter1<DistanceComputer> del(dis);
@@ -524,10 +524,10 @@ void IndexHNSW::reorder_links()
 #pragma omp for
         for(storage_idx_t i = 0; i < ntotal; i++) {
 
-            size_t begin, end;
+            int64_t begin, end;
             hnsw.neighbor_range(i, 0, &begin, &end);
 
-            for (size_t j = begin; j < end; j++) {
+            for (int64_t j = begin; j < end; j++) {
                 storage_idx_t nj = hnsw.neighbors[j];
                 if (nj < 0) {
                     end = j;
@@ -538,7 +538,7 @@ void IndexHNSW::reorder_links()
             }
 
             fvec_argsort (end - begin, distances.data(), order.data());
-            for (size_t j = begin; j < end; j++) {
+            for (int64_t j = begin; j < end; j++) {
                 hnsw.neighbors[j] = tmp[order[j - begin]];
             }
         }
@@ -553,10 +553,10 @@ void IndexHNSW::link_singletons()
 
     std::vector<bool> seen(ntotal);
 
-    for (size_t i = 0; i < ntotal; i++) {
-        size_t begin, end;
+    for (int64_t i = 0; i < ntotal; i++) {
+        int64_t begin, end;
         hnsw.neighbor_range(i, 0, &begin, &end);
-        for (size_t j = begin; j < end; j++) {
+        for (int64_t j = begin; j < end; j++) {
             storage_idx_t ni = hnsw.neighbors[j];
             if (ni >= 0) seen[ni] = true;
         }
@@ -573,7 +573,7 @@ void IndexHNSW::link_singletons()
         }
     }
 
-    printf("  Found %d / %ld singletons (%d appear in a level above)\n",
+    printf("  Found %d /  %" PRId64 " singletons (%d appear in a level above)\n",
            n_sing, ntotal, n_sing_l1);
 
     std::vector<float>recons(singletons.size() * d);
@@ -593,7 +593,7 @@ void IndexHNSW::link_singletons()
 
 
 ReconstructFromNeighbors::ReconstructFromNeighbors(
-             const IndexHNSW & index, size_t k, size_t nsq):
+             const IndexHNSW & index, int64_t k, int64_t nsq):
     index(index), k(k), nsq(nsq) {
     M = index.hnsw.nb_neighbors(0);
     FAISS_ASSERT(k <= 256);
@@ -610,7 +610,7 @@ void ReconstructFromNeighbors::reconstruct(storage_idx_t i, float *x, float *tmp
 
 
     const HNSW & hnsw = index.hnsw;
-    size_t begin, end;
+    int64_t begin, end;
     hnsw.neighbor_range(i, 0, &begin, &end);
 
     if (k == 1 || nsq == 1) {
@@ -628,7 +628,7 @@ void ReconstructFromNeighbors::reconstruct(storage_idx_t i, float *x, float *tmp
         for (int l = 0; l < d; l++)
             x[l] = w0 * tmp[l];
 
-        for (size_t j = begin; j < end; j++) {
+        for (int64_t j = begin; j < end; j++) {
 
             storage_idx_t ji = hnsw.neighbors[j];
             if (ji < 0) ji = i;
@@ -656,7 +656,7 @@ void ReconstructFromNeighbors::reconstruct(storage_idx_t i, float *x, float *tmp
         for (int l = dsub; l < d; l++)
             x[l] = w0 * tmp[l];
 
-        for (size_t j = begin; j < end; j++) {
+        for (int64_t j = begin; j < end; j++) {
             storage_idx_t ji = hnsw.neighbors[j];
             if (ji < 0) ji = i;
             index.storage->reconstruct(ji, tmp);
@@ -693,7 +693,7 @@ void ReconstructFromNeighbors::reconstruct(storage_idx_t i, float *x, float *tmp
             }
         }
 
-        for (size_t j = begin; j < end; j++) {
+        for (int64_t j = begin; j < end; j++) {
             storage_idx_t ji = hnsw.neighbors[j];
             if (ji < 0) ji = i;
 
@@ -725,12 +725,12 @@ void ReconstructFromNeighbors::reconstruct_n(storage_idx_t n0,
     }
 }
 
-size_t ReconstructFromNeighbors::compute_distances(
-    size_t n, const idx_t *shortlist,
+int64_t ReconstructFromNeighbors::compute_distances(
+    int64_t n, const idx_t *shortlist,
     const float *query, float *distances) const
 {
     std::vector<float> tmp(2 * index.d);
-    size_t ncomp = 0;
+    int64_t ncomp = 0;
     for (int i = 0; i < n; i++) {
         if (shortlist[i] < 0) break;
         reconstruct(shortlist[i], tmp.data(), tmp.data() + index.d);
@@ -743,13 +743,13 @@ size_t ReconstructFromNeighbors::compute_distances(
 void ReconstructFromNeighbors::get_neighbor_table(storage_idx_t i, float *tmp1) const
 {
     const HNSW & hnsw = index.hnsw;
-    size_t begin, end;
+    int64_t begin, end;
     hnsw.neighbor_range(i, 0, &begin, &end);
-    size_t d = index.d;
+    int64_t d = index.d;
 
     index.storage->reconstruct(i, tmp1);
 
-    for (size_t j = begin; j < end; j++) {
+    for (int64_t j = begin; j < end; j++) {
         storage_idx_t ji = hnsw.neighbors[j];
         if (ji < 0) ji = i;
         index.storage->reconstruct(ji, tmp1 + (j - begin + 1) * d);
@@ -771,7 +771,7 @@ void ReconstructFromNeighbors::estimate_code(
     // collect coordinates of base
     get_neighbor_table (i, tmp1);
 
-    for (size_t sq = 0; sq < nsq; sq++) {
+    for (int64_t sq = 0; sq < nsq; sq++) {
         int d0 = sq * dsub;
 
         {
@@ -787,7 +787,7 @@ void ReconstructFromNeighbors::estimate_code(
 
         float min = HUGE_VAL;
         int argmin = -1;
-        for (size_t j = 0; j < k; j++) {
+        for (int64_t j = 0; j < k; j++) {
             float dis = fvec_L2sqr(x + d0, tmp2 + j * dsub, dsub);
             if (dis < min) {
                 min = dis;
@@ -799,7 +799,7 @@ void ReconstructFromNeighbors::estimate_code(
 
 }
 
-void ReconstructFromNeighbors::add_codes(size_t n, const float *x)
+void ReconstructFromNeighbors::add_codes(int64_t n, const float *x)
 {
     if (k == 1) { // nothing to encode
         ntotal += n;
@@ -875,7 +875,7 @@ IndexHNSWSQ::IndexHNSWSQ() {}
  **************************************************************/
 
 
-IndexHNSW2Level::IndexHNSW2Level(Index *quantizer, size_t nlist, int m_pq, int M):
+IndexHNSW2Level::IndexHNSW2Level(Index *quantizer, int64_t nlist, int m_pq, int M):
     IndexHNSW (new Index2Layer (quantizer, nlist, m_pq), M)
 {
     own_fields = true;
@@ -912,10 +912,10 @@ int search_from_candidates_2(const HNSW & hnsw,
         float d0 = 0;
         int v0 = candidates.pop_min(&d0);
 
-        size_t begin, end;
+        int64_t begin, end;
         hnsw.neighbor_range(v0, level, &begin, &end);
 
-        for (size_t j = begin; j < end; j++) {
+        for (int64_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
             if (v1 < 0) break;
             if (vt.visited[v1] == vt.visno + 1) {
@@ -1003,7 +1003,7 @@ void IndexHNSW2Level::search (idx_t n, const float *x, idx_t k,
                 for (int j = 0; j < nprobe; j++) {
                     idx_t key = coarse_assign[j + i * nprobe];
                     if (key < 0) break;
-                    size_t list_length = index_ivfpq->get_list_size (key);
+                    int64_t list_length = index_ivfpq->get_list_size (key);
                     const idx_t * ids = index_ivfpq->invlists->get_ids (key);
 
                     for (int jj = 0; jj < list_length; jj++) {

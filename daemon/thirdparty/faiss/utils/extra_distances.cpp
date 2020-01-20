@@ -24,7 +24,7 @@ namespace faiss {
  ***************************************************************************/
 
 struct VectorDistanceL2 {
-    size_t d;
+    int64_t d;
 
     float operator () (const float *x, const float *y) const {
         return fvec_L2sqr (x, y, d);
@@ -32,7 +32,7 @@ struct VectorDistanceL2 {
 };
 
 struct VectorDistanceL1 {
-    size_t d;
+    int64_t d;
 
     float operator () (const float *x, const float *y) const {
         return fvec_L1 (x, y, d);
@@ -40,13 +40,13 @@ struct VectorDistanceL1 {
 };
 
 struct VectorDistanceLinf {
-    size_t d;
+    int64_t d;
 
     float operator () (const float *x, const float *y) const {
         return fvec_Linf (x, y, d);
         /*
         float vmax = 0;
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             float diff = fabs (x[i] - y[i]);
             if (diff > vmax) vmax = diff;
         }
@@ -55,12 +55,12 @@ struct VectorDistanceLinf {
 };
 
 struct VectorDistanceLp {
-    size_t d;
+    int64_t d;
     const float p;
 
     float operator () (const float *x, const float *y) const {
         float accu = 0;
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             float diff = fabs (x[i] - y[i]);
             accu += powf (diff, p);
         }
@@ -69,11 +69,11 @@ struct VectorDistanceLp {
 };
 
 struct VectorDistanceCanberra {
-    size_t d;
+    int64_t d;
 
     float operator () (const float *x, const float *y) const {
         float accu = 0;
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             float xi = x[i], yi = y[i];
             accu += fabs (xi - yi) / (fabs(xi) + fabs(yi));
         }
@@ -82,11 +82,11 @@ struct VectorDistanceCanberra {
 };
 
 struct VectorDistanceBrayCurtis {
-    size_t d;
+    int64_t d;
 
     float operator () (const float *x, const float *y) const {
         float accu_num = 0, accu_den = 0;
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             float xi = x[i], yi = y[i];
             accu_num += fabs (xi - yi);
             accu_den += fabs (xi + yi);
@@ -96,12 +96,12 @@ struct VectorDistanceBrayCurtis {
 };
 
 struct VectorDistanceJensenShannon {
-    size_t d;
+    int64_t d;
 
     float operator () (const float *x, const float *y) const {
         float accu = 0;
 
-        for (size_t i = 0; i < d; i++) {
+        for (int64_t i = 0; i < d; i++) {
             float xi = x[i], yi = y[i];
             float mi = 0.5 * (xi + yi);
             float kl1 = - xi * log(mi / xi);
@@ -151,22 +151,22 @@ void knn_extra_metrics_template (
         VD vd,
         const float * x,
         const float * y,
-        size_t nx, size_t ny,
+        int64_t nx, int64_t ny,
         float_maxheap_array_t * res)
 {
-    size_t k = res->k;
-    size_t d = vd.d;
-    size_t check_period = InterruptCallback::get_period_hint (ny * d);
+    int64_t k = res->k;
+    int64_t d = vd.d;
+    int64_t check_period = InterruptCallback::get_period_hint (ny * d);
     check_period *= omp_get_max_threads();
 
-    for (size_t i0 = 0; i0 < nx; i0 += check_period) {
-        size_t i1 = std::min(i0 + check_period, nx);
+    for (int64_t i0 = 0; i0 < nx; i0 += check_period) {
+        int64_t i1 = std::min(i0 + check_period, nx);
 
 #pragma omp parallel for
-        for (size_t i = i0; i < i1; i++) {
+        for (int64_t i = i0; i < i1; i++) {
             const float * x_i = x + i * d;
             const float * y_j = y;
-            size_t j;
+            int64_t j;
             float * simi = res->get_val(i);
             int64_t * idxi = res->get_ids (i);
 
@@ -204,7 +204,7 @@ struct ExtraDistanceComputer : DistanceComputer {
     }
 
     ExtraDistanceComputer(const VD & vd, const float *xb,
-                          size_t nb, const float *q = nullptr)
+                          int64_t nb, const float *q = nullptr)
         : vd(vd), nb(nb), q(q), b(xb) {}
 
     void set_query(const float *x) override {
@@ -245,7 +245,7 @@ void pairwise_extra_distances (
     switch(mt) {
 #define HANDLE_VAR(kw)                                          \
      case METRIC_ ## kw: {                                      \
-        VectorDistance ## kw vd({(size_t)d});                   \
+        VectorDistance ## kw vd({(int64_t)d});                   \
         pairwise_extra_distances_template (vd, nq, xq, nb, xb,  \
                                            dis, ldq, ldb, ldd); \
         break;                                                  \
@@ -258,7 +258,7 @@ void pairwise_extra_distances (
         HANDLE_VAR(JensenShannon);
 #undef HANDLE_VAR
     case METRIC_Lp: {
-        VectorDistanceLp vd({(size_t)d, metric_arg});
+        VectorDistanceLp vd({(int64_t)d, metric_arg});
         pairwise_extra_distances_template (vd, nq, xq, nb, xb,
                                            dis, ldq, ldb, ldd);
         break;
@@ -272,7 +272,7 @@ void pairwise_extra_distances (
 void knn_extra_metrics (
         const float * x,
         const float * y,
-        size_t d, size_t nx, size_t ny,
+        int64_t d, int64_t nx, int64_t ny,
         MetricType mt, float metric_arg,
         float_maxheap_array_t * res)
 {
@@ -280,7 +280,7 @@ void knn_extra_metrics (
     switch(mt) {
 #define HANDLE_VAR(kw)                                          \
      case METRIC_ ## kw: {                                      \
-        VectorDistance ## kw vd({(size_t)d});                   \
+        VectorDistance ## kw vd({(int64_t)d});                   \
         knn_extra_metrics_template (vd, x, y, nx, ny, res);     \
         break;                                                  \
     }
@@ -292,7 +292,7 @@ void knn_extra_metrics (
         HANDLE_VAR(JensenShannon);
 #undef HANDLE_VAR
     case METRIC_Lp: {
-        VectorDistanceLp vd({(size_t)d, metric_arg});
+        VectorDistanceLp vd({(int64_t)d, metric_arg});
         knn_extra_metrics_template (vd, x, y, nx, ny, res);
         break;
     }
@@ -303,15 +303,15 @@ void knn_extra_metrics (
 }
 
 DistanceComputer *get_extra_distance_computer (
-        size_t d,
+        int64_t d,
         MetricType mt, float metric_arg,
-        size_t nb, const float *xb)
+        int64_t nb, const float *xb)
 {
 
     switch(mt) {
 #define HANDLE_VAR(kw)                                                  \
      case METRIC_ ## kw: {                                              \
-        VectorDistance ## kw vd({(size_t)d});                           \
+        VectorDistance ## kw vd({(int64_t)d});                           \
         return new ExtraDistanceComputer<VectorDistance ## kw>(vd, xb, nb); \
     }
         HANDLE_VAR(L2);
@@ -322,7 +322,7 @@ DistanceComputer *get_extra_distance_computer (
         HANDLE_VAR(JensenShannon);
 #undef HANDLE_VAR
     case METRIC_Lp: {
-        VectorDistanceLp vd({(size_t)d, metric_arg});
+        VectorDistanceLp vd({(int64_t)d, metric_arg});
         return new ExtraDistanceComputer<VectorDistanceLp> (vd, xb, nb);
         break;
     }

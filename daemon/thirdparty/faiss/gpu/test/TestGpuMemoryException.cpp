@@ -16,16 +16,16 @@
 // Test to see if we can recover after attempting to allocate too much GPU
 // memory
 TEST(TestGpuMemoryException, AddException) {
-  size_t numBrokenAdd = std::numeric_limits<int>::max();
-  size_t numRealAdd = 10000;
-  size_t devFree = 0;
-  size_t devTotal = 0;
+  int64_t numBrokenAdd = std::numeric_limits<int>::max();
+  int64_t numRealAdd = 10000;
+  int64_t devFree = 0;
+  int64_t devTotal = 0;
 
   CUDA_VERIFY(cudaMemGetInfo(&devFree, &devTotal));
 
   // Figure out the dimensionality needed to get at least greater than devTotal
-  size_t brokenAddDims = ((devTotal / sizeof(float)) / numBrokenAdd) + 1;
-  size_t realAddDims = 128;
+  int64_t brokenAddDims = ((devTotal / sizeof(float)) / numBrokenAdd) + 1;
+  int64_t realAddDims = 128;
 
   faiss::gpu::StandardGpuResources res;
 
@@ -66,7 +66,7 @@ TEST(TestGpuMemoryException, AddException) {
 
   // Should be able to query results from what we had before
   {
-    size_t numQuery = 10;
+    int64_t numQuery = 10;
     auto vecs = faiss::gpu::randVecs(numQuery, realAddDims);
     EXPECT_NO_THROW(compareIndices(vecs, cpuIndex, gpuIndexL2,
                                    numQuery, realAddDims, 50, "",

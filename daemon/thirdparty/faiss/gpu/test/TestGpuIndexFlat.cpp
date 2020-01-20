@@ -333,7 +333,7 @@ TEST(TestGpuIndexFlat, UnifiedMemory) {
   // FIXME: GpuIndexFlat doesn't support > 2^31 (vecs * dims) due to
   // kernel indexing, so we can't test unified memory for memory
   // oversubscription.
-  size_t numVecs = 50000;
+  int64_t numVecs = 50000;
   int numQuery = 10;
   int k = 10;
 

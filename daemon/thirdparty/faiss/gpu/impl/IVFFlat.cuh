@@ -32,15 +32,15 @@ class IVFFlat : public IVFBase {
   /// host or on our current device
   void addCodeVectorsFromCpu(int listId,
                              const unsigned char* vecs,
-                             const long* indices,
-                             size_t numVecs);
+                             const int64_t* indices,
+                             int64_t numVecs);
 
   /// Adds the given vectors to this index.
   /// The input data must be on our current device.
   /// Returns the number of vectors successfully added. Vectors may
   /// not be able to be added because they contain NaNs.
   int classifyAndAddVectors(Tensor<float, 2, true>& vecs,
-                            Tensor<long, 1, true>& indices);
+                            Tensor<int64_t, 1, true>& indices);
 
   /// Find the approximate k nearest neigbors for `queries` against
   /// our database
@@ -48,11 +48,11 @@ class IVFFlat : public IVFBase {
              int nprobe,
              int k,
              Tensor<float, 2, true>& outDistances,
-             Tensor<long, 2, true>& outIndices);
+             Tensor<int64_t, 2, true>& outIndices);
 
  private:
   /// Returns the size of our stored vectors, in bytes
-  size_t getVectorMemorySize() const;
+  int64_t getVectorMemorySize() const;
 
  private:
   /// Metric type used

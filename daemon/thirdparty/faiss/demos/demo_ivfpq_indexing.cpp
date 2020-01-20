@@ -35,11 +35,11 @@ int main ()
     int d = 128;
 
     // size of the database we plan to index
-    size_t nb = 200 * 1000;
+    int64_t nb = 200 * 1000;
 
     // make a set of nt training vectors in the unit cube
     // (could be the database)
-    size_t nt = 100 * 1000;
+    int64_t nt = 100 * 1000;
 
     // make the index object and train it
     faiss::IndexFlatL2 coarse_quantizer (d);
@@ -55,11 +55,11 @@ int main ()
 
 
     { // training
-        printf ("[%.3f s] Generating %ld vectors in %dD for training\n",
+        printf ("[%.3f s] Generating  %" PRId64 " vectors in %dD for training\n",
                 elapsed() - t0, nt, d);
 
         std::vector <float> trainvecs (nt * d);
-        for (size_t i = 0; i < nt * d; i++) {
+        for (int64_t i = 0; i < nt * d; i++) {
             trainvecs[i] = drand48();
         }
 
@@ -78,15 +78,15 @@ int main ()
         write_index (&index, outfilename);
     }
 
-    size_t nq;
+    int64_t nq;
     std::vector<float> queries;
 
     { // populating the database
-        printf ("[%.3f s] Building a dataset of %ld vectors to index\n",
+        printf ("[%.3f s] Building a dataset of  %" PRId64 " vectors to index\n",
                 elapsed() - t0, nb);
 
         std::vector <float> database (nb * d);
-        for (size_t i = 0; i < nb * d; i++) {
+        for (int64_t i = 0; i < nb * d; i++) {
             database[i] = drand48();
         }
 
@@ -115,7 +115,7 @@ int main ()
     { // searching the database
         int k = 5;
         printf ("[%.3f s] Searching the %d nearest neighbors "
-                "of %ld vectors in the index\n",
+                "of  %" PRId64 " vectors in the index\n",
                 elapsed() - t0, k, nq);
 
         std::vector<faiss::Index::idx_t> nns (k * nq);

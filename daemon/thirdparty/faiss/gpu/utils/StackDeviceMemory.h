@@ -20,11 +20,11 @@ namespace faiss { namespace gpu {
 class StackDeviceMemory : public DeviceMemory {
  public:
   /// Allocate a new region of memory that we manage
-  explicit StackDeviceMemory(int device, size_t allocPerDevice);
+  explicit StackDeviceMemory(int device, int64_t allocPerDevice);
 
   /// Manage a region of memory for a particular device, with or
   /// without ownership
-  StackDeviceMemory(int device, void* p, size_t size, bool isOwner);
+  StackDeviceMemory(int device, void* p, int64_t size, bool isOwner);
 
   ~StackDeviceMemory() override;
 
@@ -35,11 +35,11 @@ class StackDeviceMemory : public DeviceMemory {
   int getDevice() const override;
 
   DeviceMemoryReservation getMemory(cudaStream_t stream,
-                                    size_t size) override;
+                                    int64_t size) override;
 
-  size_t getSizeAvailable() const override;
+  int64_t getSizeAvailable() const override;
   std::string toString() const override;
-  size_t getHighWaterCudaMalloc() const override;
+  int64_t getHighWaterCudaMalloc() const override;
 
  protected:
   void returnAllocation(DeviceMemoryReservation& m) override;
@@ -60,28 +60,28 @@ class StackDeviceMemory : public DeviceMemory {
 
   struct Stack {
     /// Constructor that allocates memory via cudaMalloc
-    Stack(int device, size_t size);
+    Stack(int device, int64_t size);
 
     /// Constructor that references a pre-allocated region of memory
-    Stack(int device, void* p, size_t size, bool isOwner);
+    Stack(int device, void* p, int64_t size, bool isOwner);
     ~Stack();
 
     /// Returns how much size is available for an allocation without
     /// calling cudaMalloc
-    size_t getSizeAvailable() const;
+    int64_t getSizeAvailable() const;
 
     /// Obtains an allocation; all allocations are guaranteed to be 16
     /// byte aligned
-    char* getAlloc(size_t size, cudaStream_t stream);
+    char* getAlloc(int64_t size, cudaStream_t stream);
 
     /// Returns an allocation
-    void returnAlloc(char* p, size_t size, cudaStream_t stream);
+    void returnAlloc(char* p, int64_t size, cudaStream_t stream);
 
     /// Returns the stack state
     std::string toString() const;
 
     /// Returns the high-water mark of cudaMalloc activity
-    size_t getHighWaterCudaMalloc() const;
+    int64_t getHighWaterCudaMalloc() const;
 
     /// Device this allocation is on
     int device_;
@@ -95,7 +95,7 @@ class StackDeviceMemory : public DeviceMemory {
     char* end_;
 
     /// Total size end_ - start_
-    size_t size_;
+    int64_t size_;
 
     /// Stack head within [start, end)
     char* head_;
@@ -105,15 +105,15 @@ class StackDeviceMemory : public DeviceMemory {
     std::list<Range> lastUsers_;
 
     /// How much cudaMalloc memory is currently outstanding?
-    size_t mallocCurrent_;
+    int64_t mallocCurrent_;
 
     /// What's the high water mark in terms of memory used from the
     /// temporary buffer?
-    size_t highWaterMemoryUsed_;
+    int64_t highWaterMemoryUsed_;
 
     /// What's the high water mark in terms of memory allocated via
     /// cudaMalloc?
-    size_t highWaterMalloc_;
+    int64_t highWaterMalloc_;
 
     /// Whether or not a warning upon cudaMalloc is generated
     bool cudaMallocWarning_;

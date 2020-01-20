@@ -35,12 +35,12 @@ int main ()
     int d = 64;
 
     // size of the database we plan to index
-    size_t nb = 1000 * 1000;
-    size_t add_bs = 10000; // # size of the blocks to add
+    int64_t nb = 1000 * 1000;
+    int64_t add_bs = 10000; // # size of the blocks to add
 
     // make a set of nt training vectors in the unit cube
     // (could be the database)
-    size_t nt = 100 * 1000;
+    int64_t nt = 100 * 1000;
 
     //---------------------------------------------------------------
     // Define the core quantizer
@@ -65,14 +65,14 @@ int main ()
     //
     // The parameter nbits_subq is determined by the size of the dataset to index.
     //
-    size_t nhash = 2;
-    size_t nbits_subq = 9;
-    size_t ncentroids = 1 << (nhash * nbits_subq);  // total # of centroids
+    int64_t nhash = 2;
+    int64_t nbits_subq = 9;
+    int64_t ncentroids = 1 << (nhash * nbits_subq);  // total # of centroids
     int bytes_per_code = 16;
 
     faiss::MultiIndexQuantizer coarse_quantizer (d, nhash, nbits_subq);
 
-    printf ("IMI (%ld,%ld): %ld virtual centroids (target: %ld base vectors)",
+    printf ("IMI ( %" PRId64 ", %" PRId64 "):  %" PRId64 " virtual centroids (target:  %" PRId64 " base vectors)",
             nhash, nbits_subq, ncentroids, nb);
 
     // the coarse quantizer should not be dealloced before the index
@@ -94,12 +94,12 @@ int main ()
         // database vectors, if sampling is not biased. Here we just
         // randomly generate the vectors.
 
-        printf ("[%.3f s] Generating %ld vectors in %dD for training\n",
+        printf ("[%.3f s] Generating  %" PRId64 " vectors in %dD for training\n",
                 elapsed() - t0, nt, d);
 
         std::vector <float> trainvecs (nt * d);
-        for (size_t i = 0; i < nt; i++) {
-            for (size_t j = 0; j < d; j++) {
+        for (int64_t i = 0; i < nt; i++) {
+            for (int64_t j = 0; j < d; j++) {
                 trainvecs[i * d + j] = drand48();
             }
         }
@@ -113,17 +113,17 @@ int main ()
     // faiss::Index * idx = faiss::read_index("/tmp/trained_index.faissindex");
     faiss::write_index(&index, "/tmp/trained_index.faissindex");
 
-    size_t nq;
+    int64_t nq;
     std::vector<float> queries;
 
     { // populating the database
-        printf ("[%.3f s] Building a dataset of %ld vectors to index\n",
+        printf ("[%.3f s] Building a dataset of  %" PRId64 " vectors to index\n",
                 elapsed() - t0, nb);
 
         std::vector <float> database (nb * d);
-        std::vector <long> ids (nb);
-        for (size_t i = 0; i < nb; i++) {
-            for (size_t j = 0; j < d; j++) {
+        std::vector <int64_t> ids (nb);
+        for (int64_t i = 0; i < nb; i++) {
+            for (int64_t j = 0; j < d; j++) {
                 database[i * d + j] = drand48();
             }
             ids[i] = 8760000000L + i;
@@ -131,8 +131,8 @@ int main ()
 
         printf ("[%.3f s] Adding the vectors to the index\n", elapsed() - t0);
 
-        for (size_t begin = 0; begin < nb; begin += add_bs) {
-            size_t end = std::min (begin + add_bs, nb);
+        for (int64_t begin = 0; begin < nb; begin += add_bs) {
+            int64_t end = std::min (begin + add_bs, nb);
             index.add_with_ids (end - begin,
                                 database.data() + d * begin,
                                 ids.data() + begin);
@@ -162,7 +162,7 @@ int main ()
     // - given a vector float *x, finding which k centroids are
     //   closest to it (ie to find the nearest neighbors) can be done with
     //
-    //   long *centroid_ids = new long[k];
+    //   int64_t *centroid_ids = new int64_t[k];
     //   float *distances = new float[k];
     //   index.quantizer->search (1, x, k, dis, centroids_ids);
     //
@@ -172,7 +172,7 @@ int main ()
     { // searching the database
         int k = 5;
         printf ("[%.3f s] Searching the %d nearest neighbors "
-                "of %ld vectors in the index\n",
+                "of  %" PRId64 " vectors in the index\n",
                 elapsed() - t0, k, nq);
 
         std::vector<faiss::Index::idx_t> nns (k * nq);

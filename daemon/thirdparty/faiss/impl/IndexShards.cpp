@@ -25,10 +25,10 @@ typedef Index::idx_t idx_t;
 
 
 // add translation to all valid labels
-void translate_labels (long n, idx_t *labels, long translation)
+void translate_labels (int64_t n, idx_t *labels, int64_t translation)
 {
     if (translation == 0) return;
-    for (long i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         if(labels[i] < 0) continue;
         labels[i] += translation;
     }
@@ -43,18 +43,18 @@ void translate_labels (long n, idx_t *labels, long translation)
 
 template <class IndexClass, class C>
 void
-merge_tables(long n, long k, long nshard,
+merge_tables(int64_t n, int64_t k, int64_t nshard,
              typename IndexClass::distance_t *distances,
              idx_t *labels,
              const std::vector<typename IndexClass::distance_t>& all_distances,
              const std::vector<idx_t>& all_labels,
-             const std::vector<long>& translations) {
+             const std::vector<int64_t>& translations) {
   if (k == 0) {
     return;
   }
   using distance_t = typename IndexClass::distance_t;
 
-  long stride = n * k;
+  int64_t stride = n * k;
 #pragma omp parallel
   {
     std::vector<int> buf (2 * nshard);
@@ -63,14 +63,14 @@ merge_tables(long n, long k, long nshard,
     std::vector<distance_t> buf2 (nshard);
     distance_t * heap_vals = buf2.data();
 #pragma omp for
-    for (long i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
       // the heap maps values to the shard where they are
       // produced.
       const distance_t *D_in = all_distances.data() + i * k;
       const idx_t *I_in = all_labels.data() + i * k;
       int heap_size = 0;
 
-      for (long s = 0; s < nshard; s++) {
+      for (int64_t s = 0; s < nshard; s++) {
         pointer[s] = 0;
         if (I_in[stride * s] >= 0) {
           heap_push<C> (++heap_size, heap_vals, shard_ids,
@@ -172,7 +172,7 @@ IndexShardsTemplate<IndexT>::train(idx_t n,
   auto fn =
     [n, x](int no, IndexT *index) {
       if (index->verbose) {
-        printf("begin train shard %d on %ld points\n", no, n);
+        printf("begin train shard %d on  %" PRId64 " points\n", no, n);
       }
 
       index->train(n, x);
@@ -227,7 +227,7 @@ IndexShardsTemplate<IndexT>::add_with_ids(idx_t n,
     ids = aids.data();
   }
 
-  size_t components_per_vec =
+  int64_t components_per_vec =
     sizeof(component_t) == 1 ? (this->d + 7) / 8 : this->d;
 
   auto fn =
@@ -237,7 +237,7 @@ IndexShardsTemplate<IndexT>::add_with_ids(idx_t n,
       auto x0 = x + i0 * components_per_vec;
 
       if (index->verbose) {
-        printf ("begin add shard %d on %ld points\n", no, n);
+        printf ("begin add shard %d on  %" PRId64 " points\n", no, n);
       }
 
       if (ids) {
@@ -247,7 +247,7 @@ IndexShardsTemplate<IndexT>::add_with_ids(idx_t n,
       }
 
       if (index->verbose) {
-        printf ("end add shard %d on %ld points\n", no, i1 - i0);
+        printf ("end add shard %d on  %" PRId64 " points\n", no, i1 - i0);
       }
     };
 
@@ -265,7 +265,7 @@ IndexShardsTemplate<IndexT>::search(idx_t n,
                                     idx_t k,
                                     distance_t *distances,
                                     idx_t *labels) const {
-  long nshard = this->count();
+  int64_t nshard = this->count();
 
   std::vector<distance_t> all_distances(nshard * k * n);
   std::vector<idx_t> all_labels(nshard * k * n);
@@ -273,7 +273,7 @@ IndexShardsTemplate<IndexT>::search(idx_t n,
   auto fn =
     [n, k, x, &all_distances, &all_labels](int no, const IndexT *index) {
       if (index->verbose) {
-        printf ("begin query shard %d on %ld points\n", no, n);
+        printf ("begin query shard %d on  %" PRId64 " points\n", no, n);
       }
 
       index->search (n, x, k,
@@ -287,7 +287,7 @@ IndexShardsTemplate<IndexT>::search(idx_t n,
 
   this->runOnIndex(fn);
 
-  std::vector<long> translations(nshard, 0);
+  std::vector<int64_t> translations(nshard, 0);
 
   // Because we just called runOnIndex above, it is safe to access the sub-index
   // ntotal here

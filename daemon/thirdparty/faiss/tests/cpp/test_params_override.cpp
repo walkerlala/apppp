@@ -30,17 +30,17 @@ typedef Index::idx_t idx_t;
 int d = 32;
 
 // size of the database we plan to index
-size_t nb = 1000;
+int64_t nb = 1000;
 
 // nb of queries
-size_t nq = 200;
+int64_t nq = 200;
 
 
 
-std::vector<float> make_data(size_t n)
+std::vector<float> make_data(int64_t n)
 {
     std::vector <float> database (n * d);
-    for (size_t i = 0; i < n * d; i++) {
+    for (int64_t i = 0; i < n * d; i++) {
         database[i] = drand48();
     }
     return database;
@@ -153,9 +153,9 @@ TEST(TPO, IVFFlatPP) {
  *************************************************************/
 
 
-std::vector<uint8_t> make_data_binary(size_t n) {
+std::vector<uint8_t> make_data_binary(int64_t n) {
     std::vector <uint8_t> database (n * d / 8);
-    for (size_t i = 0; i < n * d / 8; i++) {
+    for (int64_t i = 0; i < n * d / 8; i++) {
         database[i] = lrand48();
     }
     return database;

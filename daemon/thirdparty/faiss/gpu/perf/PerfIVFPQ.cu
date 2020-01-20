@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
   CUDA_VERIFY(cudaProfilerStop());
 
   auto seed = FLAGS_seed != -1L ? FLAGS_seed : time(nullptr);
-  printf("using seed %ld\n", seed);
+  printf("using seed  %" PRId64 "\n", seed);
 
   auto numQueries = FLAGS_num_queries;
 
@@ -60,9 +60,9 @@ int main(int argc, char** argv) {
   auto codes = index->pq.M;
   auto bitsPerCode = index->pq.nbits;
 
-  printf("Database: dim %d num vecs %ld\n", dim, index->ntotal);
-  printf("Coarse centroids: %ld\n", index->quantizer->ntotal);
-  printf("PQ centroids: codes %ld bits per code %ld\n", codes, bitsPerCode);
+  printf("Database: dim %d num vecs  %" PRId64 "\n", dim, index->ntotal);
+  printf("Coarse centroids:  %" PRId64 "\n", index->quantizer->ntotal);
+  printf("PQ centroids: codes  %" PRId64 " bits per code  %" PRId64 "\n", codes, bitsPerCode);
   printf("L2 lookup: %d queries, nprobe %d, total k %d, "
          "precomputed codes %d\n\n",
          numQueries, FLAGS_nprobe, FLAGS_k,
@@ -150,7 +150,7 @@ int main(int argc, char** argv) {
                "", true, FLAGS_diff, false);
 
   CUDA_VERIFY(cudaDeviceSynchronize());
-  // printf("\ncudaMalloc usage %zd\n",
+  // printf("\ncudaMalloc usage  %" PRId64 "\n",
   //        resources.getMemoryManager().getHighWaterCudaMalloc());
 
   return 0;

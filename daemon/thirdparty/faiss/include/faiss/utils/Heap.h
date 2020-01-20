@@ -21,6 +21,7 @@
 #ifndef FAISS_Heap_h
 #define FAISS_Heap_h
 
+#include <cinttypes>
 #include <climits>
 #include <cstring>
 #include <cmath>
@@ -87,12 +88,12 @@ struct CMax {
  * bh_ids[0..k-1].  on output the element at k-1 is undefined.
  */
 template <class C> inline
-void heap_pop (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
+void heap_pop (int64_t k, typename C::T * bh_val, typename C::TI * bh_ids)
 {
     bh_val--; /* Use 1-based indexing for easier node->child translation */
     bh_ids--;
     typename C::T val = bh_val[k];
-    size_t i = 1, i1, i2;
+    int64_t i = 1, i1, i2;
     while (1) {
         i1 = i << 1;
         i2 = i1 + 1;
@@ -123,13 +124,13 @@ void heap_pop (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
  * bh_ids[0..k-2].  on output the element at k-1 is defined.
  */
 template <class C> inline
-void heap_push (size_t k,
+void heap_push (int64_t k,
                 typename C::T * bh_val, typename C::TI * bh_ids,
                 typename C::T val, typename C::TI ids)
 {
     bh_val--; /* Use 1-based indexing for easier node->child translation */
     bh_ids--;
-    size_t i = k, i_father;
+    int64_t i = k, i_father;
     while (i > 1) {
         i_father = i >> 1;
         if (!C::cmp (val, bh_val[i_father]))  /* the heap structure is ok */
@@ -147,28 +148,28 @@ void heap_push (size_t k,
 /* Partial instanciation for heaps with TI = int64_t */
 
 template <typename T> inline
-void minheap_pop (size_t k, T * bh_val, int64_t * bh_ids)
+void minheap_pop (int64_t k, T * bh_val, int64_t * bh_ids)
 {
     heap_pop<CMin<T, int64_t> > (k, bh_val, bh_ids);
 }
 
 
 template <typename T> inline
-void minheap_push (size_t k, T * bh_val, int64_t * bh_ids, T val, int64_t ids)
+void minheap_push (int64_t k, T * bh_val, int64_t * bh_ids, T val, int64_t ids)
 {
     heap_push<CMin<T, int64_t> > (k, bh_val, bh_ids, val, ids);
 }
 
 
 template <typename T> inline
-void maxheap_pop (size_t k, T * bh_val, int64_t * bh_ids)
+void maxheap_pop (int64_t k, T * bh_val, int64_t * bh_ids)
 {
     heap_pop<CMax<T, int64_t> > (k, bh_val, bh_ids);
 }
 
 
 template <typename T> inline
-void maxheap_push (size_t k, T * bh_val, int64_t * bh_ids, T val, int64_t ids)
+void maxheap_push (int64_t k, T * bh_val, int64_t * bh_ids, T val, int64_t ids)
 {
     heap_push<CMax<T, int64_t> > (k, bh_val, bh_ids, val, ids);
 }
@@ -184,24 +185,24 @@ void maxheap_push (size_t k, T * bh_val, int64_t * bh_ids, T val, int64_t ids)
  * (bh_val, bh_ids) can be the same as (x, ids) */
 template <class C> inline
 void heap_heapify (
-        size_t k,
+        int64_t k,
         typename C::T *  bh_val,
         typename C::TI *  bh_ids,
         const typename C::T * x = nullptr,
         const typename C::TI * ids = nullptr,
-        size_t k0 = 0)
+        int64_t k0 = 0)
 {
    if (k0 > 0) assert (x);
 
    if (ids) {
-       for (size_t i = 0; i < k0; i++)
+       for (int64_t i = 0; i < k0; i++)
            heap_push<C> (i+1, bh_val, bh_ids, x[i], ids[i]);
    } else {
-       for (size_t i = 0; i < k0; i++)
+       for (int64_t i = 0; i < k0; i++)
            heap_push<C> (i+1, bh_val, bh_ids, x[i], i);
    }
 
-   for (size_t i = k0; i < k; i++) {
+   for (int64_t i = k0; i < k; i++) {
        bh_val[i] = C::neutral();
        bh_ids[i] = -1;
    }
@@ -210,11 +211,11 @@ void heap_heapify (
 
 template <typename T> inline
 void minheap_heapify (
-        size_t k, T *  bh_val,
+        int64_t k, T *  bh_val,
         int64_t * bh_ids,
         const T * x = nullptr,
         const int64_t * ids = nullptr,
-        size_t k0 = 0)
+        int64_t k0 = 0)
 {
     heap_heapify< CMin<T, int64_t> > (k, bh_val, bh_ids, x, ids, k0);
 }
@@ -222,12 +223,12 @@ void minheap_heapify (
 
 template <typename T> inline
 void maxheap_heapify (
-        size_t k,
+        int64_t k,
         T * bh_val,
         int64_t * bh_ids,
          const T * x = nullptr,
          const int64_t * ids = nullptr,
-         size_t k0 = 0)
+         int64_t k0 = 0)
 {
     heap_heapify< CMax<T, int64_t> > (k, bh_val, bh_ids, x, ids, k0);
 }
@@ -241,13 +242,13 @@ void maxheap_heapify (
 
 /* Add some elements to the heap  */
 template <class C> inline
-void heap_addn (size_t k,
+void heap_addn (int64_t k,
                 typename C::T * bh_val, typename C::TI * bh_ids,
                 const typename C::T * x,
                 const typename C::TI * ids,
-                size_t n)
+                int64_t n)
 {
-    size_t i;
+    int64_t i;
     if (ids)
         for (i = 0; i < n; i++) {
             if (C::cmp (bh_val[0], x[i])) {
@@ -268,15 +269,15 @@ void heap_addn (size_t k,
 /* Partial instanciation for heaps with TI = int64_t */
 
 template <typename T> inline
-void minheap_addn (size_t k, T * bh_val, int64_t * bh_ids,
-                   const T * x, const int64_t * ids, size_t n)
+void minheap_addn (int64_t k, T * bh_val, int64_t * bh_ids,
+                   const T * x, const int64_t * ids, int64_t n)
 {
     heap_addn<CMin<T, int64_t> > (k, bh_val, bh_ids, x, ids, n);
 }
 
 template <typename T> inline
-void maxheap_addn (size_t k, T * bh_val, int64_t * bh_ids,
-                   const T * x, const int64_t * ids, size_t n)
+void maxheap_addn (int64_t k, T * bh_val, int64_t * bh_ids,
+                   const T * x, const int64_t * ids, int64_t n)
 {
     heap_addn<CMax<T, int64_t> > (k, bh_val, bh_ids, x, ids, n);
 }
@@ -294,9 +295,9 @@ void maxheap_addn (size_t k, T * bh_val, int64_t * bh_ids,
 /* This function maps a binary heap into an sorted structure.
    It returns the number  */
 template <typename C> inline
-size_t heap_reorder (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
+int64_t heap_reorder (int64_t k, typename C::T * bh_val, typename C::TI * bh_ids)
 {
-    size_t i, ii;
+    int64_t i, ii;
 
     for (i = 0, ii = 0; i < k; i++) {
         /* top element should be put at the end of the list */
@@ -310,7 +311,7 @@ size_t heap_reorder (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
         if (id != -1) ii++;
     }
     /* Count the number of elements which are effectively returned */
-    size_t nel = ii;
+    int64_t nel = ii;
 
     memmove (bh_val, bh_val+k-ii, ii * sizeof(*bh_val));
     memmove (bh_ids, bh_ids+k-ii, ii * sizeof(*bh_ids));
@@ -323,13 +324,13 @@ size_t heap_reorder (size_t k, typename C::T * bh_val, typename C::TI * bh_ids)
 }
 
 template <typename T> inline
-size_t minheap_reorder (size_t k, T * bh_val, int64_t * bh_ids)
+int64_t minheap_reorder (int64_t k, T * bh_val, int64_t * bh_ids)
 {
     return heap_reorder< CMin<T, int64_t> > (k, bh_val, bh_ids);
 }
 
 template <typename T> inline
-size_t maxheap_reorder (size_t k, T * bh_val, int64_t * bh_ids)
+int64_t maxheap_reorder (int64_t k, T * bh_val, int64_t * bh_ids)
 {
     return heap_reorder< CMax<T, int64_t> > (k, bh_val, bh_ids);
 }
@@ -351,16 +352,16 @@ struct HeapArray {
     typedef typename C::TI TI;
     typedef typename C::T T;
 
-    size_t nh;    ///< number of heaps
-    size_t k;     ///< allocated size per heap
+    int64_t nh;    ///< number of heaps
+    int64_t k;     ///< allocated size per heap
     TI * ids;     ///< identifiers (size nh * k)
     T * val;      ///< values (distances or similarities), size nh * k
 
     /// Return the list of values for a heap
-    T * get_val (size_t key) { return val + key * k; }
+    T * get_val (int64_t key) { return val + key * k; }
 
     /// Correspponding identifiers
-    TI * get_ids (size_t key) { return ids + key * k; }
+    TI * get_ids (int64_t key) { return ids + key * k; }
 
     /// prepare all the heaps before adding
     void heapify ();
@@ -373,8 +374,8 @@ struct HeapArray {
      * @param i0    first heap to update
      * @param ni    nb of elements to update (-1 = use nh)
      */
-    void addn (size_t nj, const T *vin, TI j0 = 0,
-               size_t i0 = 0, int64_t ni = -1);
+    void addn (int64_t nj, const T *vin, TI j0 = 0,
+               int64_t i0 = 0, int64_t ni = -1);
 
     /** same as addn
      *
@@ -382,8 +383,8 @@ struct HeapArray {
      * @param id_stride stride for id_in
      */
     void addn_with_ids (
-        size_t nj, const T *vin, const TI *id_in = nullptr,
-        int64_t id_stride = 0, size_t i0 = 0, int64_t ni = -1);
+        int64_t nj, const T *vin, const TI *id_in = nullptr,
+        int64_t id_stride = 0, int64_t i0 = 0, int64_t ni = -1);
 
     /// reorder all the heaps
     void reorder ();
@@ -440,16 +441,16 @@ typedef HeapArray<CMax<int, int64_t> > int_maxheap_array_t;
 template <class C>
 inline
 void indirect_heap_pop (
-    size_t k,
+    int64_t k,
     const typename C::T * bh_val,
     typename C::TI * bh_ids)
 {
     bh_ids--; /* Use 1-based indexing for easier node->child translation */
     typename C::T val = bh_val[bh_ids[k]];
-    size_t i = 1;
+    int64_t i = 1;
     while (1) {
-        size_t i1 = i << 1;
-        size_t i2 = i1 + 1;
+        int64_t i1 = i << 1;
+        int64_t i2 = i1 + 1;
         if (i1 > k)
             break;
         typename C::TI id1 = bh_ids[i1], id2 = bh_ids[i2];
@@ -472,15 +473,15 @@ void indirect_heap_pop (
 
 template <class C>
 inline
-void indirect_heap_push (size_t k,
+void indirect_heap_push (int64_t k,
                          const typename C::T * bh_val, typename C::TI * bh_ids,
                          typename C::TI id)
 {
     bh_ids--; /* Use 1-based indexing for easier node->child translation */
     typename C::T val = bh_val[id];
-    size_t i = k;
+    int64_t i = k;
     while (i > 1) {
-        size_t i_father = i >> 1;
+        int64_t i_father = i >> 1;
         if (!C::cmp (val, bh_val[bh_ids[i_father]]))
             break;
         bh_ids[i] = bh_ids[i_father];

@@ -171,9 +171,9 @@ Index *ToGpuCloner::clone_Index(const Index *index)
         return res;
     } else if(auto ipq = dynamic_cast<const faiss::IndexIVFPQ *>(index)) {
         if(verbose)
-            printf("  IndexIVFPQ size %ld -> GpuIndexIVFPQ "
+            printf("  IndexIVFPQ size  %" PRId64 " -> GpuIndexIVFPQ "
                    "indicesOptions=%d "
-                   "usePrecomputed=%d useFloat16=%d reserveVecs=%ld\n",
+                   "usePrecomputed=%d useFloat16=%d reserveVecs= %" PRId64 "\n",
                    ipq->ntotal, indicesOptions, usePrecomputed,
                    useFloat16, reserveVecs);
         GpuIndexIVFPQConfig config;
@@ -235,20 +235,20 @@ ToGpuClonerMultiple::ToGpuClonerMultiple(
 
 void ToGpuClonerMultiple::copy_ivf_shard (
                          const IndexIVF *index_ivf, IndexIVF *idx2,
-                         long n, long i)
+                         int64_t n, int64_t i)
 {
     if (shard_type == 2) {
-        long i0 = i * index_ivf->ntotal / n;
-        long i1 = (i + 1) * index_ivf->ntotal / n;
+        int64_t i0 = i * index_ivf->ntotal / n;
+        int64_t i1 = (i + 1) * index_ivf->ntotal / n;
 
         if(verbose)
-            printf("IndexShards shard %ld indices %ld:%ld\n",
+            printf("IndexShards shard  %" PRId64 " indices  %" PRId64 ": %" PRId64 "\n",
                    i, i0, i1);
         index_ivf->copy_subset_to(*idx2, 2, i0, i1);
         FAISS_ASSERT(idx2->ntotal == i1 - i0);
     } else if (shard_type == 1) {
         if(verbose)
-            printf("IndexShards shard %ld select modulo %ld = %ld\n",
+            printf("IndexShards shard  %" PRId64 " select modulo  %" PRId64 " =  %" PRId64 "\n",
                    i, n, i);
         index_ivf->copy_subset_to(*idx2, 1, n, i);
     } else {
@@ -259,7 +259,7 @@ void ToGpuClonerMultiple::copy_ivf_shard (
 
 Index * ToGpuClonerMultiple::clone_Index_to_shards (const Index *index)
 {
-    long n = sub_cloners.size();
+    int64_t n = sub_cloners.size();
 
     auto index_ivfpq =
         dynamic_cast<const faiss::IndexIVFPQ *>(index);
@@ -277,7 +277,7 @@ Index * ToGpuClonerMultiple::clone_Index_to_shards (const Index *index)
 
     std::vector<faiss::Index*> shards(n);
 
-    for(long i = 0; i < n; i++) {
+    for(int64_t i = 0; i < n; i++) {
         // make a shallow copy
         if(reserveVecs)
             sub_cloners[i].reserveVecs =
@@ -316,8 +316,8 @@ Index * ToGpuClonerMultiple::clone_Index_to_shards (const Index *index)
                                    index->d, index->metric_type);
             shards[i] = sub_cloners[i].clone_Index(&idx2);
             if (index->ntotal > 0) {
-                long i0 = index->ntotal * i / n;
-                long i1 = index->ntotal * (i + 1) / n;
+                int64_t i0 = index->ntotal * i / n;
+                int64_t i1 = index->ntotal * (i + 1) / n;
                 shards[i]->add (i1 - i0,
                                 index_flat->xb.data() + i0 * index->d);
             }
@@ -339,7 +339,7 @@ Index * ToGpuClonerMultiple::clone_Index_to_shards (const Index *index)
 
 Index *ToGpuClonerMultiple::clone_Index(const Index *index)
 {
-    long n = sub_cloners.size();
+    int64_t n = sub_cloners.size();
     if (n == 1)
         return sub_cloners[0].clone_Index(index);
 
@@ -369,8 +369,8 @@ Index *ToGpuClonerMultiple::clone_Index(const Index *index)
         for (int m = 0; m < pq.M; m++) {
             // which GPU(s) will be assigned to this sub-quantizer
 
-            long i0 = m * n / pq.M;
-            long i1 = pq.M <= n ? (m + 1) * n / pq.M : i0 + 1;
+            int64_t i0 = m * n / pq.M;
+            int64_t i1 = pq.M <= n ? (m + 1) * n / pq.M : i0 + 1;
             std::vector<ToGpuCloner> sub_cloners_2;
             sub_cloners_2.insert(
                                  sub_cloners_2.begin(), sub_cloners.begin() + i0,

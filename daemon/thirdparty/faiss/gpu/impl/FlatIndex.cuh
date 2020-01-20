@@ -35,7 +35,7 @@ class FlatIndex {
   int getDim() const;
 
   /// Reserve storage that can contain at least this many vectors
-  void reserve(size_t numVecs, cudaStream_t stream);
+  void reserve(int64_t numVecs, cudaStream_t stream);
 
   /// Returns a reference to our vectors currently in use
   Tensor<float, 2, true>& getVectorsFloat32Ref();

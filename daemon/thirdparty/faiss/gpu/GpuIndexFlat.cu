@@ -70,10 +70,10 @@ GpuIndexFlat::copyFrom(const faiss::IndexFlat* index) {
   // GPU code has 32 bit indices
   FAISS_THROW_IF_NOT_FMT(index->ntotal <=
                          (faiss::Index::idx_t) std::numeric_limits<int>::max(),
-                         "GPU index only supports up to %zu indices; "
-                         "attempting to copy CPU index with %zu parameters",
-                         (size_t) std::numeric_limits<int>::max(),
-                         (size_t) index->ntotal);
+                         "GPU index only supports up to  %" PRId64 " indices; "
+                         "attempting to copy CPU index with  %" PRId64 " parameters",
+                         (int64_t) std::numeric_limits<int>::max(),
+                         (int64_t) index->ntotal);
   this->ntotal = index->ntotal;
 
   delete data_;
@@ -117,7 +117,7 @@ GpuIndexFlat::copyTo(faiss::IndexFlat* index) const {
   }
 }
 
-size_t
+int64_t
 GpuIndexFlat::getNumVecs() const {
   return this->ntotal;
 }
@@ -185,8 +185,8 @@ GpuIndexFlat::addImpl_(int n,
   // number of vectors on a GPU
   FAISS_THROW_IF_NOT_FMT(this->ntotal + n <=
                          (faiss::Index::idx_t) std::numeric_limits<int>::max(),
-                         "GPU index only supports up to %zu indices",
-                         (size_t) std::numeric_limits<int>::max());
+                         "GPU index only supports up to  %" PRId64 " indices",
+                         (int64_t) std::numeric_limits<int>::max());
 
   data_->add(x, n, resources_->getDefaultStream(device_));
   this->ntotal += n;
@@ -269,8 +269,8 @@ GpuIndexFlat::compute_residual_n(faiss::Index::idx_t n,
                                  const faiss::Index::idx_t* keys) const {
   FAISS_THROW_IF_NOT_FMT(n <=
                          (faiss::Index::idx_t) std::numeric_limits<int>::max(),
-                         "GPU index only supports up to %zu indices",
-                         (size_t) std::numeric_limits<int>::max());
+                         "GPU index only supports up to  %" PRId64 " indices",
+                         (int64_t) std::numeric_limits<int>::max());
 
   auto stream = resources_->getDefaultStream(device_);
 

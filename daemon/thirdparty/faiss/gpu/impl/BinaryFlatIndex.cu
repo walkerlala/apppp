@@ -34,7 +34,7 @@ int BinaryFlatIndex::getDim() const {
 }
 
 void
-BinaryFlatIndex::reserve(size_t numVecs, cudaStream_t stream) {
+BinaryFlatIndex::reserve(int64_t numVecs, cudaStream_t stream) {
   rawData_.reserve(numVecs * (dim_ / 8) * sizeof(unsigned int), stream);
 }
 
@@ -67,7 +67,7 @@ BinaryFlatIndex::add(const unsigned char* data,
   }
 
   rawData_.append((char*) data,
-                  (size_t) (dim_ / 8) * numVecs * sizeof(unsigned char),
+                  (int64_t) (dim_ / 8) * numVecs * sizeof(unsigned char),
                   stream,
                   true /* reserve exactly */);
 

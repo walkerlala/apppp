@@ -80,7 +80,7 @@ void chooseTileSize(int numQueries,
                     int numCentroids,
                     int dim,
                     int elementSize,
-                    size_t tempMemAvailable,
+                    int64_t tempMemAvailable,
                     int& tileRows,
                     int& tileCols) {
   // The matrix multiplication should be large enough to be efficient, but if it
@@ -95,9 +95,9 @@ void chooseTileSize(int numQueries,
 
   int targetUsage = 0;
 
-  if (totalMem <= ((size_t) 4) * 1024 * 1024 * 1024) {
+  if (totalMem <= ((int64_t) 4) * 1024 * 1024 * 1024) {
     targetUsage = 512 * 1024 * 1024;
-  } else if (totalMem <= ((size_t) 8) * 1024 * 1024 * 1024) {
+  } else if (totalMem <= ((int64_t) 8) * 1024 * 1024 * 1024) {
     targetUsage = 768 * 1024 * 1024;
   } else {
     targetUsage = 1024 * 1024 * 1024;
