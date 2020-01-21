@@ -38,7 +38,9 @@ async function importPhotosByPath(path: string) {
         const msg = new GenerateThumbnailsRequest();
         msg.setPath(path);
         msg.setOutDir('/tmp/');
+        msg.addTypes(ThumbnailType.SMALL);
         msg.addTypes(ThumbnailType.MEDIUM);
+        msg.addTypes(ThumbnailType.LARGE);
         const buf = msg.serializeBinary();
         const respBuf = await client.sendMessage(MessageType.GENERATETHUMBNAILS, Uint8ArrayToBuffer(buf));
         const resp = GenerateThumbnailsResponse.deserializeBinary(BufferToUint8Array(respBuf));

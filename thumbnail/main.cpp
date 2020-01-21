@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 #include <easyipc.h>
 #include <ipc-message/ipc.pb.h>
@@ -21,6 +22,10 @@
 using boost::filesystem::path;
 using namespace boost::gil;
 using EasyIpc::IpcServer;
+
+static constexpr int SmallThumbnailWidth = 128;
+static constexpr int MediumThumbnailWidth = 512;
+static constexpr int LargeThumbnailWidth = 1024;
 
 inline std::string GenUuid() {
     boost::uuids::uuid a_uuid = boost::uuids::random_generator()(); // 这里是两个() ，因为这里是调用的 () 的运算符重载
@@ -53,6 +58,7 @@ inline std::string GenRandomString(int length) {
 
 static std::string server_handler(EasyIpc::Context& ctx, const EasyIpc::Message& msg);
 static std::string gen_thumbnails(const GenerateThumbnailsRequest& req);
+static std::pair<int, int> get_proper_thumbnail_size(ThumbnailType type, int width, int height);
 
 int main() {
     auto server = std::make_shared<IpcServer>("thumbnail-service");
@@ -85,8 +91,14 @@ static std::string gen_thumbnails(const GenerateThumbnailsRequest& req) {
         try {
             rgb8_image_t img;
             read_image(req.path(), img, boost::gil::jpeg_tag{});
-            rgb8_image_t square100x100(100, 100);
-            resize_view(const_view(img), view(square100x100), bilinear_sampler{});
+
+            auto proper_size = get_proper_thumbnail_size(static_cast<ThumbnailType>(type), img.width(), img.height());
+            if (proper_size.first < 0) {
+                continue;
+            }
+
+            rgb8_image_t thumbnail_img(proper_size.first, proper_size.second);
+            resize_view(const_view(img), view(thumbnail_img), bilinear_sampler{});
 
             path src_path(req.path());
             std::string filename = src_path.filename().string();
@@ -105,10 +117,12 @@ static std::string gen_thumbnails(const GenerateThumbnailsRequest& req) {
             path output_path = path(req.out_dir()) / path(gen_filename_ss.str());
             std::string output_path_str = output_path.string();
             std::cout << "prepare to gen image: " << output_path.string() << std::endl;
-            write_view(output_path_str, const_view(square100x100), jpeg_tag{});
+            write_view(output_path_str, const_view(thumbnail_img), jpeg_tag{});
             std::cout << "finished" << std::endl;
 
             auto thumbnail = resp.add_data();
+            thumbnail->set_width(proper_size.first);
+            thumbnail->set_height(proper_size.second);
             thumbnail->set_path(output_path_str);
             thumbnail->set_type(static_cast<ThumbnailType>(type));
         } catch (std::exception& ex) {
@@ -117,4 +131,42 @@ static std::string gen_thumbnails(const GenerateThumbnailsRequest& req) {
     }
 
     return resp.SerializeAsString();
+}
+
+template <int Standard>
+std::pair<int, int> get_proper_ize_by_standard(int width, int height) {
+    int greater = std::max(width, height);
+    if (greater <= Standard) {
+        return { -1, -1 };
+    }
+
+    if (width > height) {
+        int ret_width = Standard;
+        float ratio = static_cast<float>(height) / width;
+        int ret_height = ret_width * ratio;
+
+        return { ret_width, ret_height };
+    }
+
+    int ret_height = Standard;
+    float ratio = static_cast<float>(width) / height;
+    int ret_width = ret_height * ratio;
+    return { ret_width, ret_height };
+}
+
+std::pair<int, int> get_proper_thumbnail_size(ThumbnailType type, int width, int height) {
+    switch (type) {
+        case ThumbnailType::Small:
+            return get_proper_ize_by_standard<SmallThumbnailWidth>(width, height);
+
+        case ThumbnailType::Medium:
+            return get_proper_ize_by_standard<MediumThumbnailWidth>(width, height);
+
+        case ThumbnailType::Large:
+            return get_proper_ize_by_standard<LargeThumbnailWidth>(width, height);
+
+        default:
+            return {-1, -1};
+
+    }
 }
