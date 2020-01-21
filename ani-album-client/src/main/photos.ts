@@ -2,6 +2,7 @@ import { dialog } from 'electron';
 import { logger } from './logger';
 import { insertImageEntity } from './dal';
 import { getDb } from './utils';
+import { easyipc } from './easyipc/easyipc';
 import * as fs from 'fs';
 
 export async function importPhotos() {
@@ -25,13 +26,20 @@ async function importPhotosByPath(path: string) {
     if (stat.isDirectory()) {
         return await traverseDirToImport(path);
     } else if (stat.isFile()) {
+      const client = new easyipc.IpcClient();
       try {
         insertImageEntity(getDb(), {
           path,
           datetime: new Date(),
         });
+
+        await client.connect('thumbnail-service');
+        await client.sendMessage(1, Buffer.alloc(1));
+        logger.info('insert status');
       } catch (err) {
         logger.error('insert photo failed: ', err, 'path: ', path);
+      } finally {
+        client.close();
       }
     }
 }

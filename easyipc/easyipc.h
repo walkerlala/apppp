@@ -52,8 +52,8 @@ namespace EasyIpc {
 
 #else
         void HandleRequestStandalone(int socket);
-        void ReadBody(int socket, std::size_t size, Message& message);
-        static void WriteData(int socket, const Message& msg, const std::string& resp_content);
+        bool ReadBody(int socket, std::size_t size, Message& message);
+        static bool WriteData(int socket, const Message& msg, const std::string& resp_content);
 
         int fd = -1;
 #endif
