@@ -81,6 +81,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ipc_2eproto::offsets[] PROTOBU
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::GenerateThumbnailsRequest, path_),
+  PROTOBUF_FIELD_OFFSET(::GenerateThumbnailsRequest, out_dir_),
   PROTOBUF_FIELD_OFFSET(::GenerateThumbnailsRequest, types_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Thunbnail, _internal_metadata_),
@@ -88,9 +89,9 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ipc_2eproto::offsets[] PROTOBU
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::Thunbnail, type_),
+  PROTOBUF_FIELD_OFFSET(::Thunbnail, path_),
   PROTOBUF_FIELD_OFFSET(::Thunbnail, width_),
   PROTOBUF_FIELD_OFFSET(::Thunbnail, height_),
-  PROTOBUF_FIELD_OFFSET(::Thunbnail, data_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::GenerateThumbnailsResponse, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -100,8 +101,8 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ipc_2eproto::offsets[] PROTOBU
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::GenerateThumbnailsRequest)},
-  { 7, -1, sizeof(::Thunbnail)},
-  { 16, -1, sizeof(::GenerateThumbnailsResponse)},
+  { 8, -1, sizeof(::Thunbnail)},
+  { 17, -1, sizeof(::GenerateThumbnailsResponse)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -111,15 +112,15 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_ipc_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\tipc.proto\"H\n\031GenerateThumbnailsRequest"
-  "\022\014\n\004path\030\001 \001(\t\022\035\n\005types\030\002 \003(\0162\016.Thumbnai"
-  "lType\"V\n\tThunbnail\022\034\n\004type\030\001 \001(\0162\016.Thumb"
-  "nailType\022\r\n\005width\030\002 \001(\005\022\016\n\006height\030\003 \001(\005\022"
-  "\014\n\004data\030\004 \001(\014\"6\n\032GenerateThumbnailsRespo"
-  "nse\022\030\n\004data\030\001 \003(\0132\n.Thunbnail*/\n\013Message"
-  "Type\022\010\n\004Ping\020\000\022\026\n\022GenerateThumbnails\020\001*1"
-  "\n\rThumbnailType\022\t\n\005Small\020\000\022\n\n\006Medium\020\001\022\t"
-  "\n\005Large\020\002b\006proto3"
+  "\n\tipc.proto\"Y\n\031GenerateThumbnailsRequest"
+  "\022\014\n\004path\030\001 \001(\t\022\017\n\007out_dir\030\002 \001(\t\022\035\n\005types"
+  "\030\003 \003(\0162\016.ThumbnailType\"V\n\tThunbnail\022\034\n\004t"
+  "ype\030\001 \001(\0162\016.ThumbnailType\022\014\n\004path\030\002 \001(\t\022"
+  "\r\n\005width\030\003 \001(\005\022\016\n\006height\030\004 \001(\005\"6\n\032Genera"
+  "teThumbnailsResponse\022\030\n\004data\030\001 \003(\0132\n.Thu"
+  "nbnail*/\n\013MessageType\022\010\n\004Ping\020\000\022\026\n\022Gener"
+  "ateThumbnails\020\001*1\n\rThumbnailType\022\t\n\005Smal"
+  "l\020\000\022\n\n\006Medium\020\001\022\t\n\005Large\020\002b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_ipc_2eproto_deps[1] = {
 };
@@ -131,7 +132,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_ipc
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_ipc_2eproto_once;
 static bool descriptor_table_ipc_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_ipc_2eproto = {
-  &descriptor_table_ipc_2eproto_initialized, descriptor_table_protodef_ipc_2eproto, "ipc.proto", 337,
+  &descriptor_table_ipc_2eproto_initialized, descriptor_table_protodef_ipc_2eproto, "ipc.proto", 354,
   &descriptor_table_ipc_2eproto_once, descriptor_table_ipc_2eproto_sccs, descriptor_table_ipc_2eproto_deps, 3, 0,
   schemas, file_default_instances, TableStruct_ipc_2eproto::offsets,
   file_level_metadata_ipc_2eproto, 3, file_level_enum_descriptors_ipc_2eproto, file_level_service_descriptors_ipc_2eproto,
@@ -191,12 +192,17 @@ GenerateThumbnailsRequest::GenerateThumbnailsRequest(const GenerateThumbnailsReq
   if (!from._internal_path().empty()) {
     path_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.path_);
   }
+  out_dir_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_out_dir().empty()) {
+    out_dir_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.out_dir_);
+  }
   // @@protoc_insertion_point(copy_constructor:GenerateThumbnailsRequest)
 }
 
 void GenerateThumbnailsRequest::SharedCtor() {
   ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_GenerateThumbnailsRequest_ipc_2eproto.base);
   path_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  out_dir_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 GenerateThumbnailsRequest::~GenerateThumbnailsRequest() {
@@ -206,6 +212,7 @@ GenerateThumbnailsRequest::~GenerateThumbnailsRequest() {
 
 void GenerateThumbnailsRequest::SharedDtor() {
   path_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  out_dir_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 void GenerateThumbnailsRequest::SetCachedSize(int size) const {
@@ -225,6 +232,7 @@ void GenerateThumbnailsRequest::Clear() {
 
   types_.Clear();
   path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  out_dir_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   _internal_metadata_.Clear();
 }
 
@@ -244,12 +252,21 @@ const char* GenerateThumbnailsRequest::_InternalParse(const char* ptr, ::PROTOBU
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // repeated .ThumbnailType types = 2;
+      // string out_dir = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+          auto str = _internal_mutable_out_dir();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "GenerateThumbnailsRequest.out_dir"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // repeated .ThumbnailType types = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedEnumParser(_internal_mutable_types(), ptr, ctx);
           CHK_(ptr);
-        } else if (static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16) {
+        } else if (static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24) {
           ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
           _internal_add_types(static_cast<::ThumbnailType>(val));
@@ -291,12 +308,22 @@ failure:
         1, this->_internal_path(), target);
   }
 
-  // repeated .ThumbnailType types = 2;
+  // string out_dir = 2;
+  if (this->out_dir().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_out_dir().data(), static_cast<int>(this->_internal_out_dir().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "GenerateThumbnailsRequest.out_dir");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_out_dir(), target);
+  }
+
+  // repeated .ThumbnailType types = 3;
   {
     int byte_size = _types_cached_byte_size_.load(std::memory_order_relaxed);
     if (byte_size > 0) {
       target = stream->WriteEnumPacked(
-          2, types_, byte_size, target);
+          3, types_, byte_size, target);
     }
   }
 
@@ -316,7 +343,7 @@ size_t GenerateThumbnailsRequest::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated .ThumbnailType types = 2;
+  // repeated .ThumbnailType types = 3;
   {
     size_t data_size = 0;
     unsigned int count = static_cast<unsigned int>(this->_internal_types_size());for (unsigned int i = 0; i < count; i++) {
@@ -339,6 +366,13 @@ size_t GenerateThumbnailsRequest::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_path());
+  }
+
+  // string out_dir = 2;
+  if (this->out_dir().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_out_dir());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -377,6 +411,10 @@ void GenerateThumbnailsRequest::MergeFrom(const GenerateThumbnailsRequest& from)
 
     path_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.path_);
   }
+  if (from.out_dir().size() > 0) {
+
+    out_dir_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.out_dir_);
+  }
 }
 
 void GenerateThumbnailsRequest::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -403,6 +441,8 @@ void GenerateThumbnailsRequest::InternalSwap(GenerateThumbnailsRequest* other) {
   types_.InternalSwap(&other->types_);
   path_.Swap(&other->path_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
+  out_dir_.Swap(&other->out_dir_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata GenerateThumbnailsRequest::GetMetadata() const {
@@ -427,9 +467,9 @@ Thunbnail::Thunbnail(const Thunbnail& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  data_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (!from._internal_data().empty()) {
-    data_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.data_);
+  path_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_path().empty()) {
+    path_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.path_);
   }
   ::memcpy(&type_, &from.type_,
     static_cast<size_t>(reinterpret_cast<char*>(&height_) -
@@ -439,7 +479,7 @@ Thunbnail::Thunbnail(const Thunbnail& from)
 
 void Thunbnail::SharedCtor() {
   ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_Thunbnail_ipc_2eproto.base);
-  data_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  path_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&type_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&height_) -
       reinterpret_cast<char*>(&type_)) + sizeof(height_));
@@ -451,7 +491,7 @@ Thunbnail::~Thunbnail() {
 }
 
 void Thunbnail::SharedDtor() {
-  data_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  path_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 void Thunbnail::SetCachedSize(int size) const {
@@ -469,7 +509,7 @@ void Thunbnail::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  data_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&type_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&height_) -
       reinterpret_cast<char*>(&type_)) + sizeof(height_));
@@ -491,25 +531,26 @@ const char* Thunbnail::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::
           _internal_set_type(static_cast<::ThumbnailType>(val));
         } else goto handle_unusual;
         continue;
-      // int32 width = 2;
+      // string path = 2;
       case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+          auto str = _internal_mutable_path();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "Thunbnail.path"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // int32 width = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
           width_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // int32 height = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
-          height_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
-          CHK_(ptr);
-        } else goto handle_unusual;
-        continue;
-      // bytes data = 4;
+      // int32 height = 4;
       case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 34)) {
-          auto str = _internal_mutable_data();
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
+          height_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -546,22 +587,26 @@ failure:
       1, this->_internal_type(), target);
   }
 
-  // int32 width = 2;
+  // string path = 2;
+  if (this->path().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_path().data(), static_cast<int>(this->_internal_path().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Thunbnail.path");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_path(), target);
+  }
+
+  // int32 width = 3;
   if (this->width() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_width(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(3, this->_internal_width(), target);
   }
 
-  // int32 height = 3;
+  // int32 height = 4;
   if (this->height() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(3, this->_internal_height(), target);
-  }
-
-  // bytes data = 4;
-  if (this->data().size() > 0) {
-    target = stream->WriteBytesMaybeAliased(
-        4, this->_internal_data(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(4, this->_internal_height(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -580,11 +625,11 @@ size_t Thunbnail::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // bytes data = 4;
-  if (this->data().size() > 0) {
+  // string path = 2;
+  if (this->path().size() > 0) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
-        this->_internal_data());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_path());
   }
 
   // .ThumbnailType type = 1;
@@ -593,14 +638,14 @@ size_t Thunbnail::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_type());
   }
 
-  // int32 width = 2;
+  // int32 width = 3;
   if (this->width() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
         this->_internal_width());
   }
 
-  // int32 height = 3;
+  // int32 height = 4;
   if (this->height() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
@@ -638,9 +683,9 @@ void Thunbnail::MergeFrom(const Thunbnail& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.data().size() > 0) {
+  if (from.path().size() > 0) {
 
-    data_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.data_);
+    path_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.path_);
   }
   if (from.type() != 0) {
     _internal_set_type(from._internal_type());
@@ -674,7 +719,7 @@ bool Thunbnail::IsInitialized() const {
 void Thunbnail::InternalSwap(Thunbnail* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
-  data_.Swap(&other->data_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+  path_.Swap(&other->path_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(type_, other->type_);
   swap(width_, other->width_);

@@ -229,10 +229,11 @@ class GenerateThumbnailsRequest :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kTypesFieldNumber = 2,
+    kTypesFieldNumber = 3,
     kPathFieldNumber = 1,
+    kOutDirFieldNumber = 2,
   };
-  // repeated .ThumbnailType types = 2;
+  // repeated .ThumbnailType types = 3;
   int types_size() const;
   private:
   int _internal_types_size() const;
@@ -265,6 +266,22 @@ class GenerateThumbnailsRequest :
   std::string* _internal_mutable_path();
   public:
 
+  // string out_dir = 2;
+  void clear_out_dir();
+  const std::string& out_dir() const;
+  void set_out_dir(const std::string& value);
+  void set_out_dir(std::string&& value);
+  void set_out_dir(const char* value);
+  void set_out_dir(const char* value, size_t size);
+  std::string* mutable_out_dir();
+  std::string* release_out_dir();
+  void set_allocated_out_dir(std::string* out_dir);
+  private:
+  const std::string& _internal_out_dir() const;
+  void _internal_set_out_dir(const std::string& value);
+  std::string* _internal_mutable_out_dir();
+  public:
+
   // @@protoc_insertion_point(class_scope:GenerateThumbnailsRequest)
  private:
   class _Internal;
@@ -273,6 +290,7 @@ class GenerateThumbnailsRequest :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField<int> types_;
   mutable std::atomic<int> _types_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr out_dir_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
 };
@@ -384,25 +402,25 @@ class Thunbnail :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kDataFieldNumber = 4,
+    kPathFieldNumber = 2,
     kTypeFieldNumber = 1,
-    kWidthFieldNumber = 2,
-    kHeightFieldNumber = 3,
+    kWidthFieldNumber = 3,
+    kHeightFieldNumber = 4,
   };
-  // bytes data = 4;
-  void clear_data();
-  const std::string& data() const;
-  void set_data(const std::string& value);
-  void set_data(std::string&& value);
-  void set_data(const char* value);
-  void set_data(const void* value, size_t size);
-  std::string* mutable_data();
-  std::string* release_data();
-  void set_allocated_data(std::string* data);
+  // string path = 2;
+  void clear_path();
+  const std::string& path() const;
+  void set_path(const std::string& value);
+  void set_path(std::string&& value);
+  void set_path(const char* value);
+  void set_path(const char* value, size_t size);
+  std::string* mutable_path();
+  std::string* release_path();
+  void set_allocated_path(std::string* path);
   private:
-  const std::string& _internal_data() const;
-  void _internal_set_data(const std::string& value);
-  std::string* _internal_mutable_data();
+  const std::string& _internal_path() const;
+  void _internal_set_path(const std::string& value);
+  std::string* _internal_mutable_path();
   public:
 
   // .ThumbnailType type = 1;
@@ -414,7 +432,7 @@ class Thunbnail :
   void _internal_set_type(::ThumbnailType value);
   public:
 
-  // int32 width = 2;
+  // int32 width = 3;
   void clear_width();
   ::PROTOBUF_NAMESPACE_ID::int32 width() const;
   void set_width(::PROTOBUF_NAMESPACE_ID::int32 value);
@@ -423,7 +441,7 @@ class Thunbnail :
   void _internal_set_width(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
-  // int32 height = 3;
+  // int32 height = 4;
   void clear_height();
   ::PROTOBUF_NAMESPACE_ID::int32 height() const;
   void set_height(::PROTOBUF_NAMESPACE_ID::int32 value);
@@ -437,7 +455,7 @@ class Thunbnail :
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
   int type_;
   ::PROTOBUF_NAMESPACE_ID::int32 width_;
   ::PROTOBUF_NAMESPACE_ID::int32 height_;
@@ -652,7 +670,67 @@ inline void GenerateThumbnailsRequest::set_allocated_path(std::string* path) {
   // @@protoc_insertion_point(field_set_allocated:GenerateThumbnailsRequest.path)
 }
 
-// repeated .ThumbnailType types = 2;
+// string out_dir = 2;
+inline void GenerateThumbnailsRequest::clear_out_dir() {
+  out_dir_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& GenerateThumbnailsRequest::out_dir() const {
+  // @@protoc_insertion_point(field_get:GenerateThumbnailsRequest.out_dir)
+  return _internal_out_dir();
+}
+inline void GenerateThumbnailsRequest::set_out_dir(const std::string& value) {
+  _internal_set_out_dir(value);
+  // @@protoc_insertion_point(field_set:GenerateThumbnailsRequest.out_dir)
+}
+inline std::string* GenerateThumbnailsRequest::mutable_out_dir() {
+  // @@protoc_insertion_point(field_mutable:GenerateThumbnailsRequest.out_dir)
+  return _internal_mutable_out_dir();
+}
+inline const std::string& GenerateThumbnailsRequest::_internal_out_dir() const {
+  return out_dir_.GetNoArena();
+}
+inline void GenerateThumbnailsRequest::_internal_set_out_dir(const std::string& value) {
+  
+  out_dir_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void GenerateThumbnailsRequest::set_out_dir(std::string&& value) {
+  
+  out_dir_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:GenerateThumbnailsRequest.out_dir)
+}
+inline void GenerateThumbnailsRequest::set_out_dir(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  out_dir_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:GenerateThumbnailsRequest.out_dir)
+}
+inline void GenerateThumbnailsRequest::set_out_dir(const char* value, size_t size) {
+  
+  out_dir_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:GenerateThumbnailsRequest.out_dir)
+}
+inline std::string* GenerateThumbnailsRequest::_internal_mutable_out_dir() {
+  
+  return out_dir_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* GenerateThumbnailsRequest::release_out_dir() {
+  // @@protoc_insertion_point(field_release:GenerateThumbnailsRequest.out_dir)
+  
+  return out_dir_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void GenerateThumbnailsRequest::set_allocated_out_dir(std::string* out_dir) {
+  if (out_dir != nullptr) {
+    
+  } else {
+    
+  }
+  out_dir_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), out_dir);
+  // @@protoc_insertion_point(field_set_allocated:GenerateThumbnailsRequest.out_dir)
+}
+
+// repeated .ThumbnailType types = 3;
 inline int GenerateThumbnailsRequest::_internal_types_size() const {
   return types_.size();
 }
@@ -719,7 +797,67 @@ inline void Thunbnail::set_type(::ThumbnailType value) {
   // @@protoc_insertion_point(field_set:Thunbnail.type)
 }
 
-// int32 width = 2;
+// string path = 2;
+inline void Thunbnail::clear_path() {
+  path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& Thunbnail::path() const {
+  // @@protoc_insertion_point(field_get:Thunbnail.path)
+  return _internal_path();
+}
+inline void Thunbnail::set_path(const std::string& value) {
+  _internal_set_path(value);
+  // @@protoc_insertion_point(field_set:Thunbnail.path)
+}
+inline std::string* Thunbnail::mutable_path() {
+  // @@protoc_insertion_point(field_mutable:Thunbnail.path)
+  return _internal_mutable_path();
+}
+inline const std::string& Thunbnail::_internal_path() const {
+  return path_.GetNoArena();
+}
+inline void Thunbnail::_internal_set_path(const std::string& value) {
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void Thunbnail::set_path(std::string&& value) {
+  
+  path_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:Thunbnail.path)
+}
+inline void Thunbnail::set_path(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:Thunbnail.path)
+}
+inline void Thunbnail::set_path(const char* value, size_t size) {
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:Thunbnail.path)
+}
+inline std::string* Thunbnail::_internal_mutable_path() {
+  
+  return path_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* Thunbnail::release_path() {
+  // @@protoc_insertion_point(field_release:Thunbnail.path)
+  
+  return path_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void Thunbnail::set_allocated_path(std::string* path) {
+  if (path != nullptr) {
+    
+  } else {
+    
+  }
+  path_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), path);
+  // @@protoc_insertion_point(field_set_allocated:Thunbnail.path)
+}
+
+// int32 width = 3;
 inline void Thunbnail::clear_width() {
   width_ = 0;
 }
@@ -739,7 +877,7 @@ inline void Thunbnail::set_width(::PROTOBUF_NAMESPACE_ID::int32 value) {
   // @@protoc_insertion_point(field_set:Thunbnail.width)
 }
 
-// int32 height = 3;
+// int32 height = 4;
 inline void Thunbnail::clear_height() {
   height_ = 0;
 }
@@ -757,66 +895,6 @@ inline void Thunbnail::_internal_set_height(::PROTOBUF_NAMESPACE_ID::int32 value
 inline void Thunbnail::set_height(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_height(value);
   // @@protoc_insertion_point(field_set:Thunbnail.height)
-}
-
-// bytes data = 4;
-inline void Thunbnail::clear_data() {
-  data_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-}
-inline const std::string& Thunbnail::data() const {
-  // @@protoc_insertion_point(field_get:Thunbnail.data)
-  return _internal_data();
-}
-inline void Thunbnail::set_data(const std::string& value) {
-  _internal_set_data(value);
-  // @@protoc_insertion_point(field_set:Thunbnail.data)
-}
-inline std::string* Thunbnail::mutable_data() {
-  // @@protoc_insertion_point(field_mutable:Thunbnail.data)
-  return _internal_mutable_data();
-}
-inline const std::string& Thunbnail::_internal_data() const {
-  return data_.GetNoArena();
-}
-inline void Thunbnail::_internal_set_data(const std::string& value) {
-  
-  data_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
-}
-inline void Thunbnail::set_data(std::string&& value) {
-  
-  data_.SetNoArena(
-    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:Thunbnail.data)
-}
-inline void Thunbnail::set_data(const char* value) {
-  GOOGLE_DCHECK(value != nullptr);
-  
-  data_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:Thunbnail.data)
-}
-inline void Thunbnail::set_data(const void* value, size_t size) {
-  
-  data_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:Thunbnail.data)
-}
-inline std::string* Thunbnail::_internal_mutable_data() {
-  
-  return data_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-}
-inline std::string* Thunbnail::release_data() {
-  // @@protoc_insertion_point(field_release:Thunbnail.data)
-  
-  return data_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-}
-inline void Thunbnail::set_allocated_data(std::string* data) {
-  if (data != nullptr) {
-    
-  } else {
-    
-  }
-  data_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), data);
-  // @@protoc_insertion_point(field_set_allocated:Thunbnail.data)
 }
 
 // -------------------------------------------------------------------

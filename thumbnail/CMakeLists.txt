@@ -15,4 +15,11 @@ include_directories(../easyipc)
 include_directories(../ipc-message)
 
 add_executable(thumbnail main.cpp)
-target_link_libraries(thumbnail easyipc ipc_message -lprotobuf -ljpeg -L/usr/local/lib)
+target_link_libraries(thumbnail
+        easyipc
+        ipc_message
+        -lprotobuf
+        -ljpeg
+        -lboost_filesystem
+        -lboost_random
+        -L/usr/local/lib)

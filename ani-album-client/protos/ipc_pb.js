@@ -86,7 +86,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.GenerateThumbnailsRequest.repeatedFields_ = [2];
+proto.GenerateThumbnailsRequest.repeatedFields_ = [3];
 
 
 
@@ -120,7 +120,8 @@ proto.GenerateThumbnailsRequest.prototype.toObject = function(opt_includeInstanc
 proto.GenerateThumbnailsRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     path: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    typesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f
+    outDir: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    typesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -162,6 +163,10 @@ proto.GenerateThumbnailsRequest.deserializeBinaryFromReader = function(msg, read
       msg.setPath(value);
       break;
     case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setOutDir(value);
+      break;
+    case 3:
       var value = /** @type {!Array<!proto.ThumbnailType>} */ (reader.readPackedEnum());
       msg.setTypesList(value);
       break;
@@ -201,10 +206,17 @@ proto.GenerateThumbnailsRequest.serializeBinaryToWriter = function(message, writ
       f
     );
   }
+  f = message.getOutDir();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
   f = message.getTypesList();
   if (f.length > 0) {
     writer.writePackedEnum(
-      2,
+      3,
       f
     );
   }
@@ -230,11 +242,29 @@ proto.GenerateThumbnailsRequest.prototype.setPath = function(value) {
 
 
 /**
- * repeated ThumbnailType types = 2;
+ * optional string out_dir = 2;
+ * @return {string}
+ */
+proto.GenerateThumbnailsRequest.prototype.getOutDir = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.GenerateThumbnailsRequest} returns this
+ */
+proto.GenerateThumbnailsRequest.prototype.setOutDir = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * repeated ThumbnailType types = 3;
  * @return {!Array<!proto.ThumbnailType>}
  */
 proto.GenerateThumbnailsRequest.prototype.getTypesList = function() {
-  return /** @type {!Array<!proto.ThumbnailType>} */ (jspb.Message.getRepeatedField(this, 2));
+  return /** @type {!Array<!proto.ThumbnailType>} */ (jspb.Message.getRepeatedField(this, 3));
 };
 
 
@@ -243,7 +273,7 @@ proto.GenerateThumbnailsRequest.prototype.getTypesList = function() {
  * @return {!proto.GenerateThumbnailsRequest} returns this
  */
 proto.GenerateThumbnailsRequest.prototype.setTypesList = function(value) {
-  return jspb.Message.setField(this, 2, value || []);
+  return jspb.Message.setField(this, 3, value || []);
 };
 
 
@@ -253,7 +283,7 @@ proto.GenerateThumbnailsRequest.prototype.setTypesList = function(value) {
  * @return {!proto.GenerateThumbnailsRequest} returns this
  */
 proto.GenerateThumbnailsRequest.prototype.addTypes = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 3, value, opt_index);
 };
 
 
@@ -299,9 +329,9 @@ proto.Thunbnail.prototype.toObject = function(opt_includeInstance) {
 proto.Thunbnail.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    width: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    height: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    data: msg.getData_asB64()
+    path: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    width: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    height: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -343,16 +373,16 @@ proto.Thunbnail.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setWidth(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPath(value);
       break;
     case 3:
       var value = /** @type {number} */ (reader.readInt32());
-      msg.setHeight(value);
+      msg.setWidth(value);
       break;
     case 4:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setData(value);
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setHeight(value);
       break;
     default:
       reader.skipField();
@@ -390,23 +420,23 @@ proto.Thunbnail.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getWidth();
-  if (f !== 0) {
-    writer.writeInt32(
+  f = message.getPath();
+  if (f.length > 0) {
+    writer.writeString(
       2,
       f
     );
   }
-  f = message.getHeight();
+  f = message.getWidth();
   if (f !== 0) {
     writer.writeInt32(
       3,
       f
     );
   }
-  f = message.getData_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
+  f = message.getHeight();
+  if (f !== 0) {
+    writer.writeInt32(
       4,
       f
     );
@@ -433,28 +463,28 @@ proto.Thunbnail.prototype.setType = function(value) {
 
 
 /**
- * optional int32 width = 2;
+ * optional string path = 2;
+ * @return {string}
+ */
+proto.Thunbnail.prototype.getPath = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Thunbnail} returns this
+ */
+proto.Thunbnail.prototype.setPath = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional int32 width = 3;
  * @return {number}
  */
 proto.Thunbnail.prototype.getWidth = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.Thunbnail} returns this
- */
-proto.Thunbnail.prototype.setWidth = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
-};
-
-
-/**
- * optional int32 height = 3;
- * @return {number}
- */
-proto.Thunbnail.prototype.getHeight = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -463,50 +493,26 @@ proto.Thunbnail.prototype.getHeight = function() {
  * @param {number} value
  * @return {!proto.Thunbnail} returns this
  */
-proto.Thunbnail.prototype.setHeight = function(value) {
+proto.Thunbnail.prototype.setWidth = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional bytes data = 4;
- * @return {!(string|Uint8Array)}
+ * optional int32 height = 4;
+ * @return {number}
  */
-proto.Thunbnail.prototype.getData = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+proto.Thunbnail.prototype.getHeight = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /**
- * optional bytes data = 4;
- * This is a type-conversion wrapper around `getData()`
- * @return {string}
- */
-proto.Thunbnail.prototype.getData_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getData()));
-};
-
-
-/**
- * optional bytes data = 4;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getData()`
- * @return {!Uint8Array}
- */
-proto.Thunbnail.prototype.getData_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getData()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {number} value
  * @return {!proto.Thunbnail} returns this
  */
-proto.Thunbnail.prototype.setData = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
+proto.Thunbnail.prototype.setHeight = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 

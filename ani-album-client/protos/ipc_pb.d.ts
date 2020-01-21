@@ -7,6 +7,9 @@ export class GenerateThumbnailsRequest extends jspb.Message {
   getPath(): string;
   setPath(value: string): void;
 
+  getOutDir(): string;
+  setOutDir(value: string): void;
+
   clearTypesList(): void;
   getTypesList(): Array<ThumbnailTypeMap[keyof ThumbnailTypeMap]>;
   setTypesList(value: Array<ThumbnailTypeMap[keyof ThumbnailTypeMap]>): void;
@@ -25,6 +28,7 @@ export class GenerateThumbnailsRequest extends jspb.Message {
 export namespace GenerateThumbnailsRequest {
   export type AsObject = {
     path: string,
+    outDir: string,
     typesList: Array<ThumbnailTypeMap[keyof ThumbnailTypeMap]>,
   }
 }
@@ -33,16 +37,14 @@ export class Thunbnail extends jspb.Message {
   getType(): ThumbnailTypeMap[keyof ThumbnailTypeMap];
   setType(value: ThumbnailTypeMap[keyof ThumbnailTypeMap]): void;
 
+  getPath(): string;
+  setPath(value: string): void;
+
   getWidth(): number;
   setWidth(value: number): void;
 
   getHeight(): number;
   setHeight(value: number): void;
-
-  getData(): Uint8Array | string;
-  getData_asU8(): Uint8Array;
-  getData_asB64(): string;
-  setData(value: Uint8Array | string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Thunbnail.AsObject;
@@ -57,9 +59,9 @@ export class Thunbnail extends jspb.Message {
 export namespace Thunbnail {
   export type AsObject = {
     type: ThumbnailTypeMap[keyof ThumbnailTypeMap],
+    path: string,
     width: number,
     height: number,
-    data: Uint8Array | string,
   }
 }
 

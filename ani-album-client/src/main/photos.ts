@@ -37,10 +37,16 @@ async function importPhotosByPath(path: string) {
         await client.connect('thumbnail-service');
         const msg = new GenerateThumbnailsRequest();
         msg.setPath(path);
+        msg.setOutDir('/tmp/');
         msg.addTypes(ThumbnailType.MEDIUM);
         const buf = msg.serializeBinary();
         const respBuf = await client.sendMessage(MessageType.GENERATETHUMBNAILS, Uint8ArrayToBuffer(buf));
         const resp = GenerateThumbnailsResponse.deserializeBinary(BufferToUint8Array(respBuf));
+
+        resp.getDataList().forEach(thumbnail => {
+          logger.debug('get a thumbnail', thumbnail.getPath());
+        });
+
         logger.info('import a photo');
       } catch (err) {
         logger.error('insert photo failed: ', err, 'path: ', path);
