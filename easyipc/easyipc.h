@@ -44,6 +44,8 @@ namespace EasyIpc {
 
         void HandleMessage();
 
+		void Close();
+
     private:
         std::weak_ptr<IpcServer> server_;
         MessageTunnel tunnel_;
@@ -51,6 +53,7 @@ namespace EasyIpc {
     };
 
     using MessageHandler = std::function<std::string(Context& context, const Message& req)>;
+	using ClientDisconnectHandler = std::function<void (Context& context, const Session& session)>;
 
     class IpcServer: public std::enable_shared_from_this<IpcServer> {
     public:
@@ -61,12 +64,16 @@ namespace EasyIpc {
         IpcServer& operator=(const IpcServer&) = delete;
         IpcServer& operator=(IpcServer&&) = delete;
 
-        ~IpcServer() = default;
 
         bool Run();
         void Shutdown();
 
-        MessageHandler handler;
+		~IpcServer() {
+			Shutdown();
+		}
+
+        MessageHandler message_handler;
+		ClientDisconnectHandler client_disconnect_handler;
 
     private:
         bool AcceptRequest();

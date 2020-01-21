@@ -17,10 +17,14 @@ int main(int argc, char* argv[]) {
     }
 
     auto server = std::make_shared<IpcServer>("test-ipc");
-    server->handler = [](EasyIpc::Context& ctx, const EasyIpc::Message& msg){
+    server->message_handler = [](EasyIpc::Context& ctx, const EasyIpc::Message& msg){
         std::cout << "server receive: " << msg.content << std::endl;
         return "haha";
     };
+	server->client_disconnect_handler = [](EasyIpc::Context& ctx, const EasyIpc::Session& session) {
+		std::cout << "client disconnect" << std::endl;
+		ctx.Shutdown();
+	};
     server->Run();
     std::cout << "server finish" << std::endl;
     return 0;

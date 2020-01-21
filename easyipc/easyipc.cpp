@@ -138,10 +138,6 @@ namespace EasyIpc {
 #endif
     }
 
-    Session::Session(std::weak_ptr<IpcServer> server, MessageTunnel tunnel): server_(server), tunnel_(tunnel) {
-
-    }
-
     class MessageHeader {
     public:
         std::int32_t message_type = -1;
@@ -149,12 +145,16 @@ namespace EasyIpc {
         std::uint32_t body_size = 0;
     };
 
+    Session::Session(std::weak_ptr<IpcServer> server, MessageTunnel tunnel): server_(server), tunnel_(tunnel) {
+
+    }
+
 
     void Session::HandleMessage() {
         while (true) {
             MessageHeader header;
             if (!ReadBytesFromTunnel(tunnel_, reinterpret_cast<char*>(&header), sizeof(MessageHeader))) {
-                CloseTunnel(tunnel_);
+                Close();
                 return;
             }
 
@@ -163,21 +163,21 @@ namespace EasyIpc {
             req_message.message_type = header.message_type;
 
             if (!ReadStringFromTunnel(tunnel_, header.body_size, req_message.content)) {
-                CloseTunnel(tunnel_);
+                Close();
                 return;
             }
 
             auto server = server_.lock();
             if (!server) {
-                CloseTunnel(tunnel_);
+                Close();
                 return;
             }
             Context ctx(server);
 
             std::string response_content;
-            if (server->handler) {
+            if (server->message_handler) {
                 try {
-                    response_content = server->handler(ctx, req_message);
+                    response_content = server->message_handler(ctx, req_message);
                 } catch (...) {
                     response_content.clear();
                 }
@@ -189,16 +189,26 @@ namespace EasyIpc {
             resp_header.body_size = response_content.size();
 
             if (!WriteBytesToTunnel(tunnel_, reinterpret_cast<const char*>(&resp_header), sizeof(MessageHeader))) {
-                CloseTunnel(tunnel_);
+                Close();
                 return;
             }
 
             if (!WriteStringToTunnel(tunnel_, response_content)) {
-                CloseTunnel(tunnel_);
+                Close();
                 return;
             }
         }
     }
+
+	void Session::Close() {
+		CloseTunnel(tunnel_);
+
+		auto server = server_.lock();
+		if (server && server->client_disconnect_handler) {
+			Context ctx(server);
+			server->client_disconnect_handler(ctx, *this);
+		}
+	}
 
 #ifdef WIN32
 	inline std::string GetNamedPipedFromIpcToken(const std::string& token) {
