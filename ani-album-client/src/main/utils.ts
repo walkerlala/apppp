@@ -16,3 +16,15 @@ export function setDb(db: sqlite3.Database) {
 export function getDb(): sqlite3.Database {
     return global_db;
 }
+
+export function Uint8ArrayToBuffer(arr: Uint8Array): Buffer {
+    return Buffer.from(arr.buffer);
+}
+
+export function BufferToUint8Array(buffer: Buffer): Uint8Array {
+    const uint8Arr = new Uint8Array(buffer.length);
+    for (let i = 0; i < buffer.length; i++) {
+        uint8Arr[i] = uint8Arr[i];
+    }
+    return uint8Arr;
+}

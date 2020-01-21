@@ -1,8 +1,9 @@
 import { dialog } from 'electron';
 import { logger } from './logger';
 import { insertImageEntity } from './dal';
-import { getDb } from './utils';
+import { getDb, BufferToUint8Array, Uint8ArrayToBuffer } from './utils';
 import { easyipc } from './easyipc/easyipc';
+import { MessageType, GenerateThumbnailsRequest, ThumbnailType, GenerateThumbnailsResponse } from 'protos/ipc_pb';
 import * as fs from 'fs';
 
 export async function importPhotos() {
@@ -34,8 +35,13 @@ async function importPhotosByPath(path: string) {
         });
 
         await client.connect('thumbnail-service');
-        await client.sendMessage(1, Buffer.alloc(1));
-        logger.info('insert status');
+        const msg = new GenerateThumbnailsRequest();
+        msg.setPath(path);
+        msg.addTypes(ThumbnailType.MEDIUM);
+        const buf = msg.serializeBinary();
+        const respBuf = await client.sendMessage(MessageType.GENERATETHUMBNAILS, Uint8ArrayToBuffer(buf));
+        const resp = GenerateThumbnailsResponse.deserializeBinary(BufferToUint8Array(respBuf));
+        logger.info('import a photo');
       } catch (err) {
         logger.error('insert photo failed: ', err, 'path: ', path);
       } finally {

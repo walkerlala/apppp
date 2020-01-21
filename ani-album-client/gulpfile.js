@@ -27,7 +27,7 @@ function tsToJs() {
 // }
 
 function buildMainPage() {
-    return src('./src/main/**/*')
+    return src(['./src/main/**/*'])
         .pipe(tsProject())
         .js.
         pipe(dest('dist/main'));

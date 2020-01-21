@@ -7,6 +7,24 @@ enum MessageType {
 
 }
 
+enum ThumbnailType {
+  Small = 0;
+  Medium = 1;
+  Large = 2;
+}
+
 message GenerateThumbnailsRequest {
-    string path = 1;
+  string path = 1;
+  repeated ThumbnailType types = 2;
+}
+
+message Thunbnail {
+  ThumbnailType type = 1;
+  int32 width = 2;
+  int32 height = 3;
+  bytes data = 4;
+}
+
+message GenerateThumbnailsResponse {
+  repeated Thunbnail data = 1;
 }

@@ -18,6 +18,11 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
+"@types/google-protobuf@^3.7.2":
+  version "3.7.2"
+  resolved "https://registry.npm.taobao.org/@types/google-protobuf/download/@types/google-protobuf-3.7.2.tgz#cd8a360c193ce4d672575a20a79f49ba036d38d2"
+  integrity sha1-zYo2DBk85NZyV1ogp59JugNtONI=
+
 "@types/node@*":
   version "13.1.7"
   resolved "https://registry.npm.taobao.org/@types/node/download/@types/node-13.1.7.tgz#db51d28b8dfacfe4fb2d0da88f5eb0a2eca00675"
@@ -1728,6 +1733,11 @@ glogg@^1.0.0:
   integrity sha1-LX3XAr7aIus7/634gGltpthGMT8=
   dependencies:
     sparkles "^1.0.0"
+
+google-protobuf@^3.11.2, google-protobuf@^3.6.1:
+  version "3.11.2"
+  resolved "https://registry.npm.taobao.org/google-protobuf/download/google-protobuf-3.11.2.tgz#43272974521a5cec35a21f62730cf517a5a8e38c"
+  integrity sha1-QycpdFIaXOw1oh9icwz1F6Wo44w=
 
 graceful-fs@^4.0.0, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0:
   version "4.2.3"
@@ -4164,6 +4174,13 @@ ts-loader@^6.2.1:
     loader-utils "^1.0.2"
     micromatch "^4.0.0"
     semver "^6.0.0"
+
+ts-protoc-gen@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.npm.taobao.org/ts-protoc-gen/download/ts-protoc-gen-0.12.0.tgz#932e5738f14b67e7202825b06f8c548cb7d8ef34"
+  integrity sha1-ky5XOPFLZ+cgKCWwb4xUjLfY7zQ=
+  dependencies:
+    google-protobuf "^3.6.1"
 
 tsconfig@^5.0.3:
   version "5.0.3"

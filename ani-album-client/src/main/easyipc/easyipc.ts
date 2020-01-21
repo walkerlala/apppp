@@ -54,9 +54,35 @@ export namespace easyipc {
         });
     }
 
+    let clientRemainData: Buffer | null = null;
+
+    function min<T>(a: T, b: T) {
+        return a < b ? a : b;
+    }
+
     function readBufferFromSocket(socket: net.Socket, size: number): Promise<Buffer> {
         return new Promise((resolve, reject) => {
-            const result = Buffer.alloc(size);
+            let result: Buffer;
+            if (clientRemainData) {
+                if (clientRemainData.length == size) { // return
+                    resolve(clientRemainData);
+                    clientRemainData = null;
+                    return;
+                } else if (clientRemainData.length > size) {
+                    const result = Buffer.alloc(size);
+                    clientRemainData.copy(result, 0, 0, size);
+                    clientRemainData = clientRemainData.slice(size, 0);
+                    resolve(result);
+                    return;
+                } else { // clientRemainData.length < size
+                    result = Buffer.alloc(size);
+                    clientRemainData.copy(result, 0, 0);
+                    clientRemainData = null;
+                }
+            } else {
+                result = Buffer.alloc(size);
+            }
+
 
             let readBytes: number = 0;
 
@@ -66,12 +92,16 @@ export namespace easyipc {
             }
 
             const dataHandler = (data: Buffer) => {
-                console.log('receive data');
-                data.copy(result, readBytes, 0, data.length);
+                const { length } = data;
+                const sizeShouldCopy = min(length, size - readBytes);;
+                data.copy(result, readBytes, 0, sizeShouldCopy);
 
-                readBytes += data.length;
+                readBytes += sizeShouldCopy;
 
                 if (readBytes >= size) {
+                    if (length > sizeShouldCopy) {
+                        clientRemainData = data.slice(sizeShouldCopy);
+                    }
                     socket.removeListener('data', dataHandler);
                     socket.removeListener('error', errorHandler);
                     resolve(result);
@@ -154,10 +184,6 @@ export namespace easyipc {
 
                 const path = GetDomainSocketPath(token);
                 this.socket = net.createConnection(path, resolve);
-
-                this.socket.on('data', (data: Buffer) => {
-                    console.log('haha data');
-                });
             });
         }
 
