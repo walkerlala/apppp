@@ -122,7 +122,7 @@ namespace EasyIpc {
 #else
     inline bool ReadHeaderFromSocket(int socket, MessageHeader& header) {
         int readNums = recv(socket, &header, sizeof(MessageHeader), 0);
-        return readNums == sizeof(MessageHeader);
+        return readNums >= sizeof(MessageHeader);
     }
 
     inline bool WriteHeaderToSocket(int socket, const MessageHeader& header) {
@@ -322,19 +322,25 @@ namespace EasyIpc {
     }
 
     void IpcServer::HandleRequestStandalone(int socket) {
-        MessageHeader header;
-        if (!ReadHeaderFromSocket(socket, header)) {
-            return;
-        }
+	    while (true) {
+            MessageHeader header;
+            if (!ReadHeaderFromSocket(socket, header)) {
+                ::close(socket);
+                return;
+            }
 
-        Message req_message;
-        req_message.request_id = header.request_id;
-        req_message.message_type = header.message_type;
+            Message req_message;
+            req_message.request_id = header.request_id;
+            req_message.message_type = header.message_type;
 
-        ReadBody(socket, header.body_size, req_message);
+            if (!ReadBody(socket, header.body_size, req_message)) {
+                ::close(socket);
+                return;
+            }
+	    }
     }
 
-    void IpcServer::ReadBody(int socket, std::size_t size, EasyIpc::Message &message) {
+    bool IpcServer::ReadBody(int socket, std::size_t size, EasyIpc::Message &message) {
         std::unique_ptr<char, std::function<void(char*)>> buffer(new char[size], [](char* buf) {
             delete[] buf;
         });
@@ -342,7 +348,7 @@ namespace EasyIpc {
         memset(buffer.get(), 0, size);
 
         if (!ReadStringFormSocket(socket, size, message.content)) {
-            return;
+            return false;
         }
 
         std::string response_content;
@@ -350,20 +356,20 @@ namespace EasyIpc {
             response_content = handler(message);
         }
 
-        WriteData(socket, message, response_content);
+        return WriteData(socket, message, response_content);
     }
 
-    void IpcServer::WriteData(int socket, const EasyIpc::Message &msg, const std::string &resp_content) {
+    bool IpcServer::WriteData(int socket, const EasyIpc::Message &msg, const std::string &resp_content) {
         MessageHeader header;
         header.request_id = msg.request_id;
         header.message_type = msg.message_type;
         header.body_size = resp_content.size();
 
         if (!WriteHeaderToSocket(socket, header)) {
-            return;
+            return false;
         }
 
-        WriteStringToSocket(socket, resp_content);
+        return WriteStringToSocket(socket, resp_content);
     }
 #endif
 

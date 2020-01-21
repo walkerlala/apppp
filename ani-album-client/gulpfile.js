@@ -1,7 +1,9 @@
 
 const { dest, src, parallel, watch } = require('gulp');
 const ts = require('gulp-typescript');
-const tsProject = ts.createProject('tsconfig.json');
+const tsProject = ts.createProject('tsconfig.json', {
+    target: 'esnext',
+});
 const sass = require('gulp-sass');
  
 var browserify = require('browserify');
