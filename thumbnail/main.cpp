@@ -5,16 +5,16 @@
 
 using EasyIpc::IpcServer;
 
-static std::string server_handler(const EasyIpc::Message& msg);
+static std::string server_handler(EasyIpc::Context& ctx, const EasyIpc::Message& msg);
 
 int main() {
     auto server = std::make_unique<IpcServer>("thumbnail-service");
-    server->handler = server_handler;
+    server->message_handler = server_handler;
     server->Run();
     return 0;
 }
 
-std::string server_handler(const EasyIpc::Message& msg) {
+std::string server_handler(EasyIpc::Context& ctx, const EasyIpc::Message& msg) {
     std::cout << "receive message: " << MessageType_Name(msg.message_type) << std::endl;
     switch (msg.message_type) {
         case MessageType::GenerateThumbnails: {
