@@ -9,9 +9,13 @@
 
 #ifdef WIN32
 #include <Windows.h>
+typedef HANDLE MessageTunnel;
+#else
+typedef int MessageTunnel;
 #endif
 
 namespace EasyIpc {
+
 
     class Message {
     public:
@@ -20,9 +24,41 @@ namespace EasyIpc {
         std::string content;
     };
 
-    using MessageHandler = std::function<std::string(const Message& req)>;
+    class IpcServer;
 
-    class IpcServer {
+    class Context {
+    public:
+        Context(std::weak_ptr<IpcServer> server): server_(server) {
+        }
+
+        void Shutdown();
+
+    private:
+        std::weak_ptr<IpcServer> server_;
+
+    };
+
+    class Session {
+    public:
+        Session(std::weak_ptr<IpcServer> server, MessageTunnel tunnel);
+
+        void HandleMessage();
+
+        bool Write(const char* data, std::size_t size);
+        bool Write(const std::string& data);
+
+        bool Read(char* data, std::size_t size);
+        bool Read(std::string& data, std::size_t size);
+
+    private:
+        std::weak_ptr<IpcServer> server_;
+        MessageTunnel tunnel_;
+
+    };
+
+    using MessageHandler = std::function<std::string(Context& context, const Message& req)>;
+
+    class IpcServer: public std::enable_shared_from_this<IpcServer> {
     public:
         explicit IpcServer(const std::string& token, int threads_num = 2);
         IpcServer(const IpcServer&) = delete;
@@ -52,9 +88,6 @@ namespace EasyIpc {
 
 #else
         void HandleRequestStandalone(int socket);
-        bool ReadBody(int socket, std::size_t size, Message& message);
-        static bool WriteData(int socket, const Message& msg, const std::string& resp_content);
-
         int fd = -1;
 #endif
 
@@ -80,11 +113,7 @@ namespace EasyIpc {
         std::string ipc_token;
         std::int64_t req_id_counter = 0;
 
-#ifdef WIN32
-		HANDLE handle_;
-#else
-        int fd = -1;
-#endif
+        MessageTunnel tunnel_;
 
     };
 

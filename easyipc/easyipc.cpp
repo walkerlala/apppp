@@ -22,6 +22,135 @@ static constexpr int SocketBackLog = 16;
 
 namespace EasyIpc {
 
+    inline bool ReadBytesFromTunnel(MessageTunnel tunnel, char* buffer, std::size_t size) {
+        if (size == 0) return true;
+
+        std::size_t index = 0;
+        memset(buffer, 0, size);
+
+        bool ok = false;
+        while (true) {
+            std::size_t remains_bytes = size - index;
+            int read_bytes = ::recv(tunnel, reinterpret_cast<void*>(buffer + index), std::min(remains_bytes, BufferSize), 0);
+            if (read_bytes <= 0) {
+                break;
+            }
+
+            index += read_bytes;
+
+            if (index >= size) {
+                ok = true;
+                break;
+            }
+        }
+
+        return ok;
+    }
+
+    inline bool ReadStringFromTunnel(MessageTunnel tunnel, std::size_t size, std::string& result) {
+        if (size == 0) return true;
+
+        std::unique_ptr<char, std::function<void(char*)>> buffer(new char[size], [](char* buf) {
+            delete[] buf;
+        });
+
+        if (!ReadBytesFromTunnel(tunnel, buffer.get(), size)) {
+            return false;
+        }
+
+        result = std::string(buffer.get(), size);
+
+        return true;
+    }
+
+    inline bool WriteBytesToTunnel(MessageTunnel tunnel, const char* buffer, std::size_t size) {
+        if (size == 0) return true;
+
+        std::size_t written_count = 0;
+        while (written_count < size) {
+            std::size_t remains_count = size - written_count;
+            int written = ::send(tunnel, buffer + written_count, std::min(BufferSize, remains_count), 0);
+            if (written < 0) {
+                return false;
+            }
+            written_count += written;
+        }
+
+        return true;
+    }
+
+    inline bool WriteStringToTunnel(MessageTunnel tunnel, const std::string& content) {
+        if (content.empty()) return true;
+
+        return WriteBytesToTunnel(tunnel, content.c_str(), content.size());
+    }
+
+    inline void CloseTunnel(MessageTunnel tunnel) {
+        ::close(tunnel);
+    }
+
+    Session::Session(std::weak_ptr<IpcServer> server, MessageTunnel tunnel): server_(server), tunnel_(tunnel) {
+
+    }
+
+    class MessageHeader {
+    public:
+        std::int32_t message_type = -1;
+        std::int64_t request_id = 0;
+        std::uint32_t body_size = 0;
+    };
+
+
+    void Session::HandleMessage() {
+        while (true) {
+            MessageHeader header;
+            if (!ReadBytesFromTunnel(tunnel_, reinterpret_cast<char*>(&header), sizeof(MessageHeader))) {
+                CloseTunnel(tunnel_);
+                return;
+            }
+
+            Message req_message;
+            req_message.request_id = header.request_id;
+            req_message.message_type = header.message_type;
+
+            if (!ReadStringFromTunnel(tunnel_, header.body_size, req_message.content)) {
+                CloseTunnel(tunnel_);
+                return;
+            }
+
+            auto server = server_.lock();
+            if (!server) {
+                CloseTunnel(tunnel_);
+                return;
+            }
+            Context ctx(server);
+
+            std::string response_content;
+            if (server->handler) {
+                try {
+                    response_content = server->handler(ctx, req_message);
+                } catch (...) {
+                    response_content.clear();
+                }
+            }
+
+            MessageHeader resp_header;
+            resp_header.request_id = req_message.request_id;
+            resp_header.message_type = req_message.message_type;
+            resp_header.body_size = response_content.size();
+
+            if (!WriteBytesToTunnel(tunnel_, reinterpret_cast<const char*>(&resp_header), sizeof(MessageHeader))) {
+                CloseTunnel(tunnel_);
+                return;
+            }
+
+            if (!WriteStringToTunnel(tunnel_, response_content)) {
+                CloseTunnel(tunnel_);
+                return;
+            }
+        }
+    }
+
 #ifdef WIN32
 	inline std::string GetNamedPipedFromIpcToken(const std::string& token) {
 		return "\\\\.\\pipe\\" + std::string(EasyIpcPrefix) + token;
@@ -31,13 +160,6 @@ namespace EasyIpc {
         return "/tmp/" + std::string(EasyIpcPrefix) + token;
     }
 #endif
-
-    class MessageHeader {
-    public:
-        std::int32_t message_type = -1;
-        std::int64_t request_id = 0;
-        std::uint32_t body_size = 0;
-    };
 
 #ifdef WIN32
 	inline bool ReadHeaderFromNamedPipe(HANDLE hPipe, MessageHeader& header) {
@@ -119,60 +241,13 @@ namespace EasyIpc {
         return true;
 	}
 
-#else
-    inline bool ReadHeaderFromSocket(int socket, MessageHeader& header) {
-        int readNums = recv(socket, &header, sizeof(MessageHeader), 0);
-        return readNums >= sizeof(MessageHeader);
-    }
-
-    inline bool WriteHeaderToSocket(int socket, const MessageHeader& header) {
-        int header_count = write(socket, &header, sizeof(MessageHeader));
-        return header_count == sizeof(MessageHeader);
-    }
-
-    inline bool WriteStringToSocket(int socket, const std::string& content) {
-        std::size_t written_count = 0;
-        while (written_count < content.size()) {
-            std::size_t remains_count = content.size() - written_count;
-            int written = ::send(socket, content.data() + written_count, std::min(BufferSize, remains_count), 0);
-            if (written < 0) {
-                return false;
-            }
-            written_count += written;
-        }
-        return true;
-    }
-
-    inline bool ReadStringFormSocket(int socket, std::size_t size, std::string& data) {
-        std::unique_ptr<char, std::function<void(char*)>> buffer(new char[size], [](char* buf) {
-            delete[] buf;
-        });
-        std::size_t index = 0;
-        memset(buffer.get(), 0, size);
-
-        bool ok = false;
-        while (true) {
-            int read_bytes = ::recv(socket, buffer.get() + index, BufferSize, 0);
-            if (read_bytes < 0) {
-                break;
-            }
-
-            index += read_bytes;
-
-            if (index >= size) {
-                ok = true;
-                break;
-            }
-        }
-
-        if (!ok) {
-            return false;
-        }
-
-        data = std::string(buffer.get(), size);
-        return true;
-    }
 #endif
+
+    void Context::Shutdown() {
+	    auto server = server_.lock();
+	    if (!server) return;
+	    server->Shutdown();
+	}
 
     IpcServer::IpcServer(const std::string &token, int threads_num):
     ipc_token(token), workers_(threads_num) {
@@ -317,60 +392,19 @@ namespace EasyIpc {
         if (socket < 0) {
             return false;
         }
-        workers_.enqueue(std::bind(&IpcServer::HandleRequestStandalone, this, socket));
+        workers_.enqueue([self = shared_from_this(), socket] {
+            Session session(self, socket);
+            session.HandleMessage();
+        });
         return true;
     }
 
     void IpcServer::HandleRequestStandalone(int socket) {
-	    while (true) {
-            MessageHeader header;
-            if (!ReadHeaderFromSocket(socket, header)) {
-                ::close(socket);
-                return;
-            }
-
-            Message req_message;
-            req_message.request_id = header.request_id;
-            req_message.message_type = header.message_type;
-
-            if (!ReadBody(socket, header.body_size, req_message)) {
-                ::close(socket);
-                return;
-            }
-	    }
+	    auto self = shared_from_this();
+	    Session session(self, socket);
+	    session.HandleMessage();
     }
 
-    bool IpcServer::ReadBody(int socket, std::size_t size, EasyIpc::Message &message) {
-        std::unique_ptr<char, std::function<void(char*)>> buffer(new char[size], [](char* buf) {
-            delete[] buf;
-        });
-        std::size_t index = 0;
-        memset(buffer.get(), 0, size);
-
-        if (!ReadStringFormSocket(socket, size, message.content)) {
-            return false;
-        }
-
-        std::string response_content;
-        if (handler) {
-            response_content = handler(message);
-        }
-
-        return WriteData(socket, message, response_content);
-    }
-
-    bool IpcServer::WriteData(int socket, const EasyIpc::Message &msg, const std::string &resp_content) {
-        MessageHeader header;
-        header.request_id = msg.request_id;
-        header.message_type = msg.message_type;
-        header.body_size = resp_content.size();
-
-        if (!WriteHeaderToSocket(socket, header)) {
-            return false;
-        }
-
-        return WriteStringToSocket(socket, resp_content);
-    }
 #endif
 
     void IpcServer::Shutdown() {
@@ -400,8 +434,8 @@ namespace EasyIpc {
 #else
         std::string named_socket_path = GetSocketPathFromIpcToken(ipc_token);
 
-        fd = socket(AF_UNIX, SOCK_STREAM, 0);
-        if (fd < 0) {
+        tunnel_ = socket(AF_UNIX, SOCK_STREAM, 0);
+        if (tunnel_ < 0) {
             return false;
         }
 
@@ -413,7 +447,7 @@ namespace EasyIpc {
         addr.sun_family = AF_UNIX;
         strncpy(addr.sun_path, named_socket_path.c_str(), named_socket_path.size());
 
-        int stat = ::connect(fd, reinterpret_cast<const sockaddr *>(&addr), sizeof(addr));
+        int stat = ::connect(tunnel_, reinterpret_cast<const sockaddr *>(&addr), sizeof(addr));
         if (stat < 0) {
             return false;
         }
@@ -428,37 +462,16 @@ namespace EasyIpc {
         header.message_type = message_type;
         header.body_size = content.size();
 
-#ifdef WIN32
-		if (!WriteHeaderToNamedPipe(handle_, header)) {
-			return false;
-		}
-
-		if (!WriteStringToNamedPipe(handle_, content)) {
-			false;
-		}
-
-		MessageHeader resp_header;
-		if (!ReadHeaderFromNamedPipe(handle_, resp_header)) {
-			return false;
-		}
-
-		if (resp_header.request_id != header.request_id) {
-			return false;
-		}
-
-		return ReadStringFromNamedPipe(handle_, resp_header.body_size, resp);
-
-#else
-        if (!WriteHeaderToSocket(fd, header)) {
+        if (!WriteBytesToTunnel(tunnel_, reinterpret_cast<const char*>(&header), sizeof(MessageHeader))) {
             return false;
         }
 
-        if (!WriteStringToSocket(fd, content)) {
+        if (!WriteStringToTunnel(tunnel_, content)) {
             return false;
         }
 
         MessageHeader resp_header;
-        if (!ReadHeaderFromSocket(fd, resp_header)) {
+        if (!ReadBytesFromTunnel(tunnel_, reinterpret_cast<char*>(&resp_header), sizeof(MessageHeader))) {
             return false;
         }
 
@@ -466,8 +479,7 @@ namespace EasyIpc {
             return false;
         }
 
-        return ReadStringFormSocket(fd, resp_header.body_size, resp);
-#endif
+        return ReadStringFromTunnel(tunnel_, resp_header.body_size, resp);
     }
 
 }
