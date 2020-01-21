@@ -44,12 +44,6 @@ namespace EasyIpc {
 
         void HandleMessage();
 
-        bool Write(const char* data, std::size_t size);
-        bool Write(const std::string& data);
-
-        bool Read(char* data, std::size_t size);
-        bool Read(std::string& data, std::size_t size);
-
     private:
         std::weak_ptr<IpcServer> server_;
         MessageTunnel tunnel_;
