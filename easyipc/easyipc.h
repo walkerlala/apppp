@@ -82,9 +82,7 @@ namespace EasyIpc {
         std::atomic<bool> is_running_;
         std::string ipc_token;
 #ifdef WIN32
-        void HandleRequestStandalone(HANDLE hPipe);
-		bool ReadBody(HANDLE hPipe, std::size_t size, Message& message);
-		static bool WriteData(HANDLE hPipe, const Message& msg, const std::string& resp_content);
+		HANDLE handle_;
 
 #else
         void HandleRequestStandalone(int socket);

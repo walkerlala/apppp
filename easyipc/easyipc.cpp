@@ -27,8 +27,32 @@ namespace EasyIpc {
 
         std::size_t index = 0;
         memset(buffer, 0, size);
-
         bool ok = false;
+
+#ifdef WIN32
+        while (true) {
+            std::size_t remains_bytes = size - index;
+			DWORD read_bytes = 0;
+			if (!::ReadFile(
+				tunnel,
+				buffer + index,
+				min(remains_bytes, BufferSize),
+				&read_bytes,
+				NULL
+			)) {
+				ok = false;
+				break;
+			}
+
+            index += read_bytes;
+
+            if (index >= size) {
+                ok = true;
+                break;
+            }
+        }
+
+#else
         while (true) {
             std::size_t remains_bytes = size - index;
             int read_bytes = ::recv(tunnel, reinterpret_cast<void*>(buffer + index), std::min(remains_bytes, BufferSize), 0);
@@ -43,6 +67,8 @@ namespace EasyIpc {
                 break;
             }
         }
+
+#endif
 
         return ok;
     }
@@ -66,7 +92,25 @@ namespace EasyIpc {
     inline bool WriteBytesToTunnel(MessageTunnel tunnel, const char* buffer, std::size_t size) {
         if (size == 0) return true;
 
-        std::size_t written_count = 0;
+		std::size_t written_count = 0;
+#ifdef WIN32
+		while (written_count < size) {
+			std::size_t remains_count = size - written_count;
+			DWORD tmp_written_count = 0;
+			bool ok = ::WriteFile(
+				tunnel,
+				buffer + written_count,
+				min(BufferSize, remains_count),
+				&tmp_written_count,
+				NULL
+			);
+			if (!ok) {
+				return false;
+			}
+			written_count += tmp_written_count;
+		}
+		return true;
+#else
         while (written_count < size) {
             std::size_t remains_count = size - written_count;
             int written = ::send(tunnel, buffer + written_count, std::min(BufferSize, remains_count), 0);
@@ -75,6 +119,7 @@ namespace EasyIpc {
             }
             written_count += written;
         }
+#endif
 
         return true;
     }
@@ -86,7 +131,11 @@ namespace EasyIpc {
     }
 
     inline void CloseTunnel(MessageTunnel tunnel) {
+#ifdef WIN32
+		::CloseHandle(tunnel);
+#else
         ::close(tunnel);
+#endif
     }
 
     Session::Session(std::weak_ptr<IpcServer> server, MessageTunnel tunnel): server_(server), tunnel_(tunnel) {
@@ -161,88 +210,6 @@ namespace EasyIpc {
     }
 #endif
 
-#ifdef WIN32
-	inline bool ReadHeaderFromNamedPipe(HANDLE hPipe, MessageHeader& header) {
-		DWORD read_sizes = 0;
-		bool ok = ::ReadFile(
-			hPipe,
-			&header,
-			sizeof(MessageHeader),
-			&read_sizes,
-			NULL
-		);
-
-		if (!ok) return false;
-
-		return read_sizes == sizeof(MessageHeader);
-	}
-
-	inline bool WriteHeaderToNamedPipe(HANDLE hPipe, const MessageHeader& header) {
-		DWORD written_size = 0;
-		bool ok = ::WriteFile(hPipe, &header, sizeof(MessageHeader), &written_size, NULL);
-		if (!ok) return false;
-		return written_size == sizeof(MessageHeader);
-	}
-
-	inline bool WriteStringToNamedPipe(HANDLE hPipe, const std::string& content) {
-		std::size_t written_count = 0;
-		while (written_count < content.size()) {
-			std::size_t remains_count = content.size() - written_count;
-			DWORD tmp_written_count = 0;
-			bool ok = ::WriteFile(
-				hPipe,
-				content.data() + written_count,
-				min(BufferSize, remains_count),
-				&tmp_written_count,
-				NULL
-			);
-			if (!ok) {
-				return false;
-			}
-			written_count += tmp_written_count;
-		}
-		return true;
-	}
-
-	inline bool ReadStringFromNamedPipe(HANDLE hPipe, std::size_t size, std::string& data) {
-        std::unique_ptr<char, std::function<void(char*)>> buffer(new char[size], [](char* buf) {
-            delete[] buf;
-        });
-        std::size_t index = 0;
-        memset(buffer.get(), 0, size);
-
-        bool ok = false;
-        while (true) {
-			DWORD read_bytes = 0;
-			if (!::ReadFile(
-				hPipe,
-				buffer.get() + index,
-				BufferSize,
-				&read_bytes,
-				NULL
-			)) {
-				ok = false;
-				break;
-			}
-
-            index += read_bytes;
-
-            if (index >= size) {
-                ok = true;
-                break;
-            }
-        }
-
-        if (!ok) {
-            return false;
-        }
-
-        data = std::string(buffer.get(), size);
-        return true;
-	}
-
-#endif
-
     void Context::Shutdown() {
 	    auto server = server_.lock();
 	    if (!server) return;
@@ -262,7 +229,7 @@ namespace EasyIpc {
 		std::wstring wide_path = Utils::ConvertToWstring(named_pipd_path);
 
 		while (is_running_) {
-			HANDLE handle_ = ::CreateNamedPipeW(
+			handle_ = ::CreateNamedPipeW(
 				wide_path.c_str(),
 				PIPE_ACCESS_DUPLEX,       // read/write access 
 				PIPE_TYPE_MESSAGE |       // message type pipe 
@@ -286,7 +253,10 @@ namespace EasyIpc {
 				::CloseHandle(handle_);
 				break;
 			}
-			workers_.enqueue(std::bind(&IpcServer::HandleRequestStandalone, this, handle_));
+			workers_.enqueue([self = shared_from_this(), handle = this->handle_] {
+				Session session(self, handle);
+				session.HandleMessage();
+			});
 		}
 
 #else
@@ -333,60 +303,7 @@ namespace EasyIpc {
         return true;
     }
 
-#ifdef WIN32
-	void IpcServer::HandleRequestStandalone(HANDLE hPipe) {
-		while (true) {
-			MessageHeader header;
-			if (!ReadHeaderFromNamedPipe(hPipe, header)) {
-				::CloseHandle(hPipe);
-				return;
-			}
-
-			Message req_message;
-			req_message.request_id = header.request_id;
-			req_message.message_type = header.message_type;
-
-			if (!ReadBody(hPipe, header.body_size, req_message)) {
-				::CloseHandle(hPipe);
-				return;
-			}
-		}
-	}
-
-	bool IpcServer::ReadBody(HANDLE hPipe, std::size_t size, EasyIpc::Message& message) {
-        std::unique_ptr<char, std::function<void(char*)>> buffer(new char[size], [](char* buf) {
-            delete[] buf;
-        });
-        std::size_t index = 0;
-        memset(buffer.get(), 0, size);
-
-		if (!ReadStringFromNamedPipe(hPipe, size, message.content)) {
-			return false;
-		}
-
-        std::string response_content;
-        if (handler) {
-            response_content = handler(message);
-        }
-
-        return WriteData(hPipe, message, response_content);
-	}
-
-	bool IpcServer::WriteData(HANDLE hPipe, const Message& msg, const std::string& resp_content) {
-        MessageHeader header;
-        header.request_id = msg.request_id;
-        header.message_type = msg.message_type;
-        header.body_size = resp_content.size();
-
-        if (!WriteHeaderToNamedPipe(hPipe, header)) {
-            return false;
-        }
-
-        WriteStringToNamedPipe(hPipe, resp_content);
-		return true;
-	}
-
-#else
+#ifndef WIN32
     bool IpcServer::AcceptRequest() {
         int socket = ::accept(fd, nullptr, nullptr);
         if (socket < 0) {
@@ -409,7 +326,11 @@ namespace EasyIpc {
 
     void IpcServer::Shutdown() {
         is_running_ = false;
+#ifdef WIN32
+		::CloseHandle(handle_);
+#else
         ::close(fd);
+#endif
     }
 
     bool IpcClient::Connect(const std::string &token) {
@@ -418,7 +339,7 @@ namespace EasyIpc {
 		auto named_pipd_path = GetNamedPipedFromIpcToken(ipc_token);
 		std::wstring wide_path = Utils::ConvertToWstring(named_pipd_path);
 
-		handle_ = ::CreateFileW(
+		tunnel_ = ::CreateFileW(
 			wide_path.c_str(),
 			GENERIC_READ | GENERIC_WRITE,
 			0,
@@ -428,7 +349,7 @@ namespace EasyIpc {
 			NULL
 		);
 
-		if (handle_ == INVALID_HANDLE_VALUE) {
+		if (tunnel_ == INVALID_HANDLE_VALUE) {
 			return false;
 		}
 #else

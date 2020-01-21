@@ -39,7 +39,7 @@ int client_main(int argc, char* argv[]) {
 
     for (int i = 0; i < 10; i++) {
         std::string resp;
-        if (!client->Send(0, "", resp)) {
+        if (!client->Send(0, "22", resp)) {
             std::cout << "send error" << std::endl;
             return 1;
         }
