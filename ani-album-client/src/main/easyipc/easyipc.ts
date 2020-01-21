@@ -54,30 +54,34 @@ export namespace easyipc {
         });
     }
 
-    let clientRemainData: Buffer | null = null;
-
     function min<T>(a: T, b: T) {
         return a < b ? a : b;
     }
 
-    function readBufferFromSocket(socket: net.Socket, size: number): Promise<Buffer> {
+    class ReadFromSocketSession {
+        public clientRemainData: Buffer | null = null;
+
+    }
+
+    function readBufferFromSocket(session: ReadFromSocketSession, socket: net.Socket, size: number): Promise<Buffer> {
         return new Promise((resolve, reject) => {
             let result: Buffer;
+            const { clientRemainData } = session;
             if (clientRemainData) {
                 if (clientRemainData.length == size) { // return
                     resolve(clientRemainData);
-                    clientRemainData = null;
+                    session.clientRemainData = null;
                     return;
                 } else if (clientRemainData.length > size) {
                     const result = Buffer.alloc(size);
                     clientRemainData.copy(result, 0, 0, size);
-                    clientRemainData = clientRemainData.slice(size, 0);
+                    session.clientRemainData = clientRemainData.slice(size, 0);
                     resolve(result);
                     return;
                 } else { // clientRemainData.length < size
                     result = Buffer.alloc(size);
                     clientRemainData.copy(result, 0, 0);
-                    clientRemainData = null;
+                    session.clientRemainData = null;
                 }
             } else {
                 result = Buffer.alloc(size);
@@ -100,7 +104,7 @@ export namespace easyipc {
 
                 if (readBytes >= size) {
                     if (length > sizeShouldCopy) {
-                        clientRemainData = data.slice(sizeShouldCopy);
+                        session.clientRemainData = data.slice(sizeShouldCopy);
                     }
                     socket.removeListener('data', dataHandler);
                     socket.removeListener('error', errorHandler);
@@ -177,6 +181,7 @@ export namespace easyipc {
         private ipcToken: string;
         private socket: net.Socket;
         private reqIdCounter: bigint = BigInt(0);
+        private session: ReadFromSocketSession = new ReadFromSocketSession();
 
         connect(token: string): Promise<void> {
             return new Promise((resolve, reject) => {
@@ -201,7 +206,7 @@ export namespace easyipc {
                 await writeBufferToSocket(this.socket, data);
             }
 
-            const recvHeaderBuffer = await readBufferFromSocket(this.socket, HeaderSize);
+            const recvHeaderBuffer = await readBufferFromSocket(this.session, this.socket, HeaderSize);
             const recvHeader = parseMessageHeader(recvHeaderBuffer);
             if (recvHeader.requestId != header.requestId) {
                 throw new Error(`request id: ${recvHeader.requestId} != ${header.requestId}`)
@@ -210,7 +215,7 @@ export namespace easyipc {
                 return Buffer.alloc(0);
             }
 
-            return await readBufferFromSocket(this.socket, recvHeader.bodySize);
+            return await readBufferFromSocket(this.session, this.socket, recvHeader.bodySize);
         }
 
         close() {
