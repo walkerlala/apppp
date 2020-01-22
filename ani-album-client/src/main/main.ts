@@ -3,7 +3,7 @@ import { eventBus, MainProcessEvents } from './events';
 import { getAppDateFolder, setDb } from './utils';
 import { importPhotos } from './photos';
 import { SQLiteHelper } from './sqliteHelper';
-import { ClientMessageType } from 'common/message';
+import { ClientMessageType, MessageRequest } from 'common/message';
 import { logger } from "./logger";
 import * as dal from './dal';
 import * as path from "path";
@@ -17,7 +17,6 @@ async function createWindow() {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: false,
     },
     width: 800,
   });
@@ -44,15 +43,23 @@ async function createWindow() {
     mainWindow = null;
   });
 
-  ipcMain.on(ClientMessageType.GetAllImages, (event, arg) => {
-    logger.trace('get message');
-  });
-
   showMenu();
 
-  eventBus.addListener(MainProcessEvents.ImportPhotos, importPhotos);
+  listenEvents();
   
   dal.initData(db);
+}
+
+function listenEvents() {
+  eventBus.addListener(MainProcessEvents.ImportPhotos, importPhotos);
+
+  ipcMain.handle(ClientMessageType.GetAllImages, async (event, req: MessageRequest) => {
+    const { offset = 0, length = 200 } = req;
+    logger.debug(`offset: ${offset}, length: ${length}`);
+    return {
+      content: [],
+    };
+  })
 }
 
 function showMenu() {

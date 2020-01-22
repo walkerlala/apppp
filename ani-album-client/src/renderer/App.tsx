@@ -7,7 +7,15 @@ import { ipcRenderer } from 'electron';
 class App extends Component {
 
   componentDidMount() {
-    ipcRenderer.send(ClientMessageType.GetAllImages, {});
+    this.fetchInitialImages();
+  }
+
+  async fetchInitialImages() {
+    const result = await ipcRenderer.invoke(ClientMessageType.GetAllImages, {
+      offset: 0,
+      length: 200,
+    });
+    console.log(result);
   }
 
   render() {
