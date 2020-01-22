@@ -1,5 +1,5 @@
 import { logger } from './logger';
-import { SQLiteHelper, SQLiteHelperStmt } from './sqliteHelper';
+import { SQLiteHelper } from './sqliteHelper';
 
 export async function initData(db: SQLiteHelper) {
   try {

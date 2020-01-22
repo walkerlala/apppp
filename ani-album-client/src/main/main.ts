@@ -1,8 +1,10 @@
-import { app, BrowserWindow, Menu  } from "electron";
+import { app, BrowserWindow, Menu, ipcMain } from "electron";
 import { eventBus, MainProcessEvents } from './events';
 import { getAppDateFolder, setDb } from './utils';
 import { importPhotos } from './photos';
 import { SQLiteHelper } from './sqliteHelper';
+import { ClientMessageType } from 'common/message';
+import { logger } from "./logger";
 import * as dal from './dal';
 import * as path from "path";
 import * as fs from 'fs';
@@ -14,7 +16,8 @@ async function createWindow() {
   mainWindow = new BrowserWindow({
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: true,
+      enableRemoteModule: false,
     },
     width: 800,
   });
@@ -39,6 +42,10 @@ async function createWindow() {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
+  });
+
+  ipcMain.on(ClientMessageType.GetAllImages, (event, arg) => {
+    logger.trace('get message');
   });
 
   showMenu();

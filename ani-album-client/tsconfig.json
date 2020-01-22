@@ -3,12 +3,14 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "sourceMap": true,
+    "noEmit": true,
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"],
       "renderer/*": ["src/renderer/*"],
-      "protos/*": ["./protos/*"]
+      "protos/*": ["./protos/*"],
+      "common/*": ["src/common/*"]
     },
     "jsx": "react",
     "esModuleInterop": true

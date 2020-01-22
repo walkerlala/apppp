@@ -1,6 +1,8 @@
 
 const { dest, src, parallel, watch } = require('gulp');
 const ts = require('gulp-typescript');
+// const sourcemaps = require('gulp-sourcemaps');
+const babel = require('gulp-babel');
 const tsProject = ts.createProject('tsconfig.json', {
     target: 'esnext',
 });
@@ -18,19 +20,64 @@ function tsToJs() {
         pipe(dest('dist'));
 }
 
-// function build() {
-//     return tsProject
-//         .src()
-//         .pipe(tsProject())
-//         .js.
-//         pipe(dest('dist'));
-// }
+function typeCheck() {
+    return src(['./src/common/**/*', './src/main/**/*'], {
+        base: './src'
+    })
+    .pipe(tsProject());
+}
 
-function buildMainPage() {
-    return src(['./src/main/**/*'])
-        .pipe(tsProject())
-        .js.
-        pipe(dest('dist/main'));
+function buildCommonFiles() {
+    return src('./src/common/**/*')
+        .pipe(sourcemaps.init())
+        .pipe(babel({
+
+        }))
+        .pipe(dest('dist/common'));
+}
+
+function buildMainOutput() {
+    return src(['./src/common/**/*', './src/main/**/*'], {
+        base: './src'
+    })
+      .pipe(
+        babel({
+          presets: [
+            '@babel/preset-react',
+            [
+                '@babel/preset-env',
+                {
+                    targets: {
+                        node: true,
+                    },
+                }
+            ],
+            [
+              '@babel/preset-typescript',
+              {
+                isTSX: true,
+                allExtensions: true,
+                allowNamespaces: true,
+              },
+            ],
+          ],
+          plugins: [
+            '@babel/plugin-proposal-class-properties',
+            [
+              'module-resolver',
+              {
+                root: ['.'],
+                alias: {
+                  common: './src/common',
+                  renderer: './src/renderer',
+                  protos: './protos',
+                },
+              },
+            ],
+          ],
+        }),
+      )
+      .pipe(dest('dist/'));
 }
 
 function buildRendererPage() {
@@ -50,7 +97,7 @@ function buildRendererPage() {
 }
 
 function scss() {
-    return src('./src/css/**/*.scss')
+    return src('./css/**/*.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(dest('./dist/css'));
 }
@@ -60,8 +107,9 @@ function buildWatch() {
 }
 
 exports.watch = buildWatch;
-exports.buildMainPage = buildMainPage;
+exports.buildCommonFiles = buildCommonFiles;
+exports.buildMain = parallel(buildMainOutput, typeCheck);
 exports.buildRendererPage = buildRendererPage;
 exports.tsToJs = tsToJs;
 exports.scss = scss;
-exports.build = parallel(scss, buildMainPage, buildRendererPage);
+exports.build = parallel(scss, buildMainOutput, buildRendererPage);
