@@ -2,14 +2,14 @@ import { app, BrowserWindow, Menu  } from "electron";
 import { eventBus, MainProcessEvents } from './events';
 import { getAppDateFolder, setDb } from './utils';
 import { importPhotos } from './photos';
+import { SQLiteHelper } from './sqliteHelper';
 import * as dal from './dal';
 import * as path from "path";
-import * as sqlite3 from 'sqlite3';
 import * as fs from 'fs';
 
 let mainWindow: Electron.BrowserWindow;
 
-function createWindow() {
+async function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 600,
@@ -30,7 +30,7 @@ function createWindow() {
     fs.mkdirSync(appDataFolder);
   }
   const databasePath = path.join(appDataFolder, 'database.sqlite');
-  const db = new sqlite3.Database(databasePath);
+  const db = await SQLiteHelper.create(databasePath);
   setDb(db);
 
   // Emitted when the window is closed.

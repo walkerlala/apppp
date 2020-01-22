@@ -29,10 +29,12 @@ async function importPhotosByPath(path: string) {
     } else if (stat.isFile()) {
       const client = new easyipc.IpcClient();
       try {
-        insertImageEntity(getDb(), {
+        const id = await insertImageEntity(getDb(), {
           path,
           datetime: new Date(),
         });
+
+        logger.info(`new entity: `, id);
 
         await client.connect('thumbnail-service');
         const msg = new GenerateThumbnailsRequest();
