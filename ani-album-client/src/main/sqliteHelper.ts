@@ -1,15 +1,12 @@
 import * as sqlite3 from 'sqlite3';
 import { promisify } from 'util';
-import { ThumbnailType } from 'protos/ipc_pb';
 
 export class SQLiteHelperStmt {
 
   private _finalize: () => Promise<void>;
-  private _run: (...params: any[]) => Promise<void>;
 
   constructor(private stmt: sqlite3.Statement) {
     this._finalize = promisify(stmt.finalize).bind(stmt);
-    this._run = promisify(stmt.run)
   }
 
   run(...params: any[]): Promise<sqlite3.RunResult> {
