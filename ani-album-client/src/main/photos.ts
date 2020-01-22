@@ -1,6 +1,6 @@
 import { dialog } from 'electron';
 import { logger } from './logger';
-import { insertImageEntity } from './dal';
+import { insertImageEntity, insertThumbnailEntity } from './dal';
 import { getDb, BufferToUint8Array, Uint8ArrayToBuffer } from './utils';
 import { easyipc } from './easyipc/easyipc';
 import { MessageType, GenerateThumbnailsRequest, ThumbnailType, GenerateThumbnailsResponse } from 'protos/ipc_pb';
@@ -29,12 +29,12 @@ async function importPhotosByPath(path: string) {
     } else if (stat.isFile()) {
       const client = new easyipc.IpcClient();
       try {
-        const id = await insertImageEntity(getDb(), {
+        const imageId = await insertImageEntity(getDb(), {
           path,
           datetime: new Date(),
         });
 
-        logger.info(`new entity: `, id);
+        logger.info(`new entity: `, imageId);
 
         await client.connect('thumbnail-service');
         const msg = new GenerateThumbnailsRequest();
@@ -47,9 +47,17 @@ async function importPhotosByPath(path: string) {
         const respBuf = await client.sendMessage(MessageType.GENERATETHUMBNAILS, Uint8ArrayToBuffer(buf));
         const resp = GenerateThumbnailsResponse.deserializeBinary(BufferToUint8Array(respBuf));
 
-        resp.getDataList().forEach(thumbnail => {
+        for (const thumbnail of resp.getDataList()) {
           logger.debug('get a thumbnail', thumbnail.getPath());
-        });
+          await insertThumbnailEntity(getDb(), {
+            path: thumbnail.getPath(),
+            type: thumbnail.getType(),
+            imageId,
+            width: thumbnail.getWidth(),
+            height: thumbnail.getHeight(),
+            createAt: new Date(),
+          });
+        };
 
         logger.info('import a photo');
       } catch (err) {
