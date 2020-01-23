@@ -31,12 +31,23 @@ export async function initData(db: SQLiteHelper) {
 export interface ImageEntity {
   id?: number;
   path: string;
-  datetime: Date;
+  createAt: Date;
+}
+
+export async function queryImageEntities(db: SQLiteHelper, offset: number = 0, limit: number = 200): Promise<ImageEntity[]> {
+  const result =  await db.all(`SELECT id, path, created_at FROM images_entity LIMIT ? OFFSET ?`, limit, offset);
+  return result.map(({ id, path, created_at }) => {
+    return {
+      id,
+      path,
+      createAt: new Date(created_at),
+    };
+  });
 }
 
 export async function insertImageEntity(db: SQLiteHelper, entity: ImageEntity): Promise<number> {
   const stmt = await db.prepare('INSERT INTO images_entity (path, created_at) VALUES (?, ?)');
-  await stmt.run(entity.path, entity.datetime);
+  await stmt.run(entity.path, entity.createAt);
   const { id } = await db.get('SELECT id FROM images_entity WHERE path=?', entity.path);
   await stmt.finalize();
   return id;

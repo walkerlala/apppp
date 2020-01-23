@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Menu, ipcMain } from "electron";
 import { eventBus, MainProcessEvents } from './events';
-import { getAppDateFolder, setDb } from './utils';
+import { getAppDateFolder, setDb, getDb } from './utils';
 import { importPhotos } from './photos';
 import { SQLiteHelper } from './sqliteHelper';
 import { ClientMessageType, MessageRequest } from 'common/message';
@@ -55,10 +55,8 @@ function listenEvents() {
 
   ipcMain.handle(ClientMessageType.GetAllImages, async (event, req: MessageRequest) => {
     const { offset = 0, length = 200 } = req;
-    logger.debug(`offset: ${offset}, length: ${length}`);
-    return {
-      content: [],
-    };
+    const content = await dal.queryImageEntities(getDb(), offset, length);
+    return { content };
   })
 }
 

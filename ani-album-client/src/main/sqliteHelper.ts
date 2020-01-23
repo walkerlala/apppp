@@ -35,6 +35,7 @@ export class SQLiteHelper {
   private _db: sqlite3.Database;
   private _run: (sql: string) => Promise<void>
   private _get: (sql: string, ...params: any[]) => Promise<any>;
+  private _all: (sql: string, ...params: any[]) => Promise<any>;
 
   private constructor(
     private path: string,
@@ -46,9 +47,14 @@ export class SQLiteHelper {
         if (err) return reject(err);
         this._run = promisify(this._db.run).bind(this._db);
         this._get = promisify(this._db.get).bind(this._db);
+        this._all = promisify(this._db.all).bind(this._db);
         return resolve();
       });
     });
+  }
+
+  async all(sql: string, ...params: any[]): Promise<any[]> {
+    return await this._all(sql, ...params);
   }
 
   async run(sql: string): Promise<void> {
