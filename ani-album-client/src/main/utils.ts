@@ -1,7 +1,7 @@
 import * as os from 'os';
-import * as sqlite3 from 'sqlite3';
 import { join } from 'path';
 import { SQLiteHelper} from './sqliteHelper';
+import { WebContents } from 'electron';
 
 export function getAppDateFolder(): string {
     const home = os.homedir();
@@ -9,6 +9,15 @@ export function getAppDateFolder(): string {
 }
 
 let global_db: SQLiteHelper;
+let globalWebContent: WebContents; 
+
+export function setWebContent(wc: WebContents) {
+    globalWebContent = wc;
+}
+
+export function getWebContent(): WebContents {
+    return globalWebContent;
+}
 
 export function setDb(db: SQLiteHelper) {
     global_db = db;

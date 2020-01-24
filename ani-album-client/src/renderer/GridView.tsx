@@ -24,6 +24,15 @@ class GridView extends Component<{}, GridViewState> {
 
   componentDidMount() {
     this.fetchInitialImages();
+    ipcRenderer.addListener(ClientMessageType.PhotoImported, this.handlePhotoImported);
+  }
+
+  componentWillUnmount() {
+    ipcRenderer.removeListener(ClientMessageType.PhotoImported, this.handlePhotoImported);
+  }
+
+  handlePhotoImported = () => {
+    this.fetchInitialImages();
   }
 
   async fetchInitialImages() {

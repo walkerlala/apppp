@@ -1,9 +1,11 @@
 import { dialog } from 'electron';
 import { logger } from './logger';
 import { insertImageEntity, insertThumbnailEntity } from './dal';
-import { getDb, BufferToUint8Array, Uint8ArrayToBuffer } from './utils';
+import { getDb, BufferToUint8Array, Uint8ArrayToBuffer, getWebContent } from './utils';
 import { easyipc } from './easyipc/easyipc';
 import { MessageType, GenerateThumbnailsRequest, ThumbnailType, GenerateThumbnailsResponse } from 'protos/ipc_pb';
+import { ClientMessageType } from 'common/message';
+import { ipcMain } from 'electron';
 import * as fs from 'fs';
 
 export async function importPhotos() {
@@ -59,7 +61,8 @@ async function importPhotosByPath(path: string) {
           });
         };
 
-        logger.info('import a photo');
+        logger.info('imported a photo');
+        getWebContent().send(ClientMessageType.PhotoImported);
       } catch (err) {
         logger.error('insert photo failed: ', err, 'path: ', path);
       } finally {

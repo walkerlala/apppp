@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Menu, ipcMain } from "electron";
 import { eventBus, MainProcessEvents } from './events';
-import { getAppDateFolder, setDb, getDb } from './utils';
+import { getAppDateFolder, setDb, getDb, setWebContent } from './utils';
 import { importPhotos } from './photos';
 import { SQLiteHelper } from './sqliteHelper';
 import { ImageWithThumbnails } from 'common/image';
@@ -23,6 +23,10 @@ async function createWindow() {
 
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, "../../index.html"));
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    setWebContent(mainWindow.webContents);
+  });
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
