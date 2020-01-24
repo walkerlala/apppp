@@ -1,3 +1,4 @@
+import { ImageEntity, ThumbnailEntity } from 'common/image';
 import { logger } from './logger';
 import { SQLiteHelper } from './sqliteHelper';
 
@@ -31,12 +32,6 @@ export async function initData(db: SQLiteHelper) {
   }
 }
 
-export interface ImageEntity {
-  id?: number;
-  path: string;
-  createdAt: Date;
-}
-
 export async function queryImageEntities(db: SQLiteHelper, offset: number = 0, limit: number = 200): Promise<ImageEntity[]> {
   const result =  await db.all(`SELECT
     id, path, createdAt FROM ${ImageEntityTableName} LIMIT ? OFFSET ?`, limit, offset);
@@ -55,15 +50,6 @@ export async function insertImageEntity(db: SQLiteHelper, entity: ImageEntity): 
   const { id } = await db.get(`SELECT id FROM ${ImageEntityTableName} WHERE path=?`, entity.path);
   await stmt.finalize();
   return id;
-}
-
-export interface ThumbnailEntity {
-  path: string;
-  type: number;
-  imageId: number;
-  width: number;
-  height: number;
-  createAt: Date;
 }
 
 export async function insertThumbnailEntity(db: SQLiteHelper, thumbnail: ThumbnailEntity) {
@@ -86,8 +72,4 @@ export async function queryThumbnailsByImageId(db: SQLiteHelper, imageId: number
       createdAt: new Date(createdAt),
     };
   });
-}
-
-export type ImageWithThumbnails = ImageEntity & {
-  thumbnails: ThumbnailEntity[];
 }

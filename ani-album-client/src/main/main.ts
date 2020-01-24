@@ -3,8 +3,8 @@ import { eventBus, MainProcessEvents } from './events';
 import { getAppDateFolder, setDb, getDb } from './utils';
 import { importPhotos } from './photos';
 import { SQLiteHelper } from './sqliteHelper';
+import { ImageWithThumbnails } from 'common/image';
 import { ClientMessageType, MessageRequest } from 'common/message';
-import { logger } from "./logger";
 import * as dal from './dal';
 import * as path from "path";
 import * as fs from 'fs';
@@ -56,12 +56,12 @@ function listenEvents() {
   ipcMain.handle(ClientMessageType.GetAllImages, async (event, req: MessageRequest) => {
     const { offset = 0, length = 200 } = req;
     const images = await dal.queryImageEntities(getDb(), offset, length);
-    const allPromises: Promise<dal.ImageWithThumbnails>[] = images.map(async img => {
+    const allPromises: Promise<ImageWithThumbnails>[] = images.map(async img => {
       const thumbnails = await dal.queryThumbnailsByImageId(getDb(), img.id!);
       return {
         ...img,
         thumbnails,
-      } as dal.ImageWithThumbnails;
+      } as ImageWithThumbnails;
     });
     const content = await Promise.all(allPromises);
     return { content };
