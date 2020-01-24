@@ -31,7 +31,7 @@ async function importPhotosByPath(path: string) {
       try {
         const imageId = await insertImageEntity(getDb(), {
           path,
-          createAt: new Date(),
+          createdAt: new Date(),
         });
 
         logger.info(`new entity: `, imageId);

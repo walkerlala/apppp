@@ -55,7 +55,15 @@ function listenEvents() {
 
   ipcMain.handle(ClientMessageType.GetAllImages, async (event, req: MessageRequest) => {
     const { offset = 0, length = 200 } = req;
-    const content = await dal.queryImageEntities(getDb(), offset, length);
+    const images = await dal.queryImageEntities(getDb(), offset, length);
+    const allPromises: Promise<dal.ImageWithThumbnails>[] = images.map(async img => {
+      const thumbnails = await dal.queryThumbnailsByImageId(getDb(), img.id!);
+      return {
+        ...img,
+        thumbnails,
+      } as dal.ImageWithThumbnails;
+    });
+    const content = await Promise.all(allPromises);
     return { content };
   })
 }

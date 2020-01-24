@@ -1,25 +1,28 @@
 import { logger } from './logger';
 import { SQLiteHelper } from './sqliteHelper';
 
+const ImageEntityTableName = 'imagesEntity';
+const ThumbnailsTableName = 'thumbnails';
+
 export async function initData(db: SQLiteHelper) {
   try {
     await db.run('CREATE TABLE IF NOT EXISTS global_kv (key TEXT PRIMARY KEY, value TEXT)');
     await db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "1")');
     await db.run(`
-      CREATE TABLE IF NOT EXISTS images_entity (
+      CREATE TABLE IF NOT EXISTS ${ImageEntityTableName} (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           path TEXT NOT NULL,
-          created_at DATETIME NOT NULL
+          createdAt DATETIME NOT NULL
       )
     `);
     await db.run(`
-      CREATE TABLE IF NOT EXISTS thumbnails (
+      CREATE TABLE IF NOT EXISTS ${ThumbnailsTableName} (
         path TEXT PRIMARY KEY,
         type INTEGER NOT NULL,
-        image_id INTEGER NOT NULL,
+        imageId INTEGER NOT NULL,
         width INTEGER NOT NULL,
         height INTEGER NOT NULL,
-        created_at DATETIME NOT NULL
+        createdAt DATETIME NOT NULL
       )
     `)
   } catch (err) {
@@ -31,24 +34,25 @@ export async function initData(db: SQLiteHelper) {
 export interface ImageEntity {
   id?: number;
   path: string;
-  createAt: Date;
+  createdAt: Date;
 }
 
 export async function queryImageEntities(db: SQLiteHelper, offset: number = 0, limit: number = 200): Promise<ImageEntity[]> {
-  const result =  await db.all(`SELECT id, path, created_at FROM images_entity LIMIT ? OFFSET ?`, limit, offset);
-  return result.map(({ id, path, created_at }) => {
+  const result =  await db.all(`SELECT
+    id, path, createdAt FROM ${ImageEntityTableName} LIMIT ? OFFSET ?`, limit, offset);
+  return result.map(({ id, path, createdAt }) => {
     return {
       id,
       path,
-      createAt: new Date(created_at),
+      createdAt: new Date(createdAt),
     };
   });
 }
 
 export async function insertImageEntity(db: SQLiteHelper, entity: ImageEntity): Promise<number> {
-  const stmt = await db.prepare('INSERT INTO images_entity (path, created_at) VALUES (?, ?)');
-  await stmt.run(entity.path, entity.createAt);
-  const { id } = await db.get('SELECT id FROM images_entity WHERE path=?', entity.path);
+  const stmt = await db.prepare(`INSERT INTO ${ImageEntityTableName} (path, createdAt) VALUES (?, ?)`);
+  await stmt.run(entity.path, entity.createdAt);
+  const { id } = await db.get(`SELECT id FROM ${ImageEntityTableName} WHERE path=?`, entity.path);
   await stmt.finalize();
   return id;
 }
@@ -65,9 +69,25 @@ export interface ThumbnailEntity {
 export async function insertThumbnailEntity(db: SQLiteHelper, thumbnail: ThumbnailEntity) {
   const { path, type, imageId, width, height, createAt } = thumbnail;
   const stmt = await db.prepare(`
-    INSERT INTO thumbnails (path, type, image_id, width, height, created_at)
+    INSERT INTO thumbnails (path, type, imageId, width, height, createdAt)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
   await stmt.run(path, type, imageId, width, height, createAt);
   await stmt.finalize();
+}
+
+export async function queryThumbnailsByImageId(db: SQLiteHelper, imageId: number): Promise<ThumbnailEntity[]> {
+  const result =  await db.all(`SELECT
+    path, type, width, height, createdAt
+    FROM thumbnails WHERE imageId=?`, imageId);
+  return result.map(({ createdAt, ...rst }) => {
+    return {
+      ...rst,
+      createdAt: new Date(createdAt),
+    };
+  });
+}
+
+export type ImageWithThumbnails = ImageEntity & {
+  thumbnails: ThumbnailEntity[];
 }
