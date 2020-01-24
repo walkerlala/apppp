@@ -1,11 +1,8 @@
 
 const { dest, src, parallel, watch } = require('gulp');
 const path = require('path');
-const ts = require('gulp-typescript');
 const babel = require('gulp-babel');
-const tsProject = ts.createProject('tsconfig.json', {
-    target: 'esnext',
-});
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const webpack = require('webpack');
  
@@ -17,60 +14,44 @@ const alias = {
   protos: './protos',
 };
 
-function typeCheck() {
-    return src(['./src/common/**/*', './src/main/**/*'], {
-        base: './src'
-    })
-    .pipe(tsProject());
-}
-
-function buildCommonFiles() {
-    return src('./src/common/**/*')
-        .pipe(sourcemaps.init())
-        .pipe(babel({
-
-        }))
-        .pipe(dest('dist/common'));
-}
+const babelConfig = {
+  presets: [
+    '@babel/preset-react',
+    [
+      '@babel/preset-env',
+      {
+        targets: {
+          node: true,
+        },
+      },
+    ],
+    [
+      '@babel/preset-typescript',
+      {
+        isTSX: true,
+        allExtensions: true,
+        allowNamespaces: true,
+      },
+    ],
+  ],
+  plugins: [
+    '@babel/plugin-proposal-class-properties',
+    [
+      'module-resolver',
+      {
+        root: ['.'],
+        alias,
+      },
+    ],
+  ],
+};
 
 function buildMainOutput() {
-    return src(['./src/common/**/*', './src/main/**/*'], {
-        base: './src'
-    })
-      .pipe(
-        babel({
-          presets: [
-            '@babel/preset-react',
-            [
-                '@babel/preset-env',
-                {
-                    targets: {
-                        node: true,
-                    },
-                }
-            ],
-            [
-              '@babel/preset-typescript',
-              {
-                isTSX: true,
-                allExtensions: true,
-                allowNamespaces: true,
-              },
-            ],
-          ],
-          plugins: [
-            '@babel/plugin-proposal-class-properties',
-            [
-              'module-resolver',
-              {
-                root: ['.'],
-                alias,
-              },
-            ],
-          ],
-        }),
-      )
-      .pipe(dest('dist/'));
+  return src(['./src/common/**/*', './src/main/**/*'], {
+    base: './src',
+  })
+    .pipe(babel({ ...babelConfig }))
+    .pipe(dest('dist/'));
 }
 
 function buildRendererPage(cb) {
@@ -87,20 +68,31 @@ function buildRendererPage(cb) {
       resolve: {
         extensions: ['.ts', '.tsx', '.js'],
         alias: {
-            common: path.resolve(__dirname, './src/common'),
-            renderer: path.resolve(__dirname, './src/renderer'),
-            protos: path.resolve(__dirname, './protos'),
+          common: path.resolve(__dirname, './src/common'),
+          renderer: path.resolve(
+            __dirname,
+            './src/renderer',
+          ),
+          protos: path.resolve(__dirname, './protos'),
         },
       },
       module: {
         rules: [
           // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
-          { test: /\.tsx?$/, loader: 'ts-loader' },
+          {
+            test: /\.(tsx?|m?js)$/,
+            exclude: /(node_modules|bower_components)/,
+            use: {
+                loader: 'babel-loader',
+                options: { ...babelConfig },
+            }
+          },
         ],
       },
-      externals: [
-          "electron",
-      ]
+      externals: ['electron'],
+      plugins: [
+          new ForkTsCheckerWebpackPlugin(),
+      ],
     },
     (err, stats) => {
       // Stats Object
@@ -122,7 +114,6 @@ function buildWatch() {
 }
 
 exports.watch = buildWatch;
-exports.buildCommonFiles = buildCommonFiles;
-exports.buildMain = parallel(buildMainOutput, typeCheck);
+exports.buildMain = buildMainOutput;
 exports.buildRendererPage = buildRendererPage;
 exports.build = parallel(buildMainOutput, buildRendererPage);
