@@ -2,6 +2,8 @@
 #include <sstream>
 #include <algorithm>
 
+#include <ThreadPool.h>
+
 #include <easyipc.h>
 #include <ipc-message/ipc.pb.h>
 
@@ -59,8 +61,11 @@ inline std::string GenRandomString(int length) {
 static std::string server_handler(EasyIpc::Context& ctx, const EasyIpc::Message& msg);
 static std::string gen_thumbnails(const GenerateThumbnailsRequest& req);
 static std::pair<int, int> get_proper_thumbnail_size(ThumbnailType type, int width, int height);
+static std::unique_ptr<ThreadPool> thread_pools_;
 
 int main() {
+    thread_pools_ = std::make_unique<ThreadPool>(4);
+
     auto server = std::make_shared<IpcServer>("thumbnail-service");
     server->message_handler = server_handler;
     server->Run();
@@ -84,51 +89,84 @@ std::string server_handler(EasyIpc::Context& ctx, const EasyIpc::Message& msg) {
     }
 }
 
+template <typename T>
+class plus_when_dtor {
+public:
+
+    plus_when_dtor(T& ref, std::condition_variable& cv): ref_(ref), cv_(cv) {}
+
+    ~plus_when_dtor() {
+        ref_++;
+        cv_.notify_one();
+    }
+
+private:
+    std::condition_variable& cv_;
+    T& ref_;
+
+};
+
 static std::string gen_thumbnails(const GenerateThumbnailsRequest& req) {
     GenerateThumbnailsResponse resp;
+    std::mutex resp_mutex;
+    std::condition_variable resp_cv;
+    int finished_count = 0;
 
     for (auto type : req.types()) {
-        try {
-            rgb8_image_t img;
-            read_image(req.path(), img, boost::gil::jpeg_tag{});
+        thread_pools_->enqueue([type, req, &finished_count, &resp, &resp_mutex, &resp_cv] {
+            plus_when_dtor<int> id(finished_count, resp_cv);
 
-            auto proper_size = get_proper_thumbnail_size(static_cast<ThumbnailType>(type), img.width(), img.height());
-            if (proper_size.first < 0) {
-                continue;
+            try {
+                rgb8_image_t img;
+                read_image(req.path(), img, boost::gil::jpeg_tag{});
+
+                auto proper_size = get_proper_thumbnail_size(static_cast<ThumbnailType>(type), img.width(), img.height());
+                if (proper_size.first < 0) {
+                    return;
+                }
+
+                rgb8_image_t thumbnail_img(proper_size.first, proper_size.second);
+                resize_view(const_view(img), view(thumbnail_img), bilinear_sampler{});
+
+                path src_path(req.path());
+                std::string filename = src_path.filename().string();
+                std::string no_ext = src_path.stem().string();
+                std::string ext = src_path.extension().string();
+
+                std::cout << filename << " " << no_ext << " " << ext << std::endl;
+
+                std::stringstream gen_filename_ss;
+
+                gen_filename_ss << src_path.stem().string()
+                                << "-" << GenRandomString(6)
+                                <<"-" << ThumbnailType_Name(type)
+                                << src_path.extension().string();
+
+                path output_path = path(req.out_dir()) / path(gen_filename_ss.str());
+                std::string output_path_str = output_path.string();
+                std::cout << "prepare to gen image: " << output_path.string() << std::endl;
+                write_view(output_path_str, const_view(thumbnail_img), jpeg_tag{});
+                std::cout << "finished" << std::endl;
+
+                {
+                    std::lock_guard<std::mutex> guard(resp_mutex);
+
+                    auto thumbnail = resp.add_data();
+                    thumbnail->set_width(proper_size.first);
+                    thumbnail->set_height(proper_size.second);
+                    thumbnail->set_path(output_path_str);
+                    thumbnail->set_type(static_cast<ThumbnailType>(type));
+                }
+            } catch (std::exception& ex) {
+                std::cerr << ex.what() << std::endl;
             }
-
-            rgb8_image_t thumbnail_img(proper_size.first, proper_size.second);
-            resize_view(const_view(img), view(thumbnail_img), bilinear_sampler{});
-
-            path src_path(req.path());
-            std::string filename = src_path.filename().string();
-            std::string no_ext = src_path.stem().string();
-            std::string ext = src_path.extension().string();
-
-            std::cout << filename << " " << no_ext << " " << ext << std::endl;
-
-            std::stringstream gen_filename_ss;
-
-            gen_filename_ss << src_path.stem().string()
-                << "-" << GenRandomString(6)
-                <<"-" << ThumbnailType_Name(type)
-                << src_path.extension().string();
-
-            path output_path = path(req.out_dir()) / path(gen_filename_ss.str());
-            std::string output_path_str = output_path.string();
-            std::cout << "prepare to gen image: " << output_path.string() << std::endl;
-            write_view(output_path_str, const_view(thumbnail_img), jpeg_tag{});
-            std::cout << "finished" << std::endl;
-
-            auto thumbnail = resp.add_data();
-            thumbnail->set_width(proper_size.first);
-            thumbnail->set_height(proper_size.second);
-            thumbnail->set_path(output_path_str);
-            thumbnail->set_type(static_cast<ThumbnailType>(type));
-        } catch (std::exception& ex) {
-            std::cerr << ex.what() << std::endl;
-        }
+        });
     }
+
+    std::unique_lock<std::mutex> lk(resp_mutex);
+    resp_cv.wait(lk, [&finished_count, &req] {
+        return finished_count >= req.types().size();
+    });
 
     return resp.SerializeAsString();
 }
