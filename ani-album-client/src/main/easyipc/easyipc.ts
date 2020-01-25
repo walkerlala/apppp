@@ -54,9 +54,39 @@ export namespace easyipc {
         });
     }
 
-    function readBufferFromSocket(socket: net.Socket, size: number): Promise<Buffer> {
+    function min<T>(a: T, b: T) {
+        return a < b ? a : b;
+    }
+
+    class ReadFromSocketSession {
+        public clientRemainData: Buffer | null = null;
+
+    }
+
+    function readBufferFromSocket(session: ReadFromSocketSession, socket: net.Socket, size: number): Promise<Buffer> {
         return new Promise((resolve, reject) => {
-            const result = Buffer.alloc(size);
+            let result: Buffer;
+            const { clientRemainData } = session;
+            if (clientRemainData) {
+                if (clientRemainData.length == size) { // return
+                    resolve(clientRemainData);
+                    session.clientRemainData = null;
+                    return;
+                } else if (clientRemainData.length > size) {
+                    const result = Buffer.alloc(size);
+                    clientRemainData.copy(result, 0, 0, size);
+                    session.clientRemainData = clientRemainData.slice(size, 0);
+                    resolve(result);
+                    return;
+                } else { // clientRemainData.length < size
+                    result = Buffer.alloc(size);
+                    clientRemainData.copy(result, 0, 0);
+                    session.clientRemainData = null;
+                }
+            } else {
+                result = Buffer.alloc(size);
+            }
+
 
             let readBytes: number = 0;
 
@@ -66,12 +96,16 @@ export namespace easyipc {
             }
 
             const dataHandler = (data: Buffer) => {
-                console.log('receive data');
-                data.copy(result, readBytes, 0, data.length);
+                const { length } = data;
+                const sizeShouldCopy = min(length, size - readBytes);;
+                data.copy(result, readBytes, 0, sizeShouldCopy);
 
-                readBytes += data.length;
+                readBytes += sizeShouldCopy;
 
                 if (readBytes >= size) {
+                    if (length > sizeShouldCopy) {
+                        session.clientRemainData = data.slice(sizeShouldCopy);
+                    }
                     socket.removeListener('data', dataHandler);
                     socket.removeListener('error', errorHandler);
                     resolve(result);
@@ -147,6 +181,7 @@ export namespace easyipc {
         private ipcToken: string;
         private socket: net.Socket;
         private reqIdCounter: bigint = BigInt(0);
+        private session: ReadFromSocketSession = new ReadFromSocketSession();
 
         connect(token: string): Promise<void> {
             return new Promise((resolve, reject) => {
@@ -154,10 +189,6 @@ export namespace easyipc {
 
                 const path = GetDomainSocketPath(token);
                 this.socket = net.createConnection(path, resolve);
-
-                this.socket.on('data', (data: Buffer) => {
-                    console.log('haha data');
-                });
             });
         }
 
@@ -175,7 +206,7 @@ export namespace easyipc {
                 await writeBufferToSocket(this.socket, data);
             }
 
-            const recvHeaderBuffer = await readBufferFromSocket(this.socket, HeaderSize);
+            const recvHeaderBuffer = await readBufferFromSocket(this.session, this.socket, HeaderSize);
             const recvHeader = parseMessageHeader(recvHeaderBuffer);
             if (recvHeader.requestId != header.requestId) {
                 throw new Error(`request id: ${recvHeader.requestId} != ${header.requestId}`)
@@ -184,7 +215,7 @@ export namespace easyipc {
                 return Buffer.alloc(0);
             }
 
-            return await readBufferFromSocket(this.socket, recvHeader.bodySize);
+            return await readBufferFromSocket(this.session, this.socket, recvHeader.bodySize);
         }
 
         close() {

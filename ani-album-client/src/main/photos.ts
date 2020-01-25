@@ -1,8 +1,11 @@
 import { dialog } from 'electron';
 import { logger } from './logger';
-import { insertImageEntity } from './dal';
-import { getDb } from './utils';
+import { insertImageEntity, insertThumbnailEntity } from './dal';
+import { getDb, BufferToUint8Array, Uint8ArrayToBuffer, getWebContent } from './utils';
 import { easyipc } from './easyipc/easyipc';
+import { MessageType, GenerateThumbnailsRequest, ThumbnailType, GenerateThumbnailsResponse } from 'protos/ipc_pb';
+import { ClientMessageType } from 'common/message';
+import { ipcMain } from 'electron';
 import * as fs from 'fs';
 
 export async function importPhotos() {
@@ -28,14 +31,38 @@ async function importPhotosByPath(path: string) {
     } else if (stat.isFile()) {
       const client = new easyipc.IpcClient();
       try {
-        insertImageEntity(getDb(), {
+        const imageId = await insertImageEntity(getDb(), {
           path,
-          datetime: new Date(),
+          createdAt: new Date(),
         });
 
+        logger.info(`new entity: `, imageId);
+
         await client.connect('thumbnail-service');
-        await client.sendMessage(1, Buffer.alloc(1));
-        logger.info('insert status');
+        const msg = new GenerateThumbnailsRequest();
+        msg.setPath(path);
+        msg.setOutDir('/tmp/');
+        msg.addTypes(ThumbnailType.SMALL);
+        msg.addTypes(ThumbnailType.MEDIUM);
+        msg.addTypes(ThumbnailType.LARGE);
+        const buf = msg.serializeBinary();
+        const respBuf = await client.sendMessage(MessageType.GENERATETHUMBNAILS, Uint8ArrayToBuffer(buf));
+        const resp = GenerateThumbnailsResponse.deserializeBinary(BufferToUint8Array(respBuf));
+
+        for (const thumbnail of resp.getDataList()) {
+          logger.debug('get a thumbnail', thumbnail.getPath());
+          await insertThumbnailEntity(getDb(), {
+            path: thumbnail.getPath(),
+            type: thumbnail.getType(),
+            imageId,
+            width: thumbnail.getWidth(),
+            height: thumbnail.getHeight(),
+            createAt: new Date(),
+          });
+        };
+
+        logger.info('imported a photo');
+        getWebContent().send(ClientMessageType.PhotoImported);
       } catch (err) {
         logger.error('insert photo failed: ', err, 'path: ', path);
       } finally {

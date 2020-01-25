@@ -1,26 +1,32 @@
-import { app, BrowserWindow, Menu  } from "electron";
+import { app, BrowserWindow, Menu, ipcMain } from "electron";
 import { eventBus, MainProcessEvents } from './events';
-import { getAppDateFolder, setDb } from './utils';
+import { getAppDateFolder, setDb, getDb, setWebContent } from './utils';
 import { importPhotos } from './photos';
+import { SQLiteHelper } from './sqliteHelper';
+import { ImageWithThumbnails } from 'common/image';
+import { ClientMessageType, MessageRequest } from 'common/message';
 import * as dal from './dal';
 import * as path from "path";
-import * as sqlite3 from 'sqlite3';
 import * as fs from 'fs';
 
 let mainWindow: Electron.BrowserWindow;
 
-function createWindow() {
+async function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: true,
     },
     width: 800,
   });
 
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, "../../index.html"));
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    setWebContent(mainWindow.webContents);
+  });
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
@@ -30,7 +36,7 @@ function createWindow() {
     fs.mkdirSync(appDataFolder);
   }
   const databasePath = path.join(appDataFolder, 'database.sqlite');
-  const db = new sqlite3.Database(databasePath);
+  const db = await SQLiteHelper.create(databasePath);
   setDb(db);
 
   // Emitted when the window is closed.
@@ -43,9 +49,27 @@ function createWindow() {
 
   showMenu();
 
-  eventBus.addListener(MainProcessEvents.ImportPhotos, importPhotos);
+  listenEvents();
   
   dal.initData(db);
+}
+
+function listenEvents() {
+  eventBus.addListener(MainProcessEvents.ImportPhotos, importPhotos);
+
+  ipcMain.handle(ClientMessageType.GetAllImages, async (event, req: MessageRequest) => {
+    const { offset = 0, length = 200 } = req;
+    const images = await dal.queryImageEntities(getDb(), offset, length);
+    const allPromises: Promise<ImageWithThumbnails>[] = images.map(async img => {
+      const thumbnails = await dal.queryThumbnailsByImageId(getDb(), img.id!);
+      return {
+        ...img,
+        thumbnails,
+      } as ImageWithThumbnails;
+    });
+    const content = await Promise.all(allPromises);
+    return { content };
+  })
 }
 
 function showMenu() {

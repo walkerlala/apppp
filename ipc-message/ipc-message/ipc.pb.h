@@ -48,7 +48,7 @@ struct TableStruct_ipc_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[1]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[3]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -58,8 +58,16 @@ extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table
 class GenerateThumbnailsRequest;
 class GenerateThumbnailsRequestDefaultTypeInternal;
 extern GenerateThumbnailsRequestDefaultTypeInternal _GenerateThumbnailsRequest_default_instance_;
+class GenerateThumbnailsResponse;
+class GenerateThumbnailsResponseDefaultTypeInternal;
+extern GenerateThumbnailsResponseDefaultTypeInternal _GenerateThumbnailsResponse_default_instance_;
+class Thunbnail;
+class ThunbnailDefaultTypeInternal;
+extern ThunbnailDefaultTypeInternal _Thunbnail_default_instance_;
 PROTOBUF_NAMESPACE_OPEN
 template<> ::GenerateThumbnailsRequest* Arena::CreateMaybeMessage<::GenerateThumbnailsRequest>(Arena*);
+template<> ::GenerateThumbnailsResponse* Arena::CreateMaybeMessage<::GenerateThumbnailsResponse>(Arena*);
+template<> ::Thunbnail* Arena::CreateMaybeMessage<::Thunbnail>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 
 enum MessageType : int {
@@ -86,6 +94,32 @@ inline bool MessageType_Parse(
     const std::string& name, MessageType* value) {
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MessageType>(
     MessageType_descriptor(), name, value);
+}
+enum ThumbnailType : int {
+  Small = 0,
+  Medium = 1,
+  Large = 2,
+  ThumbnailType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
+  ThumbnailType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
+};
+bool ThumbnailType_IsValid(int value);
+constexpr ThumbnailType ThumbnailType_MIN = Small;
+constexpr ThumbnailType ThumbnailType_MAX = Large;
+constexpr int ThumbnailType_ARRAYSIZE = ThumbnailType_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* ThumbnailType_descriptor();
+template<typename T>
+inline const std::string& ThumbnailType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, ThumbnailType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function ThumbnailType_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    ThumbnailType_descriptor(), enum_t_value);
+}
+inline bool ThumbnailType_Parse(
+    const std::string& name, ThumbnailType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<ThumbnailType>(
+    ThumbnailType_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -195,8 +229,27 @@ class GenerateThumbnailsRequest :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kTypesFieldNumber = 3,
     kPathFieldNumber = 1,
+    kOutDirFieldNumber = 2,
   };
+  // repeated .ThumbnailType types = 3;
+  int types_size() const;
+  private:
+  int _internal_types_size() const;
+  public:
+  void clear_types();
+  private:
+  ::ThumbnailType _internal_types(int index) const;
+  void _internal_add_types(::ThumbnailType value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>* _internal_mutable_types();
+  public:
+  ::ThumbnailType types(int index) const;
+  void set_types(int index, ::ThumbnailType value);
+  void add_types(::ThumbnailType value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>& types() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>* mutable_types();
+
   // string path = 1;
   void clear_path();
   const std::string& path() const;
@@ -213,12 +266,336 @@ class GenerateThumbnailsRequest :
   std::string* _internal_mutable_path();
   public:
 
+  // string out_dir = 2;
+  void clear_out_dir();
+  const std::string& out_dir() const;
+  void set_out_dir(const std::string& value);
+  void set_out_dir(std::string&& value);
+  void set_out_dir(const char* value);
+  void set_out_dir(const char* value, size_t size);
+  std::string* mutable_out_dir();
+  std::string* release_out_dir();
+  void set_allocated_out_dir(std::string* out_dir);
+  private:
+  const std::string& _internal_out_dir() const;
+  void _internal_set_out_dir(const std::string& value);
+  std::string* _internal_mutable_out_dir();
+  public:
+
   // @@protoc_insertion_point(class_scope:GenerateThumbnailsRequest)
  private:
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField<int> types_;
+  mutable std::atomic<int> _types_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr out_dir_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_ipc_2eproto;
+};
+// -------------------------------------------------------------------
+
+class Thunbnail :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Thunbnail) */ {
+ public:
+  Thunbnail();
+  virtual ~Thunbnail();
+
+  Thunbnail(const Thunbnail& from);
+  Thunbnail(Thunbnail&& from) noexcept
+    : Thunbnail() {
+    *this = ::std::move(from);
+  }
+
+  inline Thunbnail& operator=(const Thunbnail& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline Thunbnail& operator=(Thunbnail&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const Thunbnail& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const Thunbnail* internal_default_instance() {
+    return reinterpret_cast<const Thunbnail*>(
+               &_Thunbnail_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  friend void swap(Thunbnail& a, Thunbnail& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(Thunbnail* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline Thunbnail* New() const final {
+    return CreateMaybeMessage<Thunbnail>(nullptr);
+  }
+
+  Thunbnail* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<Thunbnail>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const Thunbnail& from);
+  void MergeFrom(const Thunbnail& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(Thunbnail* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Thunbnail";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ipc_2eproto);
+    return ::descriptor_table_ipc_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kPathFieldNumber = 2,
+    kTypeFieldNumber = 1,
+    kWidthFieldNumber = 3,
+    kHeightFieldNumber = 4,
+  };
+  // string path = 2;
+  void clear_path();
+  const std::string& path() const;
+  void set_path(const std::string& value);
+  void set_path(std::string&& value);
+  void set_path(const char* value);
+  void set_path(const char* value, size_t size);
+  std::string* mutable_path();
+  std::string* release_path();
+  void set_allocated_path(std::string* path);
+  private:
+  const std::string& _internal_path() const;
+  void _internal_set_path(const std::string& value);
+  std::string* _internal_mutable_path();
+  public:
+
+  // .ThumbnailType type = 1;
+  void clear_type();
+  ::ThumbnailType type() const;
+  void set_type(::ThumbnailType value);
+  private:
+  ::ThumbnailType _internal_type() const;
+  void _internal_set_type(::ThumbnailType value);
+  public:
+
+  // int32 width = 3;
+  void clear_width();
+  ::PROTOBUF_NAMESPACE_ID::int32 width() const;
+  void set_width(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_width() const;
+  void _internal_set_width(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 height = 4;
+  void clear_height();
+  ::PROTOBUF_NAMESPACE_ID::int32 height() const;
+  void set_height(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_height() const;
+  void _internal_set_height(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Thunbnail)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
+  int type_;
+  ::PROTOBUF_NAMESPACE_ID::int32 width_;
+  ::PROTOBUF_NAMESPACE_ID::int32 height_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_ipc_2eproto;
+};
+// -------------------------------------------------------------------
+
+class GenerateThumbnailsResponse :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:GenerateThumbnailsResponse) */ {
+ public:
+  GenerateThumbnailsResponse();
+  virtual ~GenerateThumbnailsResponse();
+
+  GenerateThumbnailsResponse(const GenerateThumbnailsResponse& from);
+  GenerateThumbnailsResponse(GenerateThumbnailsResponse&& from) noexcept
+    : GenerateThumbnailsResponse() {
+    *this = ::std::move(from);
+  }
+
+  inline GenerateThumbnailsResponse& operator=(const GenerateThumbnailsResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline GenerateThumbnailsResponse& operator=(GenerateThumbnailsResponse&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const GenerateThumbnailsResponse& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const GenerateThumbnailsResponse* internal_default_instance() {
+    return reinterpret_cast<const GenerateThumbnailsResponse*>(
+               &_GenerateThumbnailsResponse_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(GenerateThumbnailsResponse& a, GenerateThumbnailsResponse& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(GenerateThumbnailsResponse* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline GenerateThumbnailsResponse* New() const final {
+    return CreateMaybeMessage<GenerateThumbnailsResponse>(nullptr);
+  }
+
+  GenerateThumbnailsResponse* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<GenerateThumbnailsResponse>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const GenerateThumbnailsResponse& from);
+  void MergeFrom(const GenerateThumbnailsResponse& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(GenerateThumbnailsResponse* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "GenerateThumbnailsResponse";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ipc_2eproto);
+    return ::descriptor_table_ipc_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kDataFieldNumber = 1,
+  };
+  // repeated .Thunbnail data = 1;
+  int data_size() const;
+  private:
+  int _internal_data_size() const;
+  public:
+  void clear_data();
+  ::Thunbnail* mutable_data(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thunbnail >*
+      mutable_data();
+  private:
+  const ::Thunbnail& _internal_data(int index) const;
+  ::Thunbnail* _internal_add_data();
+  public:
+  const ::Thunbnail& data(int index) const;
+  ::Thunbnail* add_data();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thunbnail >&
+      data() const;
+
+  // @@protoc_insertion_point(class_scope:GenerateThumbnailsResponse)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thunbnail > data_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
 };
@@ -293,9 +670,283 @@ inline void GenerateThumbnailsRequest::set_allocated_path(std::string* path) {
   // @@protoc_insertion_point(field_set_allocated:GenerateThumbnailsRequest.path)
 }
 
+// string out_dir = 2;
+inline void GenerateThumbnailsRequest::clear_out_dir() {
+  out_dir_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& GenerateThumbnailsRequest::out_dir() const {
+  // @@protoc_insertion_point(field_get:GenerateThumbnailsRequest.out_dir)
+  return _internal_out_dir();
+}
+inline void GenerateThumbnailsRequest::set_out_dir(const std::string& value) {
+  _internal_set_out_dir(value);
+  // @@protoc_insertion_point(field_set:GenerateThumbnailsRequest.out_dir)
+}
+inline std::string* GenerateThumbnailsRequest::mutable_out_dir() {
+  // @@protoc_insertion_point(field_mutable:GenerateThumbnailsRequest.out_dir)
+  return _internal_mutable_out_dir();
+}
+inline const std::string& GenerateThumbnailsRequest::_internal_out_dir() const {
+  return out_dir_.GetNoArena();
+}
+inline void GenerateThumbnailsRequest::_internal_set_out_dir(const std::string& value) {
+  
+  out_dir_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void GenerateThumbnailsRequest::set_out_dir(std::string&& value) {
+  
+  out_dir_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:GenerateThumbnailsRequest.out_dir)
+}
+inline void GenerateThumbnailsRequest::set_out_dir(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  out_dir_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:GenerateThumbnailsRequest.out_dir)
+}
+inline void GenerateThumbnailsRequest::set_out_dir(const char* value, size_t size) {
+  
+  out_dir_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:GenerateThumbnailsRequest.out_dir)
+}
+inline std::string* GenerateThumbnailsRequest::_internal_mutable_out_dir() {
+  
+  return out_dir_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* GenerateThumbnailsRequest::release_out_dir() {
+  // @@protoc_insertion_point(field_release:GenerateThumbnailsRequest.out_dir)
+  
+  return out_dir_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void GenerateThumbnailsRequest::set_allocated_out_dir(std::string* out_dir) {
+  if (out_dir != nullptr) {
+    
+  } else {
+    
+  }
+  out_dir_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), out_dir);
+  // @@protoc_insertion_point(field_set_allocated:GenerateThumbnailsRequest.out_dir)
+}
+
+// repeated .ThumbnailType types = 3;
+inline int GenerateThumbnailsRequest::_internal_types_size() const {
+  return types_.size();
+}
+inline int GenerateThumbnailsRequest::types_size() const {
+  return _internal_types_size();
+}
+inline void GenerateThumbnailsRequest::clear_types() {
+  types_.Clear();
+}
+inline ::ThumbnailType GenerateThumbnailsRequest::_internal_types(int index) const {
+  return static_cast< ::ThumbnailType >(types_.Get(index));
+}
+inline ::ThumbnailType GenerateThumbnailsRequest::types(int index) const {
+  // @@protoc_insertion_point(field_get:GenerateThumbnailsRequest.types)
+  return _internal_types(index);
+}
+inline void GenerateThumbnailsRequest::set_types(int index, ::ThumbnailType value) {
+  types_.Set(index, value);
+  // @@protoc_insertion_point(field_set:GenerateThumbnailsRequest.types)
+}
+inline void GenerateThumbnailsRequest::_internal_add_types(::ThumbnailType value) {
+  types_.Add(value);
+}
+inline void GenerateThumbnailsRequest::add_types(::ThumbnailType value) {
+  // @@protoc_insertion_point(field_add:GenerateThumbnailsRequest.types)
+  _internal_add_types(value);
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>&
+GenerateThumbnailsRequest::types() const {
+  // @@protoc_insertion_point(field_list:GenerateThumbnailsRequest.types)
+  return types_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>*
+GenerateThumbnailsRequest::_internal_mutable_types() {
+  return &types_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>*
+GenerateThumbnailsRequest::mutable_types() {
+  // @@protoc_insertion_point(field_mutable_list:GenerateThumbnailsRequest.types)
+  return _internal_mutable_types();
+}
+
+// -------------------------------------------------------------------
+
+// Thunbnail
+
+// .ThumbnailType type = 1;
+inline void Thunbnail::clear_type() {
+  type_ = 0;
+}
+inline ::ThumbnailType Thunbnail::_internal_type() const {
+  return static_cast< ::ThumbnailType >(type_);
+}
+inline ::ThumbnailType Thunbnail::type() const {
+  // @@protoc_insertion_point(field_get:Thunbnail.type)
+  return _internal_type();
+}
+inline void Thunbnail::_internal_set_type(::ThumbnailType value) {
+  
+  type_ = value;
+}
+inline void Thunbnail::set_type(::ThumbnailType value) {
+  _internal_set_type(value);
+  // @@protoc_insertion_point(field_set:Thunbnail.type)
+}
+
+// string path = 2;
+inline void Thunbnail::clear_path() {
+  path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& Thunbnail::path() const {
+  // @@protoc_insertion_point(field_get:Thunbnail.path)
+  return _internal_path();
+}
+inline void Thunbnail::set_path(const std::string& value) {
+  _internal_set_path(value);
+  // @@protoc_insertion_point(field_set:Thunbnail.path)
+}
+inline std::string* Thunbnail::mutable_path() {
+  // @@protoc_insertion_point(field_mutable:Thunbnail.path)
+  return _internal_mutable_path();
+}
+inline const std::string& Thunbnail::_internal_path() const {
+  return path_.GetNoArena();
+}
+inline void Thunbnail::_internal_set_path(const std::string& value) {
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void Thunbnail::set_path(std::string&& value) {
+  
+  path_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:Thunbnail.path)
+}
+inline void Thunbnail::set_path(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:Thunbnail.path)
+}
+inline void Thunbnail::set_path(const char* value, size_t size) {
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:Thunbnail.path)
+}
+inline std::string* Thunbnail::_internal_mutable_path() {
+  
+  return path_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* Thunbnail::release_path() {
+  // @@protoc_insertion_point(field_release:Thunbnail.path)
+  
+  return path_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void Thunbnail::set_allocated_path(std::string* path) {
+  if (path != nullptr) {
+    
+  } else {
+    
+  }
+  path_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), path);
+  // @@protoc_insertion_point(field_set_allocated:Thunbnail.path)
+}
+
+// int32 width = 3;
+inline void Thunbnail::clear_width() {
+  width_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Thunbnail::_internal_width() const {
+  return width_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Thunbnail::width() const {
+  // @@protoc_insertion_point(field_get:Thunbnail.width)
+  return _internal_width();
+}
+inline void Thunbnail::_internal_set_width(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  width_ = value;
+}
+inline void Thunbnail::set_width(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_width(value);
+  // @@protoc_insertion_point(field_set:Thunbnail.width)
+}
+
+// int32 height = 4;
+inline void Thunbnail::clear_height() {
+  height_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Thunbnail::_internal_height() const {
+  return height_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Thunbnail::height() const {
+  // @@protoc_insertion_point(field_get:Thunbnail.height)
+  return _internal_height();
+}
+inline void Thunbnail::_internal_set_height(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  height_ = value;
+}
+inline void Thunbnail::set_height(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_height(value);
+  // @@protoc_insertion_point(field_set:Thunbnail.height)
+}
+
+// -------------------------------------------------------------------
+
+// GenerateThumbnailsResponse
+
+// repeated .Thunbnail data = 1;
+inline int GenerateThumbnailsResponse::_internal_data_size() const {
+  return data_.size();
+}
+inline int GenerateThumbnailsResponse::data_size() const {
+  return _internal_data_size();
+}
+inline void GenerateThumbnailsResponse::clear_data() {
+  data_.Clear();
+}
+inline ::Thunbnail* GenerateThumbnailsResponse::mutable_data(int index) {
+  // @@protoc_insertion_point(field_mutable:GenerateThumbnailsResponse.data)
+  return data_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thunbnail >*
+GenerateThumbnailsResponse::mutable_data() {
+  // @@protoc_insertion_point(field_mutable_list:GenerateThumbnailsResponse.data)
+  return &data_;
+}
+inline const ::Thunbnail& GenerateThumbnailsResponse::_internal_data(int index) const {
+  return data_.Get(index);
+}
+inline const ::Thunbnail& GenerateThumbnailsResponse::data(int index) const {
+  // @@protoc_insertion_point(field_get:GenerateThumbnailsResponse.data)
+  return _internal_data(index);
+}
+inline ::Thunbnail* GenerateThumbnailsResponse::_internal_add_data() {
+  return data_.Add();
+}
+inline ::Thunbnail* GenerateThumbnailsResponse::add_data() {
+  // @@protoc_insertion_point(field_add:GenerateThumbnailsResponse.data)
+  return _internal_add_data();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thunbnail >&
+GenerateThumbnailsResponse::data() const {
+  // @@protoc_insertion_point(field_list:GenerateThumbnailsResponse.data)
+  return data_;
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -306,6 +957,11 @@ template <> struct is_proto_enum< ::MessageType> : ::std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::MessageType>() {
   return ::MessageType_descriptor();
+}
+template <> struct is_proto_enum< ::ThumbnailType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::ThumbnailType>() {
+  return ::ThumbnailType_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE
