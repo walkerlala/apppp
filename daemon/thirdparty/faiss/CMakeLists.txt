@@ -1,15 +1,13 @@
-project(faiss)
-
 cmake_minimum_required(VERSION 3.10.2)
 
 set(CMAKE_CXX_FLAGS "-fopenmp") # compile and link flag
-include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_definitions("-Wall" "-Wno-sign-compare" "-g" "-std=c++1z")
 add_definitions("-mavx2") #avx256
 add_definitions("-DFINTEGER=int") #openblas
 
-file(GLOB FAISS_IMPL_SOURCE ${CMAKE_SOURCE_DIR}/impl/*.cpp)
-file(GLOB FAISS_UTILS_SOURCE ${CMAKE_SOURCE_DIR}/utils/*.cpp)
+file(GLOB FAISS_IMPL_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/impl/*.cpp)
+file(GLOB FAISS_UTILS_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp)
 SET(FAISS_SOURCE ${FAISS_IMPL_SOURCE} ${FAISS_UTILS_SOURCE})
 
 set(MKL_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mkl)
@@ -31,3 +29,4 @@ add_library(faiss ${FAISS_SOURCE})
 target_link_libraries(faiss ${MKL_LIBS} ${MKL_LIBS} dl)
 
 add_subdirectory(tutorial)
+add_subdirectory(tests)

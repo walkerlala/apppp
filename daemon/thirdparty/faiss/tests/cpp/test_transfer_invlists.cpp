@@ -13,7 +13,7 @@
 
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/index_io.h>
-#include <faiss/impl/io.h>
+#include <faiss/io.h>
 #include <faiss/AutoTune.h>
 #include <faiss/index_factory.h>
 #include <faiss/clone_index.h>
