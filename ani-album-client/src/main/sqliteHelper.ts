@@ -33,7 +33,7 @@ export class SQLiteHelper {
   }
 
   private _db: sqlite3.Database;
-  private _run: (sql: string) => Promise<void>
+  private _run: (sql: string, ...params: any[]) => Promise<void>
   private _get: (sql: string, ...params: any[]) => Promise<any>;
   private _all: (sql: string, ...params: any[]) => Promise<any>;
 
@@ -57,8 +57,8 @@ export class SQLiteHelper {
     return await this._all(sql, ...params);
   }
 
-  async run(sql: string): Promise<void> {
-    await this._run(sql);
+  async run(sql: string, ...params: any[]): Promise<void> {
+    await this._run(sql, ...params);
   }
 
   async prepare(sql: string): Promise<SQLiteHelperStmt> {

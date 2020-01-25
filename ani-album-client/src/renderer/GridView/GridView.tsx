@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
-import { ThumbnailType } from 'protos/ipc_pb';
 import { ClientMessageType } from 'common/message';
 import { ImageWithThumbnails } from 'common/image';
+import ImageItem from './ImageItem';
 import './GridView.scss';
 
 interface GridViewState {
@@ -25,14 +25,44 @@ class GridView extends Component<{}, GridViewState> {
   componentDidMount() {
     this.fetchInitialImages();
     ipcRenderer.addListener(ClientMessageType.PhotoImported, this.handlePhotoImported);
+    ipcRenderer.addListener(ClientMessageType.PhotoDeleted, this.handlePhotoDeleted);
+    window.addEventListener('contextmenu', this.handleContextMenu);
   }
 
   componentWillUnmount() {
     ipcRenderer.removeListener(ClientMessageType.PhotoImported, this.handlePhotoImported);
+    ipcRenderer.removeListener(ClientMessageType.PhotoDeleted, this.handlePhotoDeleted);
+    window.removeEventListener('contextmenu', this.handleContextMenu);
   }
 
-  handlePhotoImported = () => {
+  private handlePhotoImported = () => {
     this.fetchInitialImages();
+  }
+
+  private handlePhotoDeleted = (event: any, imageId: number) => {
+    console.log('deleted', imageId);
+    const { images } = this.state;
+    this.setState({
+      images: images.filter(item => item.id !== Number(imageId)),
+    });
+  }
+
+  private handleContextMenu = async (evt: Event) => {
+    let current = evt.target as HTMLElement;
+    while (true) {
+      if (current == null) return;
+      if (current == document.body) return;
+
+      if (current.classList.contains('ani-grid-item') && current.hasAttribute('data-id')) {
+        const dataId = Number(current.getAttribute('data-id'));
+        ipcRenderer.invoke(ClientMessageType.ShowContextMenu, {
+          imageId: dataId,
+        });
+        return;
+      }
+
+      current = current.parentElement;
+    }
   }
 
   async fetchInitialImages() {
@@ -49,31 +79,11 @@ class GridView extends Component<{}, GridViewState> {
     }
   }
 
-  private getMediumThumbnail(image: ImageWithThumbnails): string {
-    const { thumbnails, path } = image;
-    if (typeof thumbnails === 'undefined' || thumbnails.length == 0) {
-      return path;
-    }
-
-    for (const item of thumbnails) {
-      if (item.type == ThumbnailType.MEDIUM) {
-        return item.path;
-      }
-    }
-
-    return path;
-  }
-
   private renderImages() {
     const { images } = this.state;
     return images.map(data => {
-      const thumbnailPath = this.getMediumThumbnail(data);
       return (
-        <div key={`item-${data.id}`} className="ani-grid-item">
-          <div className="ani-img-container">
-            <img src={`file://${thumbnailPath}`} />
-          </div>
-        </div>
+        <ImageItem key={`item-${data.id}`} data={data} />
       );
     })
   }

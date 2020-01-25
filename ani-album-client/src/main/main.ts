@@ -1,14 +1,15 @@
-import { app, BrowserWindow, Menu, ipcMain } from "electron";
+import { app, BrowserWindow, Menu, MenuItem, ipcMain } from "electron";
 import { eventBus, MainProcessEvents } from './events';
-import { getAppDateFolder, setDb, getDb, setWebContent } from './utils';
+import { getAppDateFolder, setDb, getDb, setWebContent, getWebContent } from './utils';
 import { importPhotos } from './photos';
 import { SQLiteHelper } from './sqliteHelper';
 import { ImageWithThumbnails } from 'common/image';
 import { ClientMessageType, MessageRequest } from 'common/message';
-import { once } from 'lodash';
+import { once, get, isUndefined } from 'lodash';
 import * as dal from './dal';
 import * as path from "path";
 import * as fs from 'fs';
+import { logger } from "./logger";
 
 let mainWindow: Electron.BrowserWindow;
 
@@ -27,7 +28,27 @@ const listenEvents = once(() => {
     });
     const content = await Promise.all(allPromises);
     return { content };
-  })
+  });
+
+  ipcMain.handle(ClientMessageType.ShowContextMenu, async (event, data) => {
+    const menu = new Menu()
+    menu.append(new MenuItem({
+      label: 'Delete', 
+      click: async () => {
+        try {
+          const imageId = get(data, 'imageId');
+          if (isUndefined(imageId)) return;
+          logger.info('preparing to delete image id', imageId);
+          await dal.deleteImageById(getDb(), Number(imageId));
+          getWebContent().send(ClientMessageType.PhotoDeleted, imageId);
+          logger.info('delete image successfully: ', imageId);
+        } catch (err) {
+          logger.error(err);
+        }
+      },
+    }));
+    menu.popup();
+  });
 });
 
 const showMenu = once(() => {

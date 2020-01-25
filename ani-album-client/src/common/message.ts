@@ -2,6 +2,8 @@
 export enum ClientMessageType {
   GetAllImages = 'GetAllImages',
   PhotoImported = 'PhotoImported',
+  ShowContextMenu = 'ShowContextMenu',
+  PhotoDeleted = 'PhotoDeleted',
 }
 
 export interface MessageRequest {

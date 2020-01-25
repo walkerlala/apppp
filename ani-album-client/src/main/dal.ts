@@ -1,3 +1,6 @@
+/**
+ * Data Access Layer
+ */
 import { ImageEntity, ThumbnailEntity } from 'common/image';
 import { logger } from './logger';
 import { SQLiteHelper } from './sqliteHelper';
@@ -56,7 +59,7 @@ export async function insertImageEntity(db: SQLiteHelper, entity: ImageEntity): 
 export async function insertThumbnailEntity(db: SQLiteHelper, thumbnail: ThumbnailEntity) {
   const { path, type, imageId, width, height, createAt } = thumbnail;
   const stmt = await db.prepare(`
-    INSERT INTO thumbnails (path, type, imageId, width, height, createdAt)
+    INSERT INTO ${ThumbnailsTableName} (path, type, imageId, width, height, createdAt)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
   await stmt.run(path, type, imageId, width, height, createAt);
@@ -66,11 +69,16 @@ export async function insertThumbnailEntity(db: SQLiteHelper, thumbnail: Thumbna
 export async function queryThumbnailsByImageId(db: SQLiteHelper, imageId: number): Promise<ThumbnailEntity[]> {
   const result =  await db.all(`SELECT
     path, type, width, height, createdAt
-    FROM thumbnails WHERE imageId=?`, imageId);
+    FROM ${ThumbnailsTableName} WHERE imageId=?`, imageId);
   return result.map(({ createdAt, ...rst }) => {
     return {
       ...rst,
       createdAt: new Date(createdAt),
     };
   });
+}
+
+export async function deleteImageById(db: SQLiteHelper, imageId: number) {
+  await db.run(`DELETE FROM ${ImageEntityTableName} WHERE id=?`, imageId);
+  await db.run(`DELETE FROM ${ThumbnailsTableName} WHERE imageId=?`, imageId);
 }
