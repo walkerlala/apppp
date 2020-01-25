@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <random>
 
 #include <memory>
 #include <vector>
@@ -41,9 +42,13 @@ int64_t nq = 200;
 
 std::vector<float> make_data(int64_t n)
 {
+    std::random_device rd;  //Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+
     std::vector <float> database (n * d);
     for (int64_t i = 0; i < n * d; i++) {
-        database[i] = drand48();
+        database[i] = dis(gen);
     }
     return database;
 }

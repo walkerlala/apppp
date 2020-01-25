@@ -12,13 +12,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include <faiss/FaissAssert.h>
-#include <faiss/io.h>
+#include <faiss/IO.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>

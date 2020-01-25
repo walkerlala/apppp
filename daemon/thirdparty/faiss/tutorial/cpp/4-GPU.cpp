@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>
+#include <random>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/gpu/GpuIndexFlat.h>
@@ -22,16 +23,20 @@ int main() {
 
     float *xb = new float[d * nb];
     float *xq = new float[d * nq];
+    
+    std::random_device rd;  //Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+    std::uniform_real_distribution<> dis(0.0, 1.0);
 
     for(int i = 0; i < nb; i++) {
         for(int j = 0; j < d; j++)
-            xb[d * i + j] = drand48();
+            xb[d * i + j] = dis(gen);
         xb[d * i] += i / 1000.;
     }
 
     for(int i = 0; i < nq; i++) {
         for(int j = 0; j < d; j++)
-            xq[d * i + j] = drand48();
+            xq[d * i + j] = dis(gen);
         xq[d * i] += i / 1000.;
     }
 

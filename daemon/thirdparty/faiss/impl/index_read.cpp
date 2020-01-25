@@ -12,13 +12,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include <faiss/FaissAssert.h>
-#include <faiss/io.h>
+#include <faiss/IO.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
@@ -42,6 +37,7 @@
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
 
+#include <faiss/utils/crossplatform.h>
 
 
 namespace faiss {
@@ -241,9 +237,7 @@ InvertedLists *read_InvertedLists (IOReader *f, int io_flags) {
             FAISS_THROW_IF_NOT_FMT (ret == 0,
                                     "fstat failed: %s", strerror(errno));
             ails->totsize = buf.st_size;
-            ails->ptr = (uint8_t*)mmap (nullptr, ails->totsize,
-                                        PROT_READ, MAP_SHARED,
-                                        fileno(fdesc), 0);
+            ails->ptr = (uint8_t*)faiss_mmap (nullptr, ails->totsize, PROT_READ, MAP_SHARED, fileno(fdesc), 0);
             FAISS_THROW_IF_NOT_FMT (ails->ptr != MAP_FAILED,
                             "could not mmap: %s",
                             strerror(errno));

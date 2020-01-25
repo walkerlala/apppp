@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <random>
 
 #include <omp.h>
 
@@ -21,41 +22,45 @@
 #include <faiss/utils/random.h>
 #include <faiss/index_io.h>
 
+namespace
+{
 
-namespace {
-
-struct Tempfilename {
+struct Tempfilename
+{
 
     static pthread_mutex_t mutex;
 
     std::string filename;
 
-    Tempfilename (const char *prefix = nullptr) {
-        pthread_mutex_lock (&mutex);
-        char *cfname = tempnam (nullptr, prefix);
+    Tempfilename(const char *prefix = nullptr)
+    {
+        pthread_mutex_lock(&mutex);
+        char *cfname = tempnam(nullptr, prefix);
         filename = cfname;
         free(cfname);
-        pthread_mutex_unlock (&mutex);
+        pthread_mutex_unlock(&mutex);
     }
 
-    ~Tempfilename () {
-        if (access (filename.c_str(), F_OK)) {
-            unlink (filename.c_str());
+    ~Tempfilename()
+    {
+        if (access(filename.c_str(), F_OK))
+        {
+            unlink(filename.c_str());
         }
     }
 
-    const char *c_str() {
+    const char *c_str()
+    {
         return filename.c_str();
     }
-
 };
 
 pthread_mutex_t Tempfilename::mutex = PTHREAD_MUTEX_INITIALIZER;
 
-}  // namespace
+} // namespace
 
-
-TEST(ONDISK, make_invlists) {
+TEST(ONDISK, make_invlists)
+{
     int nlist = 100;
     int code_size = 32;
     int nadd = 1000000;
@@ -63,42 +68,48 @@ TEST(ONDISK, make_invlists) {
 
     Tempfilename filename;
 
-    faiss::OnDiskInvertedLists ivf (
-                nlist, code_size,
-                filename.c_str());
+    faiss::OnDiskInvertedLists ivf(
+        nlist, code_size,
+        filename.c_str());
 
     {
+        std::random_device rd;  //Will be used to obtain a seed for the random number engine
+        std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+        std::uniform_real_distribution<> dis(0.0, 1.0);
         std::vector<uint8_t> code(32);
-        for (int i = 0; i < nadd; i++) {
-            double d = drand48();
+        for (int i = 0; i < nadd; i++)
+        {
+            double d = dis(gen);
             int list_no = int(nlist * d * d); // skewed distribution
-            int * ar = (int*)code.data();
+            int *ar = (int *)code.data();
             ar[0] = i;
             ar[1] = list_no;
-            ivf.add_entry (list_no, i, code.data());
+            ivf.add_entry(list_no, i, code.data());
             listnos[i] = list_no;
         }
     }
 
     int ntot = 0;
-    for (int i = 0; i < nlist; i++) {
+    for (int i = 0; i < nlist; i++)
+    {
         int size = ivf.list_size(i);
-        const faiss::Index::idx_t *ids = ivf.get_ids (i);
-        const uint8_t *codes = ivf.get_codes (i);
-        for (int j = 0; j < size; j++) {
+        const faiss::Index::idx_t *ids = ivf.get_ids(i);
+        const uint8_t *codes = ivf.get_codes(i);
+        for (int j = 0; j < size; j++)
+        {
             faiss::Index::idx_t id = ids[j];
-            const int * ar = (const int*)&codes[code_size * j];
-            EXPECT_EQ (ar[0], id);
-            EXPECT_EQ (ar[1], i);
-            EXPECT_EQ (listnos[id], i);
-            ntot ++;
+            const int *ar = (const int *)&codes[code_size * j];
+            EXPECT_EQ(ar[0], id);
+            EXPECT_EQ(ar[1], i);
+            EXPECT_EQ(listnos[id], i);
+            ntot++;
         }
     }
-    EXPECT_EQ (ntot, nadd);
+    EXPECT_EQ(ntot, nadd);
 };
 
-
-TEST(ONDISK, test_add) {
+TEST(ONDISK, test_add)
+{
     int d = 8;
     int nlist = 30, nq = 200, nb = 1500, k = 10;
     faiss::IndexFlatL2 quantizer(d);
@@ -116,11 +127,11 @@ TEST(ONDISK, test_add) {
     std::vector<float> xq(d * nb);
     faiss::float_rand(xq.data(), d * nq, 34567);
 
-    std::vector<float> ref_D (nq * k);
-    std::vector<faiss::Index::idx_t> ref_I (nq * k);
+    std::vector<float> ref_D(nq * k);
+    std::vector<faiss::Index::idx_t> ref_I(nq * k);
 
-    index.search (nq, xq.data(), k,
-                  ref_D.data(), ref_I.data());
+    index.search(nq, xq.data(), k,
+                 ref_D.data(), ref_I.data());
 
     Tempfilename filename, filename2;
 
@@ -128,63 +139,64 @@ TEST(ONDISK, test_add) {
     {
         faiss::IndexIVFFlat index2(&quantizer, d, nlist);
 
-        faiss::OnDiskInvertedLists ivf (
-                index.nlist, index.code_size,
-                filename.c_str());
+        faiss::OnDiskInvertedLists ivf(
+            index.nlist, index.code_size,
+            filename.c_str());
 
         index2.replace_invlists(&ivf);
 
         index2.add(nb, xb.data());
 
-        std::vector<float> new_D (nq * k);
-        std::vector<faiss::Index::idx_t> new_I (nq * k);
+        std::vector<float> new_D(nq * k);
+        std::vector<faiss::Index::idx_t> new_I(nq * k);
 
-        index2.search (nq, xq.data(), k,
-                       new_D.data(), new_I.data());
+        index2.search(nq, xq.data(), k,
+                      new_D.data(), new_I.data());
 
-        EXPECT_EQ (ref_D, new_D);
-        EXPECT_EQ (ref_I, new_I);
+        EXPECT_EQ(ref_D, new_D);
+        EXPECT_EQ(ref_I, new_I);
 
         write_index(&index2, filename2.c_str());
-
     }
 
     // test io
     {
         faiss::Index *index3 = faiss::read_index(filename2.c_str());
 
-        std::vector<float> new_D (nq * k);
-        std::vector<faiss::Index::idx_t> new_I (nq * k);
+        std::vector<float> new_D(nq * k);
+        std::vector<faiss::Index::idx_t> new_I(nq * k);
 
-        index3->search (nq, xq.data(), k,
-                        new_D.data(), new_I.data());
+        index3->search(nq, xq.data(), k,
+                       new_D.data(), new_I.data());
 
-        EXPECT_EQ (ref_D, new_D);
-        EXPECT_EQ (ref_I, new_I);
+        EXPECT_EQ(ref_D, new_D);
+        EXPECT_EQ(ref_I, new_I);
 
         delete index3;
     }
-
 };
 
-
-
 // WARN this thest will run multithreaded only in opt mode
-TEST(ONDISK, make_invlists_threaded) {
+TEST(ONDISK, make_invlists_threaded)
+{
     int nlist = 100;
     int code_size = 32;
     int nadd = 1000000;
 
     Tempfilename filename;
 
-    faiss::OnDiskInvertedLists ivf (
-                nlist, code_size,
-                filename.c_str());
+    faiss::OnDiskInvertedLists ivf(
+        nlist, code_size,
+        filename.c_str());
 
-    std::vector<int> list_nos (nadd);
+    std::vector<int> list_nos(nadd);
 
-    for (int i = 0; i < nadd; i++) {
-        double d = drand48();
+    std::random_device rd;  //Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+    for (int i = 0; i < nadd; i++)
+    {
+        double d = dis(gen);
         list_nos[i] = int(nlist * d * d); // skewed distribution
     }
 
@@ -192,29 +204,31 @@ TEST(ONDISK, make_invlists_threaded) {
     {
         std::vector<uint8_t> code(32);
 #pragma omp for
-        for (int i = 0; i < nadd; i++) {
+        for (int i = 0; i < nadd; i++)
+        {
             int list_no = list_nos[i];
-            int * ar = (int*)code.data();
+            int *ar = (int *)code.data();
             ar[0] = i;
             ar[1] = list_no;
-            ivf.add_entry (list_no, i, code.data());
+            ivf.add_entry(list_no, i, code.data());
         }
     }
 
     int ntot = 0;
-    for (int i = 0; i < nlist; i++) {
+    for (int i = 0; i < nlist; i++)
+    {
         int size = ivf.list_size(i);
-        const faiss::Index::idx_t *ids = ivf.get_ids (i);
-        const uint8_t *codes = ivf.get_codes (i);
-        for (int j = 0; j < size; j++) {
+        const faiss::Index::idx_t *ids = ivf.get_ids(i);
+        const uint8_t *codes = ivf.get_codes(i);
+        for (int j = 0; j < size; j++)
+        {
             faiss::Index::idx_t id = ids[j];
-            const int * ar = (const int*)&codes[code_size * j];
-            EXPECT_EQ (ar[0], id);
-            EXPECT_EQ (ar[1], i);
-            EXPECT_EQ (list_nos[id], i);
-            ntot ++;
+            const int *ar = (const int *)&codes[code_size * j];
+            EXPECT_EQ(ar[0], id);
+            EXPECT_EQ(ar[1], i);
+            EXPECT_EQ(list_nos[id], i);
+            ntot++;
         }
     }
-    EXPECT_EQ (ntot, nadd);
-
+    EXPECT_EQ(ntot, nadd);
 };

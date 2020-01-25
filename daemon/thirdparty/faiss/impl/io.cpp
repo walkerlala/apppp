@@ -10,7 +10,7 @@
 #include <cstring>
 #include <cassert>
 
-#include <faiss/io.h>
+#include <faiss/IO.h>
 #include <faiss/FaissAssert.h>
 
 
