@@ -15,7 +15,25 @@ if (UNIX)
     set(DL "dl")
 endif()
 
-set(OPENBLAS_LIBS openblas gfortran)
+if (NOT ${MKL_LIB_DIR} STREQUAL "")
+    set(MKL_LIBS ${MKL_LIB_DIR}/libmkl_core.a
+        ${MKL_LIB_DIR}/libmkl_intel_lp64.a
+        ${MKL_LIB_DIR}/libmkl_gnu_thread.a
+        ${MKL_LIB_DIR}/libmkl_lapack95_lp64.a
+        ${MKL_LIB_DIR}/libmkl_core.a
+        ${MKL_LIB_DIR}/libmkl_intel_lp64.a
+        ${MKL_LIB_DIR}/libmkl_gnu_thread.a
+        ${MKL_LIB_DIR}/libmkl_lapack95_lp64.a
+        ${MKL_LIB_DIR}/libmkl_core.a
+        ${MKL_LIB_DIR}/libmkl_intel_lp64.a
+        ${MKL_LIB_DIR}/libmkl_gnu_thread.a
+        ${MKL_LIB_DIR}/libmkl_lapack95_lp64.a
+        ${MKL_LIB_DIR}/libmkl_core.a)
+    set(OPENBLAS_LIBS ${MKL_LIBS} ${MKL_LIBS})
+    MESSAGE(STATUS "Using mkl libs at: ${MKL_LIB_DIR}")
+else()
+    set(OPENBLAS_LIBS openblas gfortran)
+endif()
 
 add_library(faiss ${FAISS_SOURCE})
 target_link_libraries(faiss ${OPENBLAS_LIBS} ${DL})

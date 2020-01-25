@@ -1,2 +1,5 @@
 add_subdirectory(faiss)
-add_subdirectory(openblas)
+
+if (${MKL_LIB_DIR} STREQUAL "")
+    add_subdirectory(openblas)
+endif()
