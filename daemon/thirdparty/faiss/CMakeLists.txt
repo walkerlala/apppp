@@ -2,22 +2,32 @@ project(faiss)
 
 cmake_minimum_required(VERSION 3.10.2)
 
-set(CMAKE_CXX_FLAGS "-fopenmp")
+set(CMAKE_CXX_FLAGS "-fopenmp") # compile and link flag
 include_directories(${CMAKE_SOURCE_DIR}/include)
 add_definitions("-Wall" "-Wno-sign-compare" "-g" "-std=c++1z")
 add_definitions("-mavx2") #avx256
 add_definitions("-DFINTEGER=int") #openblas
-add_definitions("-fopenmp") #openmp
 
 file(GLOB FAISS_IMPL_SOURCE ${CMAKE_SOURCE_DIR}/impl/*.cpp)
 file(GLOB FAISS_UTILS_SOURCE ${CMAKE_SOURCE_DIR}/utils/*.cpp)
-MESSAGE(STATUS "Impl source files: ${FAISS_IMPL_SOURCE}")
-MESSAGE(STATUS "Util source files: ${FAISS_UTILS_SOURCE}")
 SET(FAISS_SOURCE ${FAISS_IMPL_SOURCE} ${FAISS_UTILS_SOURCE})
-MESSAGE(STATUS "\n")
-MESSAGE(STATUS "Faiss source files: ${FAISS_SOURCE}")
+
+set(MKL_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mkl)
+set(MKL_LIBS ${MKL_LIB_DIR}/libmkl_core.a
+     ${MKL_LIB_DIR}/libmkl_intel_lp64.a
+     ${MKL_LIB_DIR}/libmkl_gnu_thread.a
+     ${MKL_LIB_DIR}/libmkl_lapack95_lp64.a
+     ${MKL_LIB_DIR}/libmkl_core.a
+     ${MKL_LIB_DIR}/libmkl_intel_lp64.a
+     ${MKL_LIB_DIR}/libmkl_gnu_thread.a
+     ${MKL_LIB_DIR}/libmkl_lapack95_lp64.a
+     ${MKL_LIB_DIR}/libmkl_core.a
+     ${MKL_LIB_DIR}/libmkl_intel_lp64.a
+     ${MKL_LIB_DIR}/libmkl_gnu_thread.a
+     ${MKL_LIB_DIR}/libmkl_lapack95_lp64.a
+     ${MKL_LIB_DIR}/libmkl_core.a)
 
 add_library(faiss ${FAISS_SOURCE})
-target_link_libraries(faiss openblas lapack)
+target_link_libraries(faiss ${MKL_LIBS} ${MKL_LIBS} dl)
 
 add_subdirectory(tutorial)
