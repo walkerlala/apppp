@@ -70,7 +70,9 @@ class GridView extends Component<{}, GridViewState> {
       const thumbnailPath = this.getMediumThumbnail(data);
       return (
         <div key={`item-${data.id}`} className="ani-grid-item">
-          <img src={`file://${thumbnailPath}`} />
+          <div className="ani-img-container">
+            <img src={`file://${thumbnailPath}`} />
+          </div>
         </div>
       );
     })
