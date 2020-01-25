@@ -9,8 +9,11 @@
 
 #include <boost/filesystem.hpp>
 
+#include <boost/algorithm/string.hpp>
+
 #include <boost/gil.hpp>
 #include <boost/gil/extension/io/jpeg.hpp>
+#include <boost/gil/extension/io/png.hpp>
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/numeric/resample.hpp>
 
@@ -118,7 +121,15 @@ static std::string gen_thumbnails(const GenerateThumbnailsRequest& req) {
 
             try {
                 rgb8_image_t img;
-                read_image(req.path(), img, boost::gil::jpeg_tag{});
+                std::string ext = boost::algorithm::to_lower_copy(path(req.path()).extension().string());
+
+                if (ext == ".jpg" || ext == ".jpeg") {
+                    read_image(req.path(), img, boost::gil::jpeg_tag{});
+                } else if (ext == ".png") {
+                    boost::gil::read_and_convert_image(req.path(), img, boost::gil::png_tag{});
+                } else {
+                    return;
+                }
 
                 auto proper_size = get_proper_thumbnail_size(static_cast<ThumbnailType>(type), img.width(), img.height());
                 if (proper_size.first < 0) {
@@ -131,7 +142,6 @@ static std::string gen_thumbnails(const GenerateThumbnailsRequest& req) {
                 path src_path(req.path());
                 std::string filename = src_path.filename().string();
                 std::string no_ext = src_path.stem().string();
-                std::string ext = src_path.extension().string();
 
                 std::cout << filename << " " << no_ext << " " << ext << std::endl;
 

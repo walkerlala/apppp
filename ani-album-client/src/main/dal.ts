@@ -1,11 +1,12 @@
 import { ImageEntity, ThumbnailEntity } from 'common/image';
 import { logger } from './logger';
 import { SQLiteHelper } from './sqliteHelper';
+import { once } from 'lodash';
 
 const ImageEntityTableName = 'imagesEntity';
 const ThumbnailsTableName = 'thumbnails';
 
-export async function initData(db: SQLiteHelper) {
+export const initData = once(async (db: SQLiteHelper) => {
   try {
     await db.run('CREATE TABLE IF NOT EXISTS global_kv (key TEXT PRIMARY KEY, value TEXT)');
     await db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "1")');
@@ -30,7 +31,7 @@ export async function initData(db: SQLiteHelper) {
     logger.fatal('init data failed: ', err);
     process.exit(1);
   }
-}
+});
 
 export async function queryImageEntities(db: SQLiteHelper, offset: number = 0, limit: number = 200): Promise<ImageEntity[]> {
   const result =  await db.all(`SELECT

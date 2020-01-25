@@ -5,56 +5,14 @@ import { importPhotos } from './photos';
 import { SQLiteHelper } from './sqliteHelper';
 import { ImageWithThumbnails } from 'common/image';
 import { ClientMessageType, MessageRequest } from 'common/message';
+import { once } from 'lodash';
 import * as dal from './dal';
 import * as path from "path";
 import * as fs from 'fs';
 
 let mainWindow: Electron.BrowserWindow;
 
-async function createWindow() {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true,
-    },
-    width: 800,
-  });
-
-  // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, "../../index.html"));
-
-  mainWindow.webContents.on('did-finish-load', () => {
-    setWebContent(mainWindow.webContents);
-  });
-
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
-
-  const appDataFolder = getAppDateFolder();
-  if (!fs.existsSync(appDataFolder)) {
-    fs.mkdirSync(appDataFolder);
-  }
-  const databasePath = path.join(appDataFolder, 'database.sqlite');
-  const db = await SQLiteHelper.create(databasePath);
-  setDb(db);
-
-  // Emitted when the window is closed.
-  mainWindow.on("closed", () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null;
-  });
-
-  showMenu();
-
-  listenEvents();
-  
-  dal.initData(db);
-}
-
-function listenEvents() {
+const listenEvents = once(() => {
   eventBus.addListener(MainProcessEvents.ImportPhotos, importPhotos);
 
   ipcMain.handle(ClientMessageType.GetAllImages, async (event, req: MessageRequest) => {
@@ -70,9 +28,9 @@ function listenEvents() {
     const content = await Promise.all(allPromises);
     return { content };
   })
-}
+});
 
-function showMenu() {
+const showMenu = once(() => {
   const isMac = process.platform === 'darwin';
 
   const template: any = [
@@ -179,6 +137,49 @@ function showMenu() {
 
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
+});
+
+async function createWindow() {
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+    width: 800,
+  });
+
+  // and load the index.html of the app.
+  mainWindow.loadFile(path.join(__dirname, "../../index.html"));
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    setWebContent(mainWindow.webContents);
+  });
+
+  // Open the DevTools.
+  mainWindow.webContents.openDevTools();
+
+  const appDataFolder = getAppDateFolder();
+  if (!fs.existsSync(appDataFolder)) {
+    fs.mkdirSync(appDataFolder);
+  }
+  const databasePath = path.join(appDataFolder, 'database.sqlite');
+  const db = await SQLiteHelper.create(databasePath);
+  setDb(db);
+
+  // Emitted when the window is closed.
+  mainWindow.on("closed", () => {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    mainWindow = null;
+  });
+
+  showMenu();
+
+  listenEvents();
+  
+  dal.initData(db);
 }
 
 // This method will be called when Electron has finished

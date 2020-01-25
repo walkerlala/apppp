@@ -20,6 +20,7 @@ target_link_libraries(thumbnail
         ipc_message
         -lprotobuf
         -ljpeg
+        -lpng
         -lboost_filesystem
         -lboost_random
         -L/usr/local/lib)
