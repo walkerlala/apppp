@@ -9,8 +9,7 @@
 
 #include <faiss/OnDiskInvertedLists.h>
 
-#include <mutex>
-#include <condition_variable>
+#include <pthread.h>
 #include <thread>
 
 #include <unordered_set>
@@ -27,8 +26,7 @@ namespace faiss
  * LockLevels
  **********************************************/
 
-struct LockLevels
-{
+struct LockLevels {
     /* There n times lock1(n), one lock2 and one lock3
      * Invariants:
      *    a single thread can hold one lock1(n) for some n
@@ -36,219 +34,224 @@ struct LockLevels
      *    a single thread can hold lock3, if it holds lock1(n) for some n
      *       AND lock2 AND no other thread holds lock1(m) for m != n
      */
-    std::mutex mutex1;
-    std::condition_variable level1_cv;
-    std::condition_variable level2_cv;
-    std::condition_variable level3_cv;
+    pthread_mutex_t mutex1;
+    pthread_cond_t level1_cv;
+    pthread_cond_t level2_cv;
+    pthread_cond_t level3_cv;
 
     std::unordered_set<int> level1_holders; // which level1 locks are held
-    int n_level2;                           // nb threads that wait on level2
-    bool level3_in_use;                     // a threads waits on level3
+    int n_level2; // nb threads that wait on level2
+    bool level3_in_use; // a threads waits on level3
     bool level2_in_use;
 
-    LockLevels()
-    {
+    LockLevels() {
+        pthread_mutex_init(&mutex1, nullptr);
+        pthread_cond_init(&level1_cv, nullptr);
+        pthread_cond_init(&level2_cv, nullptr);
+        pthread_cond_init(&level3_cv, nullptr);
         n_level2 = 0;
         level2_in_use = false;
         level3_in_use = false;
     }
 
-    ~LockLevels() {}
-
-    void lock_1(int no)
-    {
-        std::unique_lock lk(mutex1);
-        level1_cv.wait(lk, [this, no]() {
-            return this->level3_in_use || this->level1_holders.count(no) > 0;
-        });
-        level1_holders.insert(no);
+    ~LockLevels() {
+        pthread_cond_destroy(&level1_cv);
+        pthread_cond_destroy(&level2_cv);
+        pthread_cond_destroy(&level3_cv);
+        pthread_mutex_destroy(&mutex1);
     }
 
-    void unlock_1(int no)
-    {
-        std::unique_lock lk(mutex1);
+    void lock_1(int no) {
+        pthread_mutex_lock(&mutex1);
+        while (level3_in_use || level1_holders.count(no) > 0) {
+            pthread_cond_wait(&level1_cv, &mutex1);
+        }
+        level1_holders.insert(no);
+        pthread_mutex_unlock(&mutex1);
+    }
+
+    void unlock_1(int no) {
+        pthread_mutex_lock(&mutex1);
         assert(level1_holders.count(no) == 1);
         level1_holders.erase(no);
-        if (level3_in_use)
-        { // a writer is waiting
-            level3_cv.notify_one();
+        if (level3_in_use) { // a writer is waiting
+            pthread_cond_signal(&level3_cv);
+        } else {
+            pthread_cond_broadcast(&level1_cv);
         }
-        else
-        {
-            level1_cv.notify_all();
-        }
+        pthread_mutex_unlock(&mutex1);
     }
 
-    void lock_2()
-    {
-        std::unique_lock lk(mutex1);
-        n_level2++;
-        if (level3_in_use)
-        { // tell waiting level3 that we are blocked
-            level3_cv.notify_one();
+    void lock_2() {
+        pthread_mutex_lock(&mutex1);
+        n_level2 ++;
+        if (level3_in_use) { // tell waiting level3 that we are blocked
+            pthread_cond_signal(&level3_cv);
         }
-        level2_cv.wait(lk, [this]() {
-            return this->level2_in_use;
-        });
+        while (level2_in_use) {
+            pthread_cond_wait(&level2_cv, &mutex1);
+        }
         level2_in_use = true;
+        pthread_mutex_unlock(&mutex1);
     }
 
-    void unlock_2()
-    {
-        std::unique_lock lk(mutex1);
+    void unlock_2() {
+        pthread_mutex_lock(&mutex1);
         level2_in_use = false;
-        n_level2--;
-        level2_cv.notify_one();
+        n_level2 --;
+        pthread_cond_signal(&level2_cv);
+        pthread_mutex_unlock(&mutex1);
     }
 
-    void lock_3()
-    {
-        std::unique_lock lk(mutex1);
+    void lock_3() {
+        pthread_mutex_lock(&mutex1);
         level3_in_use = true;
         // wait until there are no level1 holders anymore except the
         // ones that are waiting on level2 (we are holding lock2)
-        level3_cv.wait(lk, [this]() {
-            return this->level1_holders.size() > this->n_level2;
-        });
+        while (level1_holders.size() > n_level2) {
+            pthread_cond_wait(&level3_cv, &mutex1);
+        }
         // don't release the lock!
-        lk.release();
     }
 
-    void unlock_3()
-    {
+    void unlock_3() {
         level3_in_use = false;
         // wake up all level1_holders
-        level1_cv.notify_all();
-        mutex1.unlock();
+        pthread_cond_broadcast(&level1_cv);
+        pthread_mutex_unlock(&mutex1);
     }
 
-    void print()
-    {
-        std::unique_lock lk(mutex1);
+    void print () {
+        pthread_mutex_lock(&mutex1);
         printf("State: level3_in_use=%d n_level2=%d level1_holders: [", level3_in_use, n_level2);
-        for (int k : level1_holders)
-        {
+        for (int k : level1_holders) {
             printf("%d ", k);
         }
         printf("]\n");
+        pthread_mutex_unlock(&mutex1);
     }
+
 };
 
 /**********************************************
  * OngoingPrefetch
  **********************************************/
 
-struct OnDiskInvertedLists::OngoingPrefetch
-{
-    static void one_list(OngoingPrefetch *pf)
-    {
-        while (true)
-        {
+struct OnDiskInvertedLists::OngoingPrefetch {
+
+    struct Thread {
+        pthread_t pth;
+        OngoingPrefetch *pf;
+
+        bool one_list () {
             idx_t list_no = pf->get_next_list();
-            if (list_no == -1)
-                break;
+            if(list_no == -1) return false;
             const OnDiskInvertedLists *od = pf->od;
-            od->locks->lock_1(list_no);
-            int64_t n = od->list_size(list_no);
-            const Index::idx_t *idx = od->get_ids(list_no);
-            const uint8_t *codes = od->get_codes(list_no);
+            od->locks->lock_1 (list_no);
+            int64_t n = od->list_size (list_no);
+            const Index::idx_t *idx = od->get_ids (list_no);
+            const uint8_t *codes = od->get_codes (list_no);
             int cs = 0;
-            for (int64_t i = 0; i < n; i++)
-            {
+            for (int64_t i = 0; i < n;i++) {
                 cs += idx[i];
             }
-            const idx_t *codes8 = (const idx_t *)codes;
+            const idx_t *codes8 = (const idx_t*)codes;
             idx_t n8 = n * od->code_size / 8;
 
-            for (int64_t i = 0; i < n8; i++)
-            {
+            for (int64_t i = 0; i < n8;i++) {
                 cs += codes8[i];
             }
             od->locks->unlock_1(list_no);
 
             global_cs += cs & 1;
-            continue;
+            return true;
         }
-    }
 
-    std::vector<std::thread> threads;
+    };
 
-    std::mutex list_ids_mutex;
+    std::vector<Thread> threads;
+
+    pthread_mutex_t list_ids_mutex;
     std::vector<idx_t> list_ids;
     int cur_list;
 
     // mutex for the list of tasks
-    std::mutex mutex;
+    pthread_mutex_t mutex;
 
     // pretext to avoid code below to be optimized out
     static int global_cs;
 
     const OnDiskInvertedLists *od;
 
-    explicit OngoingPrefetch(const OnDiskInvertedLists *od) : od(od)
+    explicit OngoingPrefetch (const OnDiskInvertedLists *od): od (od)
     {
+        pthread_mutex_init (&mutex, nullptr);
+        pthread_mutex_init (&list_ids_mutex, nullptr);
         cur_list = 0;
     }
 
-    idx_t get_next_list()
-    {
+    static void* prefetch_list (void * arg) {
+        Thread *th = static_cast<Thread*>(arg);
+
+        while (th->one_list()) ;
+
+        return nullptr;
+    }
+
+    idx_t get_next_list () {
         idx_t list_no = -1;
-        {
-            std::unique_lock lk(list_ids_mutex);
-            if (cur_list >= 0 && cur_list < list_ids.size())
-            {
-                list_no = list_ids[cur_list++];
-            }
+        pthread_mutex_lock (&list_ids_mutex);
+        if (cur_list >= 0 && cur_list < list_ids.size()) {
+            list_no = list_ids[cur_list++];
         }
+        pthread_mutex_unlock (&list_ids_mutex);
         return list_no;
     }
 
-    void prefetch_lists(const idx_t *list_nos, int n)
-    {
-        std::unique_lock lk1(mutex);
-
-        {
-            std::unique_lock lk2(list_ids_mutex);
-            list_ids.clear();
+    void prefetch_lists (const idx_t *list_nos, int n) {
+        pthread_mutex_lock (&mutex);
+        pthread_mutex_lock (&list_ids_mutex);
+        list_ids.clear ();
+        pthread_mutex_unlock (&list_ids_mutex);
+        for (auto &th: threads) {
+            pthread_join (th.pth, nullptr);
         }
 
-        for (auto &th : threads)
-        {
-            th.join();
-        }
-
-        threads.resize(0);
+        threads.resize (0);
         cur_list = 0;
-        int nt = std::min(n, od->prefetch_nthread);
+        int nt = std::min (n, od->prefetch_nthread);
 
-        if (nt > 0)
-        {
+        if (nt > 0) {
             // prepare tasks
-            for (int i = 0; i < n; i++)
-            {
+            for (int i = 0; i < n; i++) {
                 idx_t list_no = list_nos[i];
-                if (list_no >= 0 && od->list_size(list_no) > 0)
-                {
-                    list_ids.push_back(list_no);
+                if (list_no >= 0 && od->list_size(list_no) > 0) {
+                    list_ids.push_back (list_no);
                 }
             }
             // prepare threads
-            for (int i = 0; i < nt; i++)
-            {
-                threads.emplace_back(one_list, this);
+            threads.resize (nt);
+            for (Thread &th: threads) {
+                th.pf = this;
+                pthread_create (&th.pth, nullptr, prefetch_list, &th);
             }
         }
+        pthread_mutex_unlock (&mutex);
     }
 
-    ~OngoingPrefetch()
-    {
-        std::unique_lock lk(mutex);
-        for (auto &th : threads)
-        {
-            th.join();
+    ~OngoingPrefetch () {
+        pthread_mutex_lock (&mutex);
+        for (auto &th: threads) {
+            pthread_join (th.pth, nullptr);
         }
+        pthread_mutex_unlock (&mutex);
+        pthread_mutex_destroy (&mutex);
+        pthread_mutex_destroy (&list_ids_mutex);
     }
+
 };
+
+
 
 int OnDiskInvertedLists::OngoingPrefetch::global_cs = 0;
 
