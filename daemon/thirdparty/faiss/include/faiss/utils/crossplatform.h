@@ -3,6 +3,11 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+
+#define faiss_mmap mmap
+#define faiss_munmap munmap
+
 #elif defined(_WIN32) || defined(WIN32)
 #include <windows.h>
 #include <sys/stat.h>
@@ -21,5 +26,8 @@
 
 void *faiss_mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset);
 int faiss_munmap(void *start, size_t length);
+
+#else
+#error "Unsupported platform"
 
 #endif

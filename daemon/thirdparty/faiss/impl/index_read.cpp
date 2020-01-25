@@ -13,7 +13,7 @@
 #include <cstdlib>
 
 #include <faiss/FaissAssert.h>
-#include <faiss/IO.h>
+#include <faiss/FaissIO.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>

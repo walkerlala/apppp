@@ -15,27 +15,10 @@ if (UNIX)
     set(DL "dl")
 endif()
 
-set(MKL_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mkl)
-if (WIN32)
-SET(MKL_LIBS ${MKL_LIB_DIR}/libopenblas.lib)  
-else()
-set(MKL_LIBS ${MKL_LIB_DIR}/libmkl_core.a
-     ${MKL_LIB_DIR}/libmkl_intel_lp64.a
-     ${MKL_LIB_DIR}/libmkl_gnu_thread.a
-     ${MKL_LIB_DIR}/libmkl_lapack95_lp64.a
-     ${MKL_LIB_DIR}/libmkl_core.a
-     ${MKL_LIB_DIR}/libmkl_intel_lp64.a
-     ${MKL_LIB_DIR}/libmkl_gnu_thread.a
-     ${MKL_LIB_DIR}/libmkl_lapack95_lp64.a
-     ${MKL_LIB_DIR}/libmkl_core.a
-     ${MKL_LIB_DIR}/libmkl_intel_lp64.a
-     ${MKL_LIB_DIR}/libmkl_gnu_thread.a
-     ${MKL_LIB_DIR}/libmkl_lapack95_lp64.a
-     ${MKL_LIB_DIR}/libmkl_core.a)
-endif()
+set(OPENBLAS_LIBS openblas gfortran)
 
 add_library(faiss ${FAISS_SOURCE})
-target_link_libraries(faiss ${MKL_LIBS} ${MKL_LIBS} ${DL})
+target_link_libraries(faiss ${OPENBLAS_LIBS} ${DL})
 
 add_subdirectory(tutorial)
 add_subdirectory(tests)

@@ -292,7 +292,7 @@ std::vector<uint8_t> make_data_binary(int64_t n)
 {
     std::random_device rd;  //Will be used to obtain a seed for the random number engine
     std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-    std::uniform_int_distribution<> dis(0, UINT32_MAX-1);
+    std::uniform_int_distribution<> dis(0, INT8_MAX);
     std::vector<uint8_t> database(n * nbit / 8);
     for (int64_t i = 0; i < n * d; i++)
     {
