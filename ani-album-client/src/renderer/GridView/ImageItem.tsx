@@ -18,8 +18,9 @@ class ImageItem extends Component<ImageItemProps> {
 
   private handleImageDoubleClicked = (e: React.MouseEvent<HTMLImageElement>) => {
     e.preventDefault();
-    const { id } = this.props.data;
-    eventBus.emit(RendererEvents.PhotoItemDoubleClicked, id);
+    const { data } = this.props;
+    const thumbnailPath = this.getMediumThumbnail(data);
+    eventBus.emit(RendererEvents.PhotoItemDoubleClicked, data.id, thumbnailPath);
   }
 
   private getMediumThumbnail(image: ImageWithThumbnails): string {

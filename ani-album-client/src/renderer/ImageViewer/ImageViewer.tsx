@@ -1,24 +1,25 @@
 import React, { Component } from 'react';
-import { ClientMessageType } from 'common/message';
 import { ImageWithThumbnails } from 'common/image';
-import { ipcRenderer } from 'electron';
 import { eventBus, RendererEvents } from 'renderer/events';
+import { ImageViewerCanvas } from './ImageViewerCanvas';
 import CloseButton from './CloseButton';
 import './ImageViewer.scss';
 
 interface ImageViewerState {
   enable: boolean;
-  data: ImageWithThumbnails | null,
 }
 
 class ImageViewer extends Component<{}, ImageViewerState> {
+
+  private __imageViewerCanvas: ImageViewerCanvas | null = null;
+  private __imgContainerRef: React.RefObject<HTMLDivElement>;
 
   constructor(props: {}) {
     super(props);
     this.state = {
       enable: false,
-      data: null,
     };
+    this.__imgContainerRef = React.createRef();
   }
 
   componentDidMount() {
@@ -27,19 +28,29 @@ class ImageViewer extends Component<{}, ImageViewerState> {
 
   componentWillUnmount() {
     eventBus.removeListener(RendererEvents.PhotoItemDoubleClicked, this.handleImageItemDoubleClicked);
+
+    if (this.__imageViewerCanvas) {
+      this.__imageViewerCanvas.dispose();
+    }
   }
 
-  private handleImageItemDoubleClicked = (imageId: number) => {
-    this.setState({ // 立即显示
-      enable: true,
-    });
-    this.fetchDataAndSetPath(imageId);
+  private setViewerCanvas(canvas: ImageViewerCanvas | null) {
+    if (this.__imageViewerCanvas) {
+      this.__imageViewerCanvas.dispose();
+    }
+    this.__imageViewerCanvas = canvas;
   }
 
-  private async fetchDataAndSetPath(imageId: number) {
-    const image = await ipcRenderer.invoke(ClientMessageType.GetImageById, imageId);
+  private handleImageItemDoubleClicked = (imageId: number, thumbnailPath: string) => {
     this.setState({
-      data: image,
+      enable: true,
+    }, () => {
+      const viewer = new ImageViewerCanvas(
+        this.__imgContainerRef.current,
+        imageId,
+        thumbnailPath,
+      );
+      this.setViewerCanvas(viewer);
     });
   }
 
@@ -48,20 +59,28 @@ class ImageViewer extends Component<{}, ImageViewerState> {
 
     this.setState({
       enable: false,
-      data: null,
     });
+
+    this.setViewerCanvas(null);
   }
 
-  renderImageContent() {
-    const { data } = this.state;
-    if (data === null) return null;
-
-    return (
-      <div className="ani-image-viewer-content">
-        <img src={`file://${data.path}`} alt="" />
-      </div>
-    );
-  }
+  // private getStylesOfImg(): React.CSSProperties {
+  //   const { shouldDisplayImage } = this;
+  //   let computedSize: React.CSSProperties | undefined;
+  //   if (shouldDisplayImage) {
+  //     const { width, height } = this.computeSize();
+  //     computedSize = {
+  //       width: `${width}px`,
+  //       height: `${height}px`,
+  //     };
+  //   }
+  //   return {
+  //     visibility: shouldDisplayImage ? 'visible' : 'hidden',
+  //     left: '50%',
+  //     top: '50%',
+  //     ...computedSize,
+  //   };
+  // }
 
   render() {
     const { enable } = this.state;
@@ -69,7 +88,8 @@ class ImageViewer extends Component<{}, ImageViewerState> {
     return (
       <div className="ani-image-viewer">
         <CloseButton onClick={this.handleCloseButtonClicked} />
-        {this.renderImageContent()}
+        <div className="ani-image-viewer-content" ref={this.__imgContainerRef}>
+        </div>
       </div>
     );
   }
