@@ -14,7 +14,7 @@ include(GNUInstallDirs)
 
 include(CMakePackageConfigHelpers)
 
-option(NOFORTRAN "Build with fortran support" OFF)
+SET(NOFORTRAN OFF)
 
 #######
 if(MSVC)
