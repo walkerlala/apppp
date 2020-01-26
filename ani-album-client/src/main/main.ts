@@ -6,12 +6,18 @@ import { SQLiteHelper } from './sqliteHelper';
 import { ImageWithThumbnails } from 'common/image';
 import { ClientMessageType, MessageRequest } from 'common/message';
 import { once, get, isUndefined } from 'lodash';
+import { logger } from "./logger";
+import MicroService from './microService';
 import * as dal from './dal';
 import * as path from "path";
 import * as fs from 'fs';
-import { logger } from "./logger";
 
 let mainWindow: Electron.BrowserWindow;
+
+const startMicroService = once(() => {
+  MicroService.initialize();
+  MicroService.startAllServices();
+});
 
 const listenEvents = once(() => {
   eventBus.addListener(MainProcessEvents.ImportPhotos, importPhotos);
@@ -197,6 +203,8 @@ async function createWindow() {
   });
 
   showMenu();
+
+  startMicroService();
 
   listenEvents();
   

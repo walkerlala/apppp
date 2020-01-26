@@ -2,10 +2,20 @@ import * as os from 'os';
 import { join } from 'path';
 import { SQLiteHelper} from './sqliteHelper';
 import { WebContents } from 'electron';
+import { existsSync, mkdirSync } from 'fs';
 
 export function getAppDateFolder(): string {
     const home = os.homedir();
     return join(home, 'Library', 'Application Support', 'SmartNotebook');
+}
+
+export function getLogsFolder(): string {
+    const appDataFolder = getAppDateFolder();
+    const logsPath = join(appDataFolder, 'Logs');
+    if (!existsSync(logsPath)) {
+        mkdirSync(logsPath);
+    }
+    return logsPath;
 }
 
 let global_db: SQLiteHelper;

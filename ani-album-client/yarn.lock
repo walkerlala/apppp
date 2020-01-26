@@ -1367,6 +1367,11 @@ babel-plugin-module-resolver@^4.0.0:
     reselect "^4.0.0"
     resolve "^1.13.1"
 
+babel-plugin-search-and-replace@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-search-and-replace/-/babel-plugin-search-and-replace-1.0.1.tgz#04701015116e9223ee183ea014ffd1a1efea70ac"
+  integrity sha512-/DBaV38i2/kj2iQK99zW8Te6XxMntMwV/1wfGSvBOIC0xAv7gc9vLxaCgi2gZbI76dpHsvH0vd6Rx7Bxu04WEw==
+
 bach@^1.0.0:
   version "1.2.0"
   resolved "https://registry.npm.taobao.org/bach/download/bach-1.2.0.tgz#4b3ce96bf27134f79a1b414a51c14e34c3bd9880"

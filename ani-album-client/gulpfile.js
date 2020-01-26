@@ -43,6 +43,17 @@ const babelConfig = {
         alias,
       },
     ],
+    [
+      "search-and-replace",
+      {
+        "rules": [
+          {
+            "search": "__PACK_DIR__",
+            "replace": __dirname,
+          },
+        ]
+      }
+    ],
   ],
 };
 
