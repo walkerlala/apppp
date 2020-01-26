@@ -63,11 +63,11 @@ inline std::pair<int, int> get_proper_thumbnail_size(ThumbnailType type, int wid
 
 std::optional<Thumbnail> gen_thumbnails(int type, const std::string& in_path_str, const std::string& out_dir) {
     try {
-        rgb8_image_t img;
+        rgba8_image_t img;
         std::string ext = boost::algorithm::to_lower_copy(path(in_path_str).extension().string());
 
         if (ext == ".jpg" || ext == ".jpeg") {
-            read_image(in_path_str, img, boost::gil::jpeg_tag{});
+            boost::gil::read_and_convert_image(in_path_str, img, boost::gil::jpeg_tag{});
         } else if (ext == ".png") {
             boost::gil::read_and_convert_image(in_path_str, img, boost::gil::png_tag{});
         } else {
@@ -98,7 +98,11 @@ std::optional<Thumbnail> gen_thumbnails(int type, const std::string& in_path_str
         path output_path = path(out_dir) / path(gen_filename_ss.str());
         std::string output_path_str = output_path.string();
         std::cout << "prepare to gen image: " << output_path.string() << std::endl;
-        write_view(output_path_str, const_view(thumbnail_img), jpeg_tag{});
+        if (ext == ".jpg" || ext == ".jpeg") {
+            write_view(output_path_str, const_view(thumbnail_img), jpeg_tag{});
+        } else {
+            write_view(output_path_str, const_view(thumbnail_img), png_tag{});
+        }
         std::cout << "finished" << std::endl;
 
         Thumbnail tb;
