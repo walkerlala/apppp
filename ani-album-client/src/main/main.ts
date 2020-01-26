@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, MenuItem, ipcMain } from "electron";
+import { app, BrowserWindow, Menu, MenuItem, ipcMain, IpcMainInvokeEvent } from "electron";
 import { eventBus, MainProcessEvents } from './events';
 import { getAppDateFolder, setDb, getDb, setWebContent, getWebContent } from './utils';
 import { importPhotos } from './photos';
@@ -22,7 +22,7 @@ const startMicroService = once(() => {
 const listenEvents = once(() => {
   eventBus.addListener(MainProcessEvents.ImportPhotos, importPhotos);
 
-  ipcMain.handle(ClientMessageType.GetAllImages, async (event, req: MessageRequest) => {
+  ipcMain.handle(ClientMessageType.GetAllImages, async (event: IpcMainInvokeEvent, req: MessageRequest) => {
     const { offset = 0, length = 200 } = req;
     const images = await dal.queryImageEntities(getDb(), offset, length);
     const allPromises: Promise<ImageWithThumbnails>[] = images.map(async img => {
@@ -36,7 +36,16 @@ const listenEvents = once(() => {
     return { content };
   });
 
-  ipcMain.handle(ClientMessageType.ShowContextMenu, async (event, data) => {
+  ipcMain.handle(ClientMessageType.GetImageById, async (event: IpcMainInvokeEvent, imageId: number) => {
+    const image = await dal.queryImageById(getDb(), imageId);
+    const thumbnails = await dal.queryThumbnailsByImageId(getDb(), imageId);
+    return {
+      ...image,
+      thumbnails,
+    };
+  });
+
+  ipcMain.handle(ClientMessageType.ShowContextMenu, async (event: IpcMainInvokeEvent, data) => {
     const menu = new Menu()
     menu.append(new MenuItem({
       label: 'Delete', 

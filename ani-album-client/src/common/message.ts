@@ -4,6 +4,7 @@ export enum ClientMessageType {
   PhotoImported = 'PhotoImported',
   ShowContextMenu = 'ShowContextMenu',
   PhotoDeleted = 'PhotoDeleted',
+  GetImageById = 'GetImageById',
 }
 
 export interface MessageRequest {
