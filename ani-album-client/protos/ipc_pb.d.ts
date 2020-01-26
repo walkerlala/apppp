@@ -33,7 +33,7 @@ export namespace GenerateThumbnailsRequest {
   }
 }
 
-export class Thunbnail extends jspb.Message {
+export class Thumbnail extends jspb.Message {
   getType(): ThumbnailTypeMap[keyof ThumbnailTypeMap];
   setType(value: ThumbnailTypeMap[keyof ThumbnailTypeMap]): void;
 
@@ -47,16 +47,16 @@ export class Thunbnail extends jspb.Message {
   setHeight(value: number): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Thunbnail.AsObject;
-  static toObject(includeInstance: boolean, msg: Thunbnail): Thunbnail.AsObject;
+  toObject(includeInstance?: boolean): Thumbnail.AsObject;
+  static toObject(includeInstance: boolean, msg: Thumbnail): Thumbnail.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Thunbnail, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Thunbnail;
-  static deserializeBinaryFromReader(message: Thunbnail, reader: jspb.BinaryReader): Thunbnail;
+  static serializeBinaryToWriter(message: Thumbnail, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Thumbnail;
+  static deserializeBinaryFromReader(message: Thumbnail, reader: jspb.BinaryReader): Thumbnail;
 }
 
-export namespace Thunbnail {
+export namespace Thumbnail {
   export type AsObject = {
     type: ThumbnailTypeMap[keyof ThumbnailTypeMap],
     path: string,
@@ -67,9 +67,9 @@ export namespace Thunbnail {
 
 export class GenerateThumbnailsResponse extends jspb.Message {
   clearDataList(): void;
-  getDataList(): Array<Thunbnail>;
-  setDataList(value: Array<Thunbnail>): void;
-  addData(value?: Thunbnail, index?: number): Thunbnail;
+  getDataList(): Array<Thumbnail>;
+  setDataList(value: Array<Thumbnail>): void;
+  addData(value?: Thumbnail, index?: number): Thumbnail;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GenerateThumbnailsResponse.AsObject;
@@ -83,7 +83,7 @@ export class GenerateThumbnailsResponse extends jspb.Message {
 
 export namespace GenerateThumbnailsResponse {
   export type AsObject = {
-    dataList: Array<Thunbnail.AsObject>,
+    dataList: Array<Thumbnail.AsObject>,
   }
 }
 

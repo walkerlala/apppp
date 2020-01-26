@@ -14,15 +14,15 @@
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-extern PROTOBUF_INTERNAL_EXPORT_ipc_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_Thunbnail_ipc_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_ipc_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_Thumbnail_ipc_2eproto;
 class GenerateThumbnailsRequestDefaultTypeInternal {
  public:
   ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<GenerateThumbnailsRequest> _instance;
 } _GenerateThumbnailsRequest_default_instance_;
-class ThunbnailDefaultTypeInternal {
+class ThumbnailDefaultTypeInternal {
  public:
-  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<Thunbnail> _instance;
-} _Thunbnail_default_instance_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<Thumbnail> _instance;
+} _Thumbnail_default_instance_;
 class GenerateThumbnailsResponseDefaultTypeInternal {
  public:
   ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<GenerateThumbnailsResponse> _instance;
@@ -54,21 +54,21 @@ static void InitDefaultsscc_info_GenerateThumbnailsResponse_ipc_2eproto() {
 
 ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_GenerateThumbnailsResponse_ipc_2eproto =
     {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 1, 0, InitDefaultsscc_info_GenerateThumbnailsResponse_ipc_2eproto}, {
-      &scc_info_Thunbnail_ipc_2eproto.base,}};
+      &scc_info_Thumbnail_ipc_2eproto.base,}};
 
-static void InitDefaultsscc_info_Thunbnail_ipc_2eproto() {
+static void InitDefaultsscc_info_Thumbnail_ipc_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
-    void* ptr = &::_Thunbnail_default_instance_;
-    new (ptr) ::Thunbnail();
+    void* ptr = &::_Thumbnail_default_instance_;
+    new (ptr) ::Thumbnail();
     ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
-  ::Thunbnail::InitAsDefaultInstance();
+  ::Thumbnail::InitAsDefaultInstance();
 }
 
-::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_Thunbnail_ipc_2eproto =
-    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_Thunbnail_ipc_2eproto}, {}};
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_Thumbnail_ipc_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_Thumbnail_ipc_2eproto}, {}};
 
 static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_ipc_2eproto[3];
 static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_ipc_2eproto[2];
@@ -84,14 +84,14 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ipc_2eproto::offsets[] PROTOBU
   PROTOBUF_FIELD_OFFSET(::GenerateThumbnailsRequest, out_dir_),
   PROTOBUF_FIELD_OFFSET(::GenerateThumbnailsRequest, types_),
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::Thunbnail, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::Thumbnail, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  PROTOBUF_FIELD_OFFSET(::Thunbnail, type_),
-  PROTOBUF_FIELD_OFFSET(::Thunbnail, path_),
-  PROTOBUF_FIELD_OFFSET(::Thunbnail, width_),
-  PROTOBUF_FIELD_OFFSET(::Thunbnail, height_),
+  PROTOBUF_FIELD_OFFSET(::Thumbnail, type_),
+  PROTOBUF_FIELD_OFFSET(::Thumbnail, path_),
+  PROTOBUF_FIELD_OFFSET(::Thumbnail, width_),
+  PROTOBUF_FIELD_OFFSET(::Thumbnail, height_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::GenerateThumbnailsResponse, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -101,24 +101,24 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ipc_2eproto::offsets[] PROTOBU
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::GenerateThumbnailsRequest)},
-  { 8, -1, sizeof(::Thunbnail)},
+  { 8, -1, sizeof(::Thumbnail)},
   { 17, -1, sizeof(::GenerateThumbnailsResponse)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_GenerateThumbnailsRequest_default_instance_),
-  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_Thunbnail_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_Thumbnail_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_GenerateThumbnailsResponse_default_instance_),
 };
 
 const char descriptor_table_protodef_ipc_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\tipc.proto\"Y\n\031GenerateThumbnailsRequest"
   "\022\014\n\004path\030\001 \001(\t\022\017\n\007out_dir\030\002 \001(\t\022\035\n\005types"
-  "\030\003 \003(\0162\016.ThumbnailType\"V\n\tThunbnail\022\034\n\004t"
+  "\030\003 \003(\0162\016.ThumbnailType\"V\n\tThumbnail\022\034\n\004t"
   "ype\030\001 \001(\0162\016.ThumbnailType\022\014\n\004path\030\002 \001(\t\022"
   "\r\n\005width\030\003 \001(\005\022\016\n\006height\030\004 \001(\005\"6\n\032Genera"
   "teThumbnailsResponse\022\030\n\004data\030\001 \003(\0132\n.Thu"
-  "nbnail*/\n\013MessageType\022\010\n\004Ping\020\000\022\026\n\022Gener"
+  "mbnail*/\n\013MessageType\022\010\n\004Ping\020\000\022\026\n\022Gener"
   "ateThumbnails\020\001*1\n\rThumbnailType\022\t\n\005Smal"
   "l\020\000\022\n\n\006Medium\020\001\022\t\n\005Large\020\002b\006proto3"
   ;
@@ -127,7 +127,7 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor
 static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_ipc_2eproto_sccs[3] = {
   &scc_info_GenerateThumbnailsRequest_ipc_2eproto.base,
   &scc_info_GenerateThumbnailsResponse_ipc_2eproto.base,
-  &scc_info_Thunbnail_ipc_2eproto.base,
+  &scc_info_Thumbnail_ipc_2eproto.base,
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_ipc_2eproto_once;
 static bool descriptor_table_ipc_2eproto_initialized = false;
@@ -452,18 +452,18 @@ void GenerateThumbnailsRequest::InternalSwap(GenerateThumbnailsRequest* other) {
 
 // ===================================================================
 
-void Thunbnail::InitAsDefaultInstance() {
+void Thumbnail::InitAsDefaultInstance() {
 }
-class Thunbnail::_Internal {
+class Thumbnail::_Internal {
  public:
 };
 
-Thunbnail::Thunbnail()
+Thumbnail::Thumbnail()
   : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:Thunbnail)
+  // @@protoc_insertion_point(constructor:Thumbnail)
 }
-Thunbnail::Thunbnail(const Thunbnail& from)
+Thumbnail::Thumbnail(const Thumbnail& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
@@ -474,37 +474,37 @@ Thunbnail::Thunbnail(const Thunbnail& from)
   ::memcpy(&type_, &from.type_,
     static_cast<size_t>(reinterpret_cast<char*>(&height_) -
     reinterpret_cast<char*>(&type_)) + sizeof(height_));
-  // @@protoc_insertion_point(copy_constructor:Thunbnail)
+  // @@protoc_insertion_point(copy_constructor:Thumbnail)
 }
 
-void Thunbnail::SharedCtor() {
-  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_Thunbnail_ipc_2eproto.base);
+void Thumbnail::SharedCtor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_Thumbnail_ipc_2eproto.base);
   path_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&type_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&height_) -
       reinterpret_cast<char*>(&type_)) + sizeof(height_));
 }
 
-Thunbnail::~Thunbnail() {
-  // @@protoc_insertion_point(destructor:Thunbnail)
+Thumbnail::~Thumbnail() {
+  // @@protoc_insertion_point(destructor:Thumbnail)
   SharedDtor();
 }
 
-void Thunbnail::SharedDtor() {
+void Thumbnail::SharedDtor() {
   path_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
-void Thunbnail::SetCachedSize(int size) const {
+void Thumbnail::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const Thunbnail& Thunbnail::default_instance() {
-  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_Thunbnail_ipc_2eproto.base);
+const Thumbnail& Thumbnail::default_instance() {
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_Thumbnail_ipc_2eproto.base);
   return *internal_default_instance();
 }
 
 
-void Thunbnail::Clear() {
-// @@protoc_insertion_point(message_clear_start:Thunbnail)
+void Thumbnail::Clear() {
+// @@protoc_insertion_point(message_clear_start:Thumbnail)
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -516,7 +516,7 @@ void Thunbnail::Clear() {
   _internal_metadata_.Clear();
 }
 
-const char* Thunbnail::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+const char* Thumbnail::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
@@ -536,7 +536,7 @@ const char* Thunbnail::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
           auto str = _internal_mutable_path();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "Thunbnail.path"));
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "Thumbnail.path"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -574,9 +574,9 @@ failure:
 #undef CHK_
 }
 
-::PROTOBUF_NAMESPACE_ID::uint8* Thunbnail::_InternalSerialize(
+::PROTOBUF_NAMESPACE_ID::uint8* Thumbnail::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:Thunbnail)
+  // @@protoc_insertion_point(serialize_to_array_start:Thumbnail)
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -592,7 +592,7 @@ failure:
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_path().data(), static_cast<int>(this->_internal_path().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "Thunbnail.path");
+      "Thumbnail.path");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_path(), target);
   }
@@ -613,12 +613,12 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:Thunbnail)
+  // @@protoc_insertion_point(serialize_to_array_end:Thumbnail)
   return target;
 }
 
-size_t Thunbnail::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Thunbnail)
+size_t Thumbnail::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Thumbnail)
   size_t total_size = 0;
 
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
@@ -661,23 +661,23 @@ size_t Thunbnail::ByteSizeLong() const {
   return total_size;
 }
 
-void Thunbnail::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:Thunbnail)
+void Thumbnail::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:Thumbnail)
   GOOGLE_DCHECK_NE(&from, this);
-  const Thunbnail* source =
-      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<Thunbnail>(
+  const Thumbnail* source =
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<Thumbnail>(
           &from);
   if (source == nullptr) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Thunbnail)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Thumbnail)
     ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:Thunbnail)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:Thumbnail)
     MergeFrom(*source);
   }
 }
 
-void Thunbnail::MergeFrom(const Thunbnail& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:Thunbnail)
+void Thumbnail::MergeFrom(const Thumbnail& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:Thumbnail)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
@@ -698,25 +698,25 @@ void Thunbnail::MergeFrom(const Thunbnail& from) {
   }
 }
 
-void Thunbnail::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:Thunbnail)
+void Thumbnail::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:Thumbnail)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void Thunbnail::CopyFrom(const Thunbnail& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Thunbnail)
+void Thumbnail::CopyFrom(const Thumbnail& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Thumbnail)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool Thunbnail::IsInitialized() const {
+bool Thumbnail::IsInitialized() const {
   return true;
 }
 
-void Thunbnail::InternalSwap(Thunbnail* other) {
+void Thumbnail::InternalSwap(Thumbnail* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
   path_.Swap(&other->path_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
@@ -726,7 +726,7 @@ void Thunbnail::InternalSwap(Thunbnail* other) {
   swap(height_, other->height_);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata Thunbnail::GetMetadata() const {
+::PROTOBUF_NAMESPACE_ID::Metadata Thumbnail::GetMetadata() const {
   return GetMetadataStatic();
 }
 
@@ -790,7 +790,7 @@ const char* GenerateThumbnailsResponse::_InternalParse(const char* ptr, ::PROTOB
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // repeated .Thunbnail data = 1;
+      // repeated .Thumbnail data = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
           ptr -= 1;
@@ -828,7 +828,7 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // repeated .Thunbnail data = 1;
+  // repeated .Thumbnail data = 1;
   for (unsigned int i = 0,
       n = static_cast<unsigned int>(this->_internal_data_size()); i < n; i++) {
     target = stream->EnsureSpace(target);
@@ -852,7 +852,7 @@ size_t GenerateThumbnailsResponse::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated .Thunbnail data = 1;
+  // repeated .Thumbnail data = 1;
   total_size += 1UL * this->_internal_data_size();
   for (const auto& msg : this->data_) {
     total_size +=
@@ -927,8 +927,8 @@ PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::GenerateThumbnailsRequest* Arena::CreateMaybeMessage< ::GenerateThumbnailsRequest >(Arena* arena) {
   return Arena::CreateInternal< ::GenerateThumbnailsRequest >(arena);
 }
-template<> PROTOBUF_NOINLINE ::Thunbnail* Arena::CreateMaybeMessage< ::Thunbnail >(Arena* arena) {
-  return Arena::CreateInternal< ::Thunbnail >(arena);
+template<> PROTOBUF_NOINLINE ::Thumbnail* Arena::CreateMaybeMessage< ::Thumbnail >(Arena* arena) {
+  return Arena::CreateInternal< ::Thumbnail >(arena);
 }
 template<> PROTOBUF_NOINLINE ::GenerateThumbnailsResponse* Arena::CreateMaybeMessage< ::GenerateThumbnailsResponse >(Arena* arena) {
   return Arena::CreateInternal< ::GenerateThumbnailsResponse >(arena);

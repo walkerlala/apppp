@@ -19,7 +19,7 @@ message GenerateThumbnailsRequest {
   repeated ThumbnailType types = 3;
 }
 
-message Thunbnail {
+message Thumbnail {
   ThumbnailType type = 1;
   string path = 2;
   int32 width = 3;
@@ -27,5 +27,5 @@ message Thunbnail {
 }
 
 message GenerateThumbnailsResponse {
-  repeated Thunbnail data = 1;
+  repeated Thumbnail data = 1;
 }

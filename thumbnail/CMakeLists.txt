@@ -14,7 +14,7 @@ include_directories(/usr/local/include)
 include_directories(../easyipc)
 include_directories(../ipc-message)
 
-add_executable(thumbnail main.cpp)
+add_executable(thumbnail main.cpp gen_thumbnails.cpp)
 target_link_libraries(thumbnail
         easyipc
         ipc_message
