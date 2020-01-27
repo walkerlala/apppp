@@ -1,3 +1,6 @@
 [submodule "ThreadPool"]
-	path = ThreadPool
+	path = third_party/ThreadPool
 	url = https://github.com/progschj/ThreadPool.git
+[submodule "third_party/boost"]
+	path = third_party/boost
+	url = https://github.com/boostorg/boost.git
