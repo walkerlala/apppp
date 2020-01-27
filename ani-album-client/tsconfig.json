@@ -10,7 +10,8 @@
       "*": ["node_modules/*"],
       "renderer/*": ["src/renderer/*"],
       "protos/*": ["./protos/*"],
-      "common/*": ["src/common/*"]
+      "common/*": ["src/common/*"],
+      "vectorious/*": ["vectorious/*"]
     },
     "jsx": "react",
     "esModuleInterop": true

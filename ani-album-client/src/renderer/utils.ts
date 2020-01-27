@@ -1,4 +1,4 @@
-import { Vector } from '@josh-brown/vector';
+import NDArray from 'vectorious/index';
 
 export function removeElement(element: HTMLElement) {
   element.parentElement.removeChild(element);
@@ -12,9 +12,16 @@ export function turnVisible(element: HTMLElement) {
   element.style.visibility = 'visible';
 }
 
-export function setImageSize(element: HTMLImageElement, size: Vector<number>) {
-  const width = size.getEntry(0);
-  const height = size.getEntry(1);
+export function setImageSize(element: HTMLImageElement, size: NDArray) {
+  const width = size.get(0);
+  const height = size.get(1);
   element.style.width = width + 'px';
   element.style.height = height + 'px';
+}
+
+export function setImagePosition(element: HTMLElement, pos: NDArray) {
+  const x = pos.get(1);
+  const y = pos.get(1);
+  element.style.top = y + 'px';
+  element.style.left = x + 'px';
 }
