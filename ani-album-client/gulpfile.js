@@ -108,7 +108,7 @@ function buildRendererPage(cb) {
           },
         ],
       },
-      externals: ['electron', 'vectorious'],
+      externals: ['electron'],
       plugins: [
           new ForkTsCheckerWebpackPlugin(),
       ],

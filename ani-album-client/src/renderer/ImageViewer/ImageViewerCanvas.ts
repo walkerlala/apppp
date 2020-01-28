@@ -1,11 +1,8 @@
 import { ImageWithThumbnails } from 'common/image';
 import { IDisposable } from 'common/disposable';
 import { ClientMessageType } from 'common/message';
-import {
-  removeElement, turnInvisible, turnVisible,
-  setImageSize, setImagePosition,
-} from 'renderer/utils';
-import NDArray from 'vectorious/index';
+import { removeElement, turnInvisible, turnVisible, setImageSize } from 'renderer/utils';
+import { Vector, vec } from '@josh-brown/vector';
 import { ipcRenderer } from 'electron';
 
 /**
@@ -17,7 +14,7 @@ export class ImageViewerCanvas implements IDisposable {
   private thumbnailElement: HTMLImageElement | null;
   private sourceElement: HTMLImageElement;
   private imageData: ImageWithThumbnails | null = null;
-  private imageSize: NDArray;
+  private imageSize: Vector<number>;
   private __scale: number = 1.0;
 
   constructor(
@@ -25,7 +22,7 @@ export class ImageViewerCanvas implements IDisposable {
     public readonly imageId: number,
     public readonly thumbnailPath: string
   ) {
-    this.imageSize = NDArray.array([ 0, 0 ]);
+    this.imageSize = vec([ 0, 0 ]);
 
     this.thumbnailElement = document.createElement('img');
     this.thumbnailElement.src = thumbnailPath;
@@ -42,7 +39,6 @@ export class ImageViewerCanvas implements IDisposable {
     container.appendChild(this.sourceElement);
 
     window.addEventListener('wheel', this.handleWheel);
-    window.addEventListener('resize', this.handleWindowResize);
 
     this.fetchDataAndSetSrc(imageId);
   }
@@ -51,10 +47,6 @@ export class ImageViewerCanvas implements IDisposable {
     if (e.ctrlKey) { // zooming
       this.scale = this.scale + e.deltaY * -0.1;
     }
-  }
-
-  private handleWindowResize = (e: UIEvent) => {
-
   }
 
   get scale() {
@@ -70,12 +62,12 @@ export class ImageViewerCanvas implements IDisposable {
     console.log()
 
     const elm = this.getAImageElement();
-    const properSize = this.getFixedSize(NDArray.array([
+    const properSize = this.getFixedSize(vec([
       elm.width,
       elm.height,
     ]));
 
-    this.imageSize = properSize.scale(this.__scale);
+    this.imageSize = properSize.scalarMultiply(this.__scale);
 
     setImageSize(elm, this.imageSize);
   }
@@ -92,11 +84,8 @@ export class ImageViewerCanvas implements IDisposable {
   }
 
   private setImageDefaultStyle(element: HTMLElement) {
-    const { innerWidth, innerHeight } = window;
-
-    const pos = NDArray.array([ innerWidth, innerHeight ]).scale(0.5).subtract(this.imageSize.scale(0.5));
-
-    setImagePosition(element, pos);
+    element.style.left = '50%';
+    element.style.top = '50%';
   }
 
   private async fetchDataAndSetSrc(imageId: number) {
@@ -104,9 +93,9 @@ export class ImageViewerCanvas implements IDisposable {
     this.sourceElement.src = this.imageData.path;
   }
 
-  private getFixedSize(imageSize: NDArray): NDArray {
-    const width = imageSize.get(0);
-    const height = imageSize.get(1);
+  private getFixedSize(imageSize: Vector<number>): Vector<number> {
+    const width = imageSize.getEntry(0);
+    const height = imageSize.getEntry(1);
     const { innerWidth, innerHeight } = window;
 
     const isWide = width >= height;
@@ -114,14 +103,14 @@ export class ImageViewerCanvas implements IDisposable {
     if (isWide) {
       const expectedWidth = innerWidth;
       const expectedHeight = innerWidth * (height / width);
-      return NDArray.array([
+      return vec([
         expectedWidth,
         expectedHeight,
       ]);
     } else {
       const expectedHeight = innerHeight;
       const expectedWidth = innerHeight * (width / height);
-      return NDArray.array([
+      return vec([
         expectedWidth,
         expectedHeight,
       ]);
@@ -131,7 +120,7 @@ export class ImageViewerCanvas implements IDisposable {
   private handleThumbnailImageLoaded = () => {
     const { width, height } = this.thumbnailElement;
 
-    this.imageSize = this.getFixedSize(NDArray.array([ width, height ]));
+    this.imageSize = this.getFixedSize(vec([ width, height ]));
 
     setImageSize(this.thumbnailElement, this.imageSize);
     turnVisible(this.thumbnailElement);
@@ -152,7 +141,6 @@ export class ImageViewerCanvas implements IDisposable {
     removeElement(this.sourceElement);
 
     window.removeEventListener('wheel', this.handleWheel);
-    window.removeEventListener('resize', this.handleWindowResize);
   }
 
 }
