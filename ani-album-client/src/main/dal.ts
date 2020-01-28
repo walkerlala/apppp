@@ -4,7 +4,7 @@
 import { ImageEntity, ThumbnailEntity } from 'common/image';
 import { logger } from './logger';
 import { SQLiteHelper } from './sqliteHelper';
-import { once } from 'lodash';
+import { once, isUndefined } from 'lodash';
 
 const ImageEntityTableName = 'imagesEntity';
 const ThumbnailsTableName = 'thumbnails';
@@ -12,24 +12,33 @@ const ThumbnailsTableName = 'thumbnails';
 export const initData = once(async (db: SQLiteHelper) => {
   try {
     await db.run('CREATE TABLE IF NOT EXISTS global_kv (key TEXT PRIMARY KEY, value TEXT)');
-    await db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "1")');
-    await db.run(`
-      CREATE TABLE IF NOT EXISTS ${ImageEntityTableName} (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          path TEXT NOT NULL,
+    const dbVersionResult = await db.get('SELECT value FROM global_kv WHERE key="version"');
+
+    let dbVersion: number = 1;
+    if (isUndefined(dbVersion)) {
+      await db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "1")');
+      await db.run(`
+        CREATE TABLE IF NOT EXISTS ${ImageEntityTableName} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            path TEXT NOT NULL,
+            createdAt DATETIME NOT NULL
+        )
+      `);
+      await db.run(`
+        CREATE TABLE IF NOT EXISTS ${ThumbnailsTableName} (
+          path TEXT PRIMARY KEY,
+          type INTEGER NOT NULL,
+          imageId INTEGER NOT NULL,
+          width INTEGER NOT NULL,
+          height INTEGER NOT NULL,
           createdAt DATETIME NOT NULL
-      )
-    `);
-    await db.run(`
-      CREATE TABLE IF NOT EXISTS ${ThumbnailsTableName} (
-        path TEXT PRIMARY KEY,
-        type INTEGER NOT NULL,
-        imageId INTEGER NOT NULL,
-        width INTEGER NOT NULL,
-        height INTEGER NOT NULL,
-        createdAt DATETIME NOT NULL
-      )
-    `)
+        )
+      `);
+    } else {
+      dbVersion = Number(dbVersionResult.value);
+    }
+    
+    logger.info('db version: ', dbVersion);
   } catch (err) {
     logger.fatal('init data failed: ', err);
     process.exit(1);
