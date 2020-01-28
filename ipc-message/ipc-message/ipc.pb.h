@@ -48,37 +48,46 @@ struct TableStruct_ipc_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[3]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[5]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
   static const ::PROTOBUF_NAMESPACE_ID::uint32 offsets[];
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_ipc_2eproto;
+class ExifInfo;
+class ExifInfoDefaultTypeInternal;
+extern ExifInfoDefaultTypeInternal _ExifInfo_default_instance_;
 class GenerateThumbnailsRequest;
 class GenerateThumbnailsRequestDefaultTypeInternal;
 extern GenerateThumbnailsRequestDefaultTypeInternal _GenerateThumbnailsRequest_default_instance_;
 class GenerateThumbnailsResponse;
 class GenerateThumbnailsResponseDefaultTypeInternal;
 extern GenerateThumbnailsResponseDefaultTypeInternal _GenerateThumbnailsResponse_default_instance_;
+class ReadExifRequest;
+class ReadExifRequestDefaultTypeInternal;
+extern ReadExifRequestDefaultTypeInternal _ReadExifRequest_default_instance_;
 class Thumbnail;
 class ThumbnailDefaultTypeInternal;
 extern ThumbnailDefaultTypeInternal _Thumbnail_default_instance_;
 PROTOBUF_NAMESPACE_OPEN
+template<> ::ExifInfo* Arena::CreateMaybeMessage<::ExifInfo>(Arena*);
 template<> ::GenerateThumbnailsRequest* Arena::CreateMaybeMessage<::GenerateThumbnailsRequest>(Arena*);
 template<> ::GenerateThumbnailsResponse* Arena::CreateMaybeMessage<::GenerateThumbnailsResponse>(Arena*);
+template<> ::ReadExifRequest* Arena::CreateMaybeMessage<::ReadExifRequest>(Arena*);
 template<> ::Thumbnail* Arena::CreateMaybeMessage<::Thumbnail>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 
 enum MessageType : int {
   Ping = 0,
   GenerateThumbnails = 1,
+  ReadExif = 2,
   MessageType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
   MessageType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
 };
 bool MessageType_IsValid(int value);
 constexpr MessageType MessageType_MIN = Ping;
-constexpr MessageType MessageType_MAX = GenerateThumbnails;
+constexpr MessageType MessageType_MAX = ReadExif;
 constexpr int MessageType_ARRAYSIZE = MessageType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MessageType_descriptor();
@@ -599,6 +608,596 @@ class GenerateThumbnailsResponse :
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
 };
+// -------------------------------------------------------------------
+
+class ReadExifRequest :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ReadExifRequest) */ {
+ public:
+  ReadExifRequest();
+  virtual ~ReadExifRequest();
+
+  ReadExifRequest(const ReadExifRequest& from);
+  ReadExifRequest(ReadExifRequest&& from) noexcept
+    : ReadExifRequest() {
+    *this = ::std::move(from);
+  }
+
+  inline ReadExifRequest& operator=(const ReadExifRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ReadExifRequest& operator=(ReadExifRequest&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const ReadExifRequest& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ReadExifRequest* internal_default_instance() {
+    return reinterpret_cast<const ReadExifRequest*>(
+               &_ReadExifRequest_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  friend void swap(ReadExifRequest& a, ReadExifRequest& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ReadExifRequest* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ReadExifRequest* New() const final {
+    return CreateMaybeMessage<ReadExifRequest>(nullptr);
+  }
+
+  ReadExifRequest* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ReadExifRequest>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const ReadExifRequest& from);
+  void MergeFrom(const ReadExifRequest& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ReadExifRequest* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "ReadExifRequest";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ipc_2eproto);
+    return ::descriptor_table_ipc_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kPathFieldNumber = 1,
+  };
+  // string path = 1;
+  void clear_path();
+  const std::string& path() const;
+  void set_path(const std::string& value);
+  void set_path(std::string&& value);
+  void set_path(const char* value);
+  void set_path(const char* value, size_t size);
+  std::string* mutable_path();
+  std::string* release_path();
+  void set_allocated_path(std::string* path);
+  private:
+  const std::string& _internal_path() const;
+  void _internal_set_path(const std::string& value);
+  std::string* _internal_mutable_path();
+  public:
+
+  // @@protoc_insertion_point(class_scope:ReadExifRequest)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_ipc_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ExifInfo :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ExifInfo) */ {
+ public:
+  ExifInfo();
+  virtual ~ExifInfo();
+
+  ExifInfo(const ExifInfo& from);
+  ExifInfo(ExifInfo&& from) noexcept
+    : ExifInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline ExifInfo& operator=(const ExifInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ExifInfo& operator=(ExifInfo&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const ExifInfo& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ExifInfo* internal_default_instance() {
+    return reinterpret_cast<const ExifInfo*>(
+               &_ExifInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    4;
+
+  friend void swap(ExifInfo& a, ExifInfo& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ExifInfo* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ExifInfo* New() const final {
+    return CreateMaybeMessage<ExifInfo>(nullptr);
+  }
+
+  ExifInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ExifInfo>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const ExifInfo& from);
+  void MergeFrom(const ExifInfo& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ExifInfo* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "ExifInfo";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ipc_2eproto);
+    return ::descriptor_table_ipc_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kCameraMakeFieldNumber = 1,
+    kCameraModelFieldNumber = 2,
+    kSoftwareFieldNumber = 3,
+    kImageDescriptionFieldNumber = 7,
+    kImageCopyrightFieldNumber = 9,
+    kImageDatetimeFieldNumber = 10,
+    kOriginalDatetimeFieldNumber = 11,
+    kDigitizeDatetimeFieldNumber = 12,
+    kSubsecondTimeFieldNumber = 13,
+    kBitsPerSampleFieldNumber = 4,
+    kImageWidthFieldNumber = 5,
+    kImageHeightFieldNumber = 6,
+    kImageOriientationFieldNumber = 8,
+    kExposureTimeFieldNumber = 14,
+    kFStopFieldNumber = 15,
+    kIsoSpeedFieldNumber = 16,
+    kSubjectDistanceFieldNumber = 17,
+    kExposureBiasFieldNumber = 18,
+    kFlashUsedFieldNumber = 19,
+    kMeteringModeFieldNumber = 20,
+    kLensFocalLengthFieldNumber = 21,
+    k35MmFocalLengthFieldNumber = 22,
+    kGpsLatitudeFieldNumber = 23,
+    kGpsLongitudeFieldNumber = 24,
+    kGpsAltitudeFieldNumber = 25,
+  };
+  // string camera_make = 1;
+  void clear_camera_make();
+  const std::string& camera_make() const;
+  void set_camera_make(const std::string& value);
+  void set_camera_make(std::string&& value);
+  void set_camera_make(const char* value);
+  void set_camera_make(const char* value, size_t size);
+  std::string* mutable_camera_make();
+  std::string* release_camera_make();
+  void set_allocated_camera_make(std::string* camera_make);
+  private:
+  const std::string& _internal_camera_make() const;
+  void _internal_set_camera_make(const std::string& value);
+  std::string* _internal_mutable_camera_make();
+  public:
+
+  // string camera_model = 2;
+  void clear_camera_model();
+  const std::string& camera_model() const;
+  void set_camera_model(const std::string& value);
+  void set_camera_model(std::string&& value);
+  void set_camera_model(const char* value);
+  void set_camera_model(const char* value, size_t size);
+  std::string* mutable_camera_model();
+  std::string* release_camera_model();
+  void set_allocated_camera_model(std::string* camera_model);
+  private:
+  const std::string& _internal_camera_model() const;
+  void _internal_set_camera_model(const std::string& value);
+  std::string* _internal_mutable_camera_model();
+  public:
+
+  // string software = 3;
+  void clear_software();
+  const std::string& software() const;
+  void set_software(const std::string& value);
+  void set_software(std::string&& value);
+  void set_software(const char* value);
+  void set_software(const char* value, size_t size);
+  std::string* mutable_software();
+  std::string* release_software();
+  void set_allocated_software(std::string* software);
+  private:
+  const std::string& _internal_software() const;
+  void _internal_set_software(const std::string& value);
+  std::string* _internal_mutable_software();
+  public:
+
+  // string image_description = 7;
+  void clear_image_description();
+  const std::string& image_description() const;
+  void set_image_description(const std::string& value);
+  void set_image_description(std::string&& value);
+  void set_image_description(const char* value);
+  void set_image_description(const char* value, size_t size);
+  std::string* mutable_image_description();
+  std::string* release_image_description();
+  void set_allocated_image_description(std::string* image_description);
+  private:
+  const std::string& _internal_image_description() const;
+  void _internal_set_image_description(const std::string& value);
+  std::string* _internal_mutable_image_description();
+  public:
+
+  // string image_copyright = 9;
+  void clear_image_copyright();
+  const std::string& image_copyright() const;
+  void set_image_copyright(const std::string& value);
+  void set_image_copyright(std::string&& value);
+  void set_image_copyright(const char* value);
+  void set_image_copyright(const char* value, size_t size);
+  std::string* mutable_image_copyright();
+  std::string* release_image_copyright();
+  void set_allocated_image_copyright(std::string* image_copyright);
+  private:
+  const std::string& _internal_image_copyright() const;
+  void _internal_set_image_copyright(const std::string& value);
+  std::string* _internal_mutable_image_copyright();
+  public:
+
+  // string image_datetime = 10;
+  void clear_image_datetime();
+  const std::string& image_datetime() const;
+  void set_image_datetime(const std::string& value);
+  void set_image_datetime(std::string&& value);
+  void set_image_datetime(const char* value);
+  void set_image_datetime(const char* value, size_t size);
+  std::string* mutable_image_datetime();
+  std::string* release_image_datetime();
+  void set_allocated_image_datetime(std::string* image_datetime);
+  private:
+  const std::string& _internal_image_datetime() const;
+  void _internal_set_image_datetime(const std::string& value);
+  std::string* _internal_mutable_image_datetime();
+  public:
+
+  // string original_datetime = 11;
+  void clear_original_datetime();
+  const std::string& original_datetime() const;
+  void set_original_datetime(const std::string& value);
+  void set_original_datetime(std::string&& value);
+  void set_original_datetime(const char* value);
+  void set_original_datetime(const char* value, size_t size);
+  std::string* mutable_original_datetime();
+  std::string* release_original_datetime();
+  void set_allocated_original_datetime(std::string* original_datetime);
+  private:
+  const std::string& _internal_original_datetime() const;
+  void _internal_set_original_datetime(const std::string& value);
+  std::string* _internal_mutable_original_datetime();
+  public:
+
+  // string digitize_datetime = 12;
+  void clear_digitize_datetime();
+  const std::string& digitize_datetime() const;
+  void set_digitize_datetime(const std::string& value);
+  void set_digitize_datetime(std::string&& value);
+  void set_digitize_datetime(const char* value);
+  void set_digitize_datetime(const char* value, size_t size);
+  std::string* mutable_digitize_datetime();
+  std::string* release_digitize_datetime();
+  void set_allocated_digitize_datetime(std::string* digitize_datetime);
+  private:
+  const std::string& _internal_digitize_datetime() const;
+  void _internal_set_digitize_datetime(const std::string& value);
+  std::string* _internal_mutable_digitize_datetime();
+  public:
+
+  // string subsecond_time = 13;
+  void clear_subsecond_time();
+  const std::string& subsecond_time() const;
+  void set_subsecond_time(const std::string& value);
+  void set_subsecond_time(std::string&& value);
+  void set_subsecond_time(const char* value);
+  void set_subsecond_time(const char* value, size_t size);
+  std::string* mutable_subsecond_time();
+  std::string* release_subsecond_time();
+  void set_allocated_subsecond_time(std::string* subsecond_time);
+  private:
+  const std::string& _internal_subsecond_time() const;
+  void _internal_set_subsecond_time(const std::string& value);
+  std::string* _internal_mutable_subsecond_time();
+  public:
+
+  // int32 bits_per_sample = 4;
+  void clear_bits_per_sample();
+  ::PROTOBUF_NAMESPACE_ID::int32 bits_per_sample() const;
+  void set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_bits_per_sample() const;
+  void _internal_set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 image_width = 5;
+  void clear_image_width();
+  ::PROTOBUF_NAMESPACE_ID::int32 image_width() const;
+  void set_image_width(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_image_width() const;
+  void _internal_set_image_width(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 image_height = 6;
+  void clear_image_height();
+  ::PROTOBUF_NAMESPACE_ID::int32 image_height() const;
+  void set_image_height(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_image_height() const;
+  void _internal_set_image_height(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 image_oriientation = 8;
+  void clear_image_oriientation();
+  ::PROTOBUF_NAMESPACE_ID::int32 image_oriientation() const;
+  void set_image_oriientation(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_image_oriientation() const;
+  void _internal_set_image_oriientation(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 exposure_time = 14;
+  void clear_exposure_time();
+  ::PROTOBUF_NAMESPACE_ID::int32 exposure_time() const;
+  void set_exposure_time(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_exposure_time() const;
+  void _internal_set_exposure_time(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // float f_stop = 15;
+  void clear_f_stop();
+  float f_stop() const;
+  void set_f_stop(float value);
+  private:
+  float _internal_f_stop() const;
+  void _internal_set_f_stop(float value);
+  public:
+
+  // int32 iso_speed = 16;
+  void clear_iso_speed();
+  ::PROTOBUF_NAMESPACE_ID::int32 iso_speed() const;
+  void set_iso_speed(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_iso_speed() const;
+  void _internal_set_iso_speed(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // float subject_distance = 17;
+  void clear_subject_distance();
+  float subject_distance() const;
+  void set_subject_distance(float value);
+  private:
+  float _internal_subject_distance() const;
+  void _internal_set_subject_distance(float value);
+  public:
+
+  // float exposure_bias = 18;
+  void clear_exposure_bias();
+  float exposure_bias() const;
+  void set_exposure_bias(float value);
+  private:
+  float _internal_exposure_bias() const;
+  void _internal_set_exposure_bias(float value);
+  public:
+
+  // int32 flash_used = 19;
+  void clear_flash_used();
+  ::PROTOBUF_NAMESPACE_ID::int32 flash_used() const;
+  void set_flash_used(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_flash_used() const;
+  void _internal_set_flash_used(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 metering_mode = 20;
+  void clear_metering_mode();
+  ::PROTOBUF_NAMESPACE_ID::int32 metering_mode() const;
+  void set_metering_mode(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_metering_mode() const;
+  void _internal_set_metering_mode(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // float lens_focal_length = 21;
+  void clear_lens_focal_length();
+  float lens_focal_length() const;
+  void set_lens_focal_length(float value);
+  private:
+  float _internal_lens_focal_length() const;
+  void _internal_set_lens_focal_length(float value);
+  public:
+
+  // uint32 _35mm_focal_length = 22;
+  void clear__35mm_focal_length();
+  ::PROTOBUF_NAMESPACE_ID::uint32 _35mm_focal_length() const;
+  void set__35mm_focal_length(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal__35mm_focal_length() const;
+  void _internal_set__35mm_focal_length(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // float gps_latitude = 23;
+  void clear_gps_latitude();
+  float gps_latitude() const;
+  void set_gps_latitude(float value);
+  private:
+  float _internal_gps_latitude() const;
+  void _internal_set_gps_latitude(float value);
+  public:
+
+  // float gps_longitude = 24;
+  void clear_gps_longitude();
+  float gps_longitude() const;
+  void set_gps_longitude(float value);
+  private:
+  float _internal_gps_longitude() const;
+  void _internal_set_gps_longitude(float value);
+  public:
+
+  // float gps_altitude = 25;
+  void clear_gps_altitude();
+  float gps_altitude() const;
+  void set_gps_altitude(float value);
+  private:
+  float _internal_gps_altitude() const;
+  void _internal_set_gps_altitude(float value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:ExifInfo)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr camera_make_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr camera_model_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr software_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr image_description_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr image_copyright_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr image_datetime_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr original_datetime_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr digitize_datetime_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr subsecond_time_;
+  ::PROTOBUF_NAMESPACE_ID::int32 bits_per_sample_;
+  ::PROTOBUF_NAMESPACE_ID::int32 image_width_;
+  ::PROTOBUF_NAMESPACE_ID::int32 image_height_;
+  ::PROTOBUF_NAMESPACE_ID::int32 image_oriientation_;
+  ::PROTOBUF_NAMESPACE_ID::int32 exposure_time_;
+  float f_stop_;
+  ::PROTOBUF_NAMESPACE_ID::int32 iso_speed_;
+  float subject_distance_;
+  float exposure_bias_;
+  ::PROTOBUF_NAMESPACE_ID::int32 flash_used_;
+  ::PROTOBUF_NAMESPACE_ID::int32 metering_mode_;
+  float lens_focal_length_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 _35mm_focal_length_;
+  float gps_latitude_;
+  float gps_longitude_;
+  float gps_altitude_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_ipc_2eproto;
+};
 // ===================================================================
 
 
@@ -940,9 +1539,941 @@ GenerateThumbnailsResponse::data() const {
   return data_;
 }
 
+// -------------------------------------------------------------------
+
+// ReadExifRequest
+
+// string path = 1;
+inline void ReadExifRequest::clear_path() {
+  path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ReadExifRequest::path() const {
+  // @@protoc_insertion_point(field_get:ReadExifRequest.path)
+  return _internal_path();
+}
+inline void ReadExifRequest::set_path(const std::string& value) {
+  _internal_set_path(value);
+  // @@protoc_insertion_point(field_set:ReadExifRequest.path)
+}
+inline std::string* ReadExifRequest::mutable_path() {
+  // @@protoc_insertion_point(field_mutable:ReadExifRequest.path)
+  return _internal_mutable_path();
+}
+inline const std::string& ReadExifRequest::_internal_path() const {
+  return path_.GetNoArena();
+}
+inline void ReadExifRequest::_internal_set_path(const std::string& value) {
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ReadExifRequest::set_path(std::string&& value) {
+  
+  path_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ReadExifRequest.path)
+}
+inline void ReadExifRequest::set_path(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ReadExifRequest.path)
+}
+inline void ReadExifRequest::set_path(const char* value, size_t size) {
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ReadExifRequest.path)
+}
+inline std::string* ReadExifRequest::_internal_mutable_path() {
+  
+  return path_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ReadExifRequest::release_path() {
+  // @@protoc_insertion_point(field_release:ReadExifRequest.path)
+  
+  return path_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ReadExifRequest::set_allocated_path(std::string* path) {
+  if (path != nullptr) {
+    
+  } else {
+    
+  }
+  path_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), path);
+  // @@protoc_insertion_point(field_set_allocated:ReadExifRequest.path)
+}
+
+// -------------------------------------------------------------------
+
+// ExifInfo
+
+// string camera_make = 1;
+inline void ExifInfo::clear_camera_make() {
+  camera_make_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ExifInfo::camera_make() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.camera_make)
+  return _internal_camera_make();
+}
+inline void ExifInfo::set_camera_make(const std::string& value) {
+  _internal_set_camera_make(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.camera_make)
+}
+inline std::string* ExifInfo::mutable_camera_make() {
+  // @@protoc_insertion_point(field_mutable:ExifInfo.camera_make)
+  return _internal_mutable_camera_make();
+}
+inline const std::string& ExifInfo::_internal_camera_make() const {
+  return camera_make_.GetNoArena();
+}
+inline void ExifInfo::_internal_set_camera_make(const std::string& value) {
+  
+  camera_make_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ExifInfo::set_camera_make(std::string&& value) {
+  
+  camera_make_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.camera_make)
+}
+inline void ExifInfo::set_camera_make(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  camera_make_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ExifInfo.camera_make)
+}
+inline void ExifInfo::set_camera_make(const char* value, size_t size) {
+  
+  camera_make_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ExifInfo.camera_make)
+}
+inline std::string* ExifInfo::_internal_mutable_camera_make() {
+  
+  return camera_make_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ExifInfo::release_camera_make() {
+  // @@protoc_insertion_point(field_release:ExifInfo.camera_make)
+  
+  return camera_make_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_camera_make(std::string* camera_make) {
+  if (camera_make != nullptr) {
+    
+  } else {
+    
+  }
+  camera_make_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), camera_make);
+  // @@protoc_insertion_point(field_set_allocated:ExifInfo.camera_make)
+}
+
+// string camera_model = 2;
+inline void ExifInfo::clear_camera_model() {
+  camera_model_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ExifInfo::camera_model() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.camera_model)
+  return _internal_camera_model();
+}
+inline void ExifInfo::set_camera_model(const std::string& value) {
+  _internal_set_camera_model(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.camera_model)
+}
+inline std::string* ExifInfo::mutable_camera_model() {
+  // @@protoc_insertion_point(field_mutable:ExifInfo.camera_model)
+  return _internal_mutable_camera_model();
+}
+inline const std::string& ExifInfo::_internal_camera_model() const {
+  return camera_model_.GetNoArena();
+}
+inline void ExifInfo::_internal_set_camera_model(const std::string& value) {
+  
+  camera_model_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ExifInfo::set_camera_model(std::string&& value) {
+  
+  camera_model_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.camera_model)
+}
+inline void ExifInfo::set_camera_model(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  camera_model_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ExifInfo.camera_model)
+}
+inline void ExifInfo::set_camera_model(const char* value, size_t size) {
+  
+  camera_model_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ExifInfo.camera_model)
+}
+inline std::string* ExifInfo::_internal_mutable_camera_model() {
+  
+  return camera_model_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ExifInfo::release_camera_model() {
+  // @@protoc_insertion_point(field_release:ExifInfo.camera_model)
+  
+  return camera_model_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_camera_model(std::string* camera_model) {
+  if (camera_model != nullptr) {
+    
+  } else {
+    
+  }
+  camera_model_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), camera_model);
+  // @@protoc_insertion_point(field_set_allocated:ExifInfo.camera_model)
+}
+
+// string software = 3;
+inline void ExifInfo::clear_software() {
+  software_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ExifInfo::software() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.software)
+  return _internal_software();
+}
+inline void ExifInfo::set_software(const std::string& value) {
+  _internal_set_software(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.software)
+}
+inline std::string* ExifInfo::mutable_software() {
+  // @@protoc_insertion_point(field_mutable:ExifInfo.software)
+  return _internal_mutable_software();
+}
+inline const std::string& ExifInfo::_internal_software() const {
+  return software_.GetNoArena();
+}
+inline void ExifInfo::_internal_set_software(const std::string& value) {
+  
+  software_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ExifInfo::set_software(std::string&& value) {
+  
+  software_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.software)
+}
+inline void ExifInfo::set_software(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  software_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ExifInfo.software)
+}
+inline void ExifInfo::set_software(const char* value, size_t size) {
+  
+  software_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ExifInfo.software)
+}
+inline std::string* ExifInfo::_internal_mutable_software() {
+  
+  return software_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ExifInfo::release_software() {
+  // @@protoc_insertion_point(field_release:ExifInfo.software)
+  
+  return software_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_software(std::string* software) {
+  if (software != nullptr) {
+    
+  } else {
+    
+  }
+  software_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), software);
+  // @@protoc_insertion_point(field_set_allocated:ExifInfo.software)
+}
+
+// int32 bits_per_sample = 4;
+inline void ExifInfo::clear_bits_per_sample() {
+  bits_per_sample_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_bits_per_sample() const {
+  return bits_per_sample_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::bits_per_sample() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.bits_per_sample)
+  return _internal_bits_per_sample();
+}
+inline void ExifInfo::_internal_set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  bits_per_sample_ = value;
+}
+inline void ExifInfo::set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_bits_per_sample(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.bits_per_sample)
+}
+
+// int32 image_width = 5;
+inline void ExifInfo::clear_image_width() {
+  image_width_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_image_width() const {
+  return image_width_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::image_width() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.image_width)
+  return _internal_image_width();
+}
+inline void ExifInfo::_internal_set_image_width(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  image_width_ = value;
+}
+inline void ExifInfo::set_image_width(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_image_width(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.image_width)
+}
+
+// int32 image_height = 6;
+inline void ExifInfo::clear_image_height() {
+  image_height_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_image_height() const {
+  return image_height_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::image_height() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.image_height)
+  return _internal_image_height();
+}
+inline void ExifInfo::_internal_set_image_height(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  image_height_ = value;
+}
+inline void ExifInfo::set_image_height(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_image_height(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.image_height)
+}
+
+// string image_description = 7;
+inline void ExifInfo::clear_image_description() {
+  image_description_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ExifInfo::image_description() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.image_description)
+  return _internal_image_description();
+}
+inline void ExifInfo::set_image_description(const std::string& value) {
+  _internal_set_image_description(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.image_description)
+}
+inline std::string* ExifInfo::mutable_image_description() {
+  // @@protoc_insertion_point(field_mutable:ExifInfo.image_description)
+  return _internal_mutable_image_description();
+}
+inline const std::string& ExifInfo::_internal_image_description() const {
+  return image_description_.GetNoArena();
+}
+inline void ExifInfo::_internal_set_image_description(const std::string& value) {
+  
+  image_description_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ExifInfo::set_image_description(std::string&& value) {
+  
+  image_description_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.image_description)
+}
+inline void ExifInfo::set_image_description(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  image_description_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ExifInfo.image_description)
+}
+inline void ExifInfo::set_image_description(const char* value, size_t size) {
+  
+  image_description_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ExifInfo.image_description)
+}
+inline std::string* ExifInfo::_internal_mutable_image_description() {
+  
+  return image_description_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ExifInfo::release_image_description() {
+  // @@protoc_insertion_point(field_release:ExifInfo.image_description)
+  
+  return image_description_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_image_description(std::string* image_description) {
+  if (image_description != nullptr) {
+    
+  } else {
+    
+  }
+  image_description_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), image_description);
+  // @@protoc_insertion_point(field_set_allocated:ExifInfo.image_description)
+}
+
+// int32 image_oriientation = 8;
+inline void ExifInfo::clear_image_oriientation() {
+  image_oriientation_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_image_oriientation() const {
+  return image_oriientation_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::image_oriientation() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.image_oriientation)
+  return _internal_image_oriientation();
+}
+inline void ExifInfo::_internal_set_image_oriientation(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  image_oriientation_ = value;
+}
+inline void ExifInfo::set_image_oriientation(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_image_oriientation(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.image_oriientation)
+}
+
+// string image_copyright = 9;
+inline void ExifInfo::clear_image_copyright() {
+  image_copyright_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ExifInfo::image_copyright() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.image_copyright)
+  return _internal_image_copyright();
+}
+inline void ExifInfo::set_image_copyright(const std::string& value) {
+  _internal_set_image_copyright(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.image_copyright)
+}
+inline std::string* ExifInfo::mutable_image_copyright() {
+  // @@protoc_insertion_point(field_mutable:ExifInfo.image_copyright)
+  return _internal_mutable_image_copyright();
+}
+inline const std::string& ExifInfo::_internal_image_copyright() const {
+  return image_copyright_.GetNoArena();
+}
+inline void ExifInfo::_internal_set_image_copyright(const std::string& value) {
+  
+  image_copyright_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ExifInfo::set_image_copyright(std::string&& value) {
+  
+  image_copyright_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.image_copyright)
+}
+inline void ExifInfo::set_image_copyright(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  image_copyright_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ExifInfo.image_copyright)
+}
+inline void ExifInfo::set_image_copyright(const char* value, size_t size) {
+  
+  image_copyright_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ExifInfo.image_copyright)
+}
+inline std::string* ExifInfo::_internal_mutable_image_copyright() {
+  
+  return image_copyright_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ExifInfo::release_image_copyright() {
+  // @@protoc_insertion_point(field_release:ExifInfo.image_copyright)
+  
+  return image_copyright_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_image_copyright(std::string* image_copyright) {
+  if (image_copyright != nullptr) {
+    
+  } else {
+    
+  }
+  image_copyright_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), image_copyright);
+  // @@protoc_insertion_point(field_set_allocated:ExifInfo.image_copyright)
+}
+
+// string image_datetime = 10;
+inline void ExifInfo::clear_image_datetime() {
+  image_datetime_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ExifInfo::image_datetime() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.image_datetime)
+  return _internal_image_datetime();
+}
+inline void ExifInfo::set_image_datetime(const std::string& value) {
+  _internal_set_image_datetime(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.image_datetime)
+}
+inline std::string* ExifInfo::mutable_image_datetime() {
+  // @@protoc_insertion_point(field_mutable:ExifInfo.image_datetime)
+  return _internal_mutable_image_datetime();
+}
+inline const std::string& ExifInfo::_internal_image_datetime() const {
+  return image_datetime_.GetNoArena();
+}
+inline void ExifInfo::_internal_set_image_datetime(const std::string& value) {
+  
+  image_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ExifInfo::set_image_datetime(std::string&& value) {
+  
+  image_datetime_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.image_datetime)
+}
+inline void ExifInfo::set_image_datetime(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  image_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ExifInfo.image_datetime)
+}
+inline void ExifInfo::set_image_datetime(const char* value, size_t size) {
+  
+  image_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ExifInfo.image_datetime)
+}
+inline std::string* ExifInfo::_internal_mutable_image_datetime() {
+  
+  return image_datetime_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ExifInfo::release_image_datetime() {
+  // @@protoc_insertion_point(field_release:ExifInfo.image_datetime)
+  
+  return image_datetime_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_image_datetime(std::string* image_datetime) {
+  if (image_datetime != nullptr) {
+    
+  } else {
+    
+  }
+  image_datetime_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), image_datetime);
+  // @@protoc_insertion_point(field_set_allocated:ExifInfo.image_datetime)
+}
+
+// string original_datetime = 11;
+inline void ExifInfo::clear_original_datetime() {
+  original_datetime_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ExifInfo::original_datetime() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.original_datetime)
+  return _internal_original_datetime();
+}
+inline void ExifInfo::set_original_datetime(const std::string& value) {
+  _internal_set_original_datetime(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.original_datetime)
+}
+inline std::string* ExifInfo::mutable_original_datetime() {
+  // @@protoc_insertion_point(field_mutable:ExifInfo.original_datetime)
+  return _internal_mutable_original_datetime();
+}
+inline const std::string& ExifInfo::_internal_original_datetime() const {
+  return original_datetime_.GetNoArena();
+}
+inline void ExifInfo::_internal_set_original_datetime(const std::string& value) {
+  
+  original_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ExifInfo::set_original_datetime(std::string&& value) {
+  
+  original_datetime_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.original_datetime)
+}
+inline void ExifInfo::set_original_datetime(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  original_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ExifInfo.original_datetime)
+}
+inline void ExifInfo::set_original_datetime(const char* value, size_t size) {
+  
+  original_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ExifInfo.original_datetime)
+}
+inline std::string* ExifInfo::_internal_mutable_original_datetime() {
+  
+  return original_datetime_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ExifInfo::release_original_datetime() {
+  // @@protoc_insertion_point(field_release:ExifInfo.original_datetime)
+  
+  return original_datetime_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_original_datetime(std::string* original_datetime) {
+  if (original_datetime != nullptr) {
+    
+  } else {
+    
+  }
+  original_datetime_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), original_datetime);
+  // @@protoc_insertion_point(field_set_allocated:ExifInfo.original_datetime)
+}
+
+// string digitize_datetime = 12;
+inline void ExifInfo::clear_digitize_datetime() {
+  digitize_datetime_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ExifInfo::digitize_datetime() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.digitize_datetime)
+  return _internal_digitize_datetime();
+}
+inline void ExifInfo::set_digitize_datetime(const std::string& value) {
+  _internal_set_digitize_datetime(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.digitize_datetime)
+}
+inline std::string* ExifInfo::mutable_digitize_datetime() {
+  // @@protoc_insertion_point(field_mutable:ExifInfo.digitize_datetime)
+  return _internal_mutable_digitize_datetime();
+}
+inline const std::string& ExifInfo::_internal_digitize_datetime() const {
+  return digitize_datetime_.GetNoArena();
+}
+inline void ExifInfo::_internal_set_digitize_datetime(const std::string& value) {
+  
+  digitize_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ExifInfo::set_digitize_datetime(std::string&& value) {
+  
+  digitize_datetime_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.digitize_datetime)
+}
+inline void ExifInfo::set_digitize_datetime(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  digitize_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ExifInfo.digitize_datetime)
+}
+inline void ExifInfo::set_digitize_datetime(const char* value, size_t size) {
+  
+  digitize_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ExifInfo.digitize_datetime)
+}
+inline std::string* ExifInfo::_internal_mutable_digitize_datetime() {
+  
+  return digitize_datetime_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ExifInfo::release_digitize_datetime() {
+  // @@protoc_insertion_point(field_release:ExifInfo.digitize_datetime)
+  
+  return digitize_datetime_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_digitize_datetime(std::string* digitize_datetime) {
+  if (digitize_datetime != nullptr) {
+    
+  } else {
+    
+  }
+  digitize_datetime_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), digitize_datetime);
+  // @@protoc_insertion_point(field_set_allocated:ExifInfo.digitize_datetime)
+}
+
+// string subsecond_time = 13;
+inline void ExifInfo::clear_subsecond_time() {
+  subsecond_time_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ExifInfo::subsecond_time() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.subsecond_time)
+  return _internal_subsecond_time();
+}
+inline void ExifInfo::set_subsecond_time(const std::string& value) {
+  _internal_set_subsecond_time(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.subsecond_time)
+}
+inline std::string* ExifInfo::mutable_subsecond_time() {
+  // @@protoc_insertion_point(field_mutable:ExifInfo.subsecond_time)
+  return _internal_mutable_subsecond_time();
+}
+inline const std::string& ExifInfo::_internal_subsecond_time() const {
+  return subsecond_time_.GetNoArena();
+}
+inline void ExifInfo::_internal_set_subsecond_time(const std::string& value) {
+  
+  subsecond_time_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ExifInfo::set_subsecond_time(std::string&& value) {
+  
+  subsecond_time_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.subsecond_time)
+}
+inline void ExifInfo::set_subsecond_time(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  subsecond_time_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ExifInfo.subsecond_time)
+}
+inline void ExifInfo::set_subsecond_time(const char* value, size_t size) {
+  
+  subsecond_time_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ExifInfo.subsecond_time)
+}
+inline std::string* ExifInfo::_internal_mutable_subsecond_time() {
+  
+  return subsecond_time_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ExifInfo::release_subsecond_time() {
+  // @@protoc_insertion_point(field_release:ExifInfo.subsecond_time)
+  
+  return subsecond_time_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ExifInfo::set_allocated_subsecond_time(std::string* subsecond_time) {
+  if (subsecond_time != nullptr) {
+    
+  } else {
+    
+  }
+  subsecond_time_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), subsecond_time);
+  // @@protoc_insertion_point(field_set_allocated:ExifInfo.subsecond_time)
+}
+
+// int32 exposure_time = 14;
+inline void ExifInfo::clear_exposure_time() {
+  exposure_time_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_exposure_time() const {
+  return exposure_time_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::exposure_time() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.exposure_time)
+  return _internal_exposure_time();
+}
+inline void ExifInfo::_internal_set_exposure_time(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  exposure_time_ = value;
+}
+inline void ExifInfo::set_exposure_time(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_exposure_time(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.exposure_time)
+}
+
+// float f_stop = 15;
+inline void ExifInfo::clear_f_stop() {
+  f_stop_ = 0;
+}
+inline float ExifInfo::_internal_f_stop() const {
+  return f_stop_;
+}
+inline float ExifInfo::f_stop() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.f_stop)
+  return _internal_f_stop();
+}
+inline void ExifInfo::_internal_set_f_stop(float value) {
+  
+  f_stop_ = value;
+}
+inline void ExifInfo::set_f_stop(float value) {
+  _internal_set_f_stop(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.f_stop)
+}
+
+// int32 iso_speed = 16;
+inline void ExifInfo::clear_iso_speed() {
+  iso_speed_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_iso_speed() const {
+  return iso_speed_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::iso_speed() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.iso_speed)
+  return _internal_iso_speed();
+}
+inline void ExifInfo::_internal_set_iso_speed(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  iso_speed_ = value;
+}
+inline void ExifInfo::set_iso_speed(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_iso_speed(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.iso_speed)
+}
+
+// float subject_distance = 17;
+inline void ExifInfo::clear_subject_distance() {
+  subject_distance_ = 0;
+}
+inline float ExifInfo::_internal_subject_distance() const {
+  return subject_distance_;
+}
+inline float ExifInfo::subject_distance() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.subject_distance)
+  return _internal_subject_distance();
+}
+inline void ExifInfo::_internal_set_subject_distance(float value) {
+  
+  subject_distance_ = value;
+}
+inline void ExifInfo::set_subject_distance(float value) {
+  _internal_set_subject_distance(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.subject_distance)
+}
+
+// float exposure_bias = 18;
+inline void ExifInfo::clear_exposure_bias() {
+  exposure_bias_ = 0;
+}
+inline float ExifInfo::_internal_exposure_bias() const {
+  return exposure_bias_;
+}
+inline float ExifInfo::exposure_bias() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.exposure_bias)
+  return _internal_exposure_bias();
+}
+inline void ExifInfo::_internal_set_exposure_bias(float value) {
+  
+  exposure_bias_ = value;
+}
+inline void ExifInfo::set_exposure_bias(float value) {
+  _internal_set_exposure_bias(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.exposure_bias)
+}
+
+// int32 flash_used = 19;
+inline void ExifInfo::clear_flash_used() {
+  flash_used_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_flash_used() const {
+  return flash_used_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::flash_used() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.flash_used)
+  return _internal_flash_used();
+}
+inline void ExifInfo::_internal_set_flash_used(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  flash_used_ = value;
+}
+inline void ExifInfo::set_flash_used(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_flash_used(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.flash_used)
+}
+
+// int32 metering_mode = 20;
+inline void ExifInfo::clear_metering_mode() {
+  metering_mode_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_metering_mode() const {
+  return metering_mode_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::metering_mode() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.metering_mode)
+  return _internal_metering_mode();
+}
+inline void ExifInfo::_internal_set_metering_mode(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  metering_mode_ = value;
+}
+inline void ExifInfo::set_metering_mode(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_metering_mode(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.metering_mode)
+}
+
+// float lens_focal_length = 21;
+inline void ExifInfo::clear_lens_focal_length() {
+  lens_focal_length_ = 0;
+}
+inline float ExifInfo::_internal_lens_focal_length() const {
+  return lens_focal_length_;
+}
+inline float ExifInfo::lens_focal_length() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.lens_focal_length)
+  return _internal_lens_focal_length();
+}
+inline void ExifInfo::_internal_set_lens_focal_length(float value) {
+  
+  lens_focal_length_ = value;
+}
+inline void ExifInfo::set_lens_focal_length(float value) {
+  _internal_set_lens_focal_length(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.lens_focal_length)
+}
+
+// uint32 _35mm_focal_length = 22;
+inline void ExifInfo::clear__35mm_focal_length() {
+  _35mm_focal_length_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal__35mm_focal_length() const {
+  return _35mm_focal_length_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_35mm_focal_length() const {
+  // @@protoc_insertion_point(field_get:ExifInfo._35mm_focal_length)
+  return _internal__35mm_focal_length();
+}
+inline void ExifInfo::_internal_set__35mm_focal_length(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  _35mm_focal_length_ = value;
+}
+inline void ExifInfo::set__35mm_focal_length(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set__35mm_focal_length(value);
+  // @@protoc_insertion_point(field_set:ExifInfo._35mm_focal_length)
+}
+
+// float gps_latitude = 23;
+inline void ExifInfo::clear_gps_latitude() {
+  gps_latitude_ = 0;
+}
+inline float ExifInfo::_internal_gps_latitude() const {
+  return gps_latitude_;
+}
+inline float ExifInfo::gps_latitude() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.gps_latitude)
+  return _internal_gps_latitude();
+}
+inline void ExifInfo::_internal_set_gps_latitude(float value) {
+  
+  gps_latitude_ = value;
+}
+inline void ExifInfo::set_gps_latitude(float value) {
+  _internal_set_gps_latitude(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.gps_latitude)
+}
+
+// float gps_longitude = 24;
+inline void ExifInfo::clear_gps_longitude() {
+  gps_longitude_ = 0;
+}
+inline float ExifInfo::_internal_gps_longitude() const {
+  return gps_longitude_;
+}
+inline float ExifInfo::gps_longitude() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.gps_longitude)
+  return _internal_gps_longitude();
+}
+inline void ExifInfo::_internal_set_gps_longitude(float value) {
+  
+  gps_longitude_ = value;
+}
+inline void ExifInfo::set_gps_longitude(float value) {
+  _internal_set_gps_longitude(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.gps_longitude)
+}
+
+// float gps_altitude = 25;
+inline void ExifInfo::clear_gps_altitude() {
+  gps_altitude_ = 0;
+}
+inline float ExifInfo::_internal_gps_altitude() const {
+  return gps_altitude_;
+}
+inline float ExifInfo::gps_altitude() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.gps_altitude)
+  return _internal_gps_altitude();
+}
+inline void ExifInfo::_internal_set_gps_altitude(float value) {
+  
+  gps_altitude_ = value;
+}
+inline void ExifInfo::set_gps_altitude(float value) {
+  _internal_set_gps_altitude(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.gps_altitude)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

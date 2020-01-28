@@ -36,6 +36,16 @@ std::string server_handler(EasyIpc::Context& ctx, const EasyIpc::Message& msg) {
             return gen_thumbnails(request);
         }
 
+        case MessageType::ReadExif: {
+            ReadExifRequest request;
+            if (!request.ParseFromString(msg.content)) {
+                return "";
+            }
+
+            ExifInfo exif;
+            return exif.SerializeAsString();
+        }
+
         default:
             return "";
     }
