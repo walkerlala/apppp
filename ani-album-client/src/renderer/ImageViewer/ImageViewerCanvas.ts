@@ -25,6 +25,7 @@ export class ImageViewerCanvas implements IDisposable {
     public readonly imageId: number,
     public readonly thumbnailPath: string
   ) {
+    console.log('new canvas');
     this.canvas = document.createElement('canvas');
     this.canvas.classList.add('ani-image-viewer-canvas');
     this.canvas.style.width = '100%';
@@ -202,6 +203,7 @@ export class ImageViewerCanvas implements IDisposable {
     removeElement(this.canvas);
 
     window.removeEventListener('wheel', this.handleWheel);
+    window.removeEventListener('resize', this.handleWindowResize);
   }
 
 }

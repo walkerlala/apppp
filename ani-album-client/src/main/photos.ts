@@ -6,6 +6,7 @@ import { ClientMessageType } from 'common/message';
 import { getThumbnailsFolder } from './dataFolder';
 import microService from './microService';
 import * as fs from 'fs';
+import { ExifInfo } from 'protos/ipc_pb';
 
 export async function importPhotos() {
   try {
@@ -51,6 +52,8 @@ async function importPhotosByPath(path: string) {
 
         logger.info('imported a photo');
         getWebContent().send(ClientMessageType.PhotoImported);
+        const exifInfo = await microService.readExif(path);
+        logger.info(ExifInfo.toObject(false, exifInfo));
       } catch (err) {
         logger.error('insert photo failed: ', err, 'path: ', path);
       }

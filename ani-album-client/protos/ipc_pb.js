@@ -10,7 +10,6 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
 
 goog.exportSymbol('proto.ExifInfo', null, global);
 goog.exportSymbol('proto.GenerateThumbnailsRequest', null, global);

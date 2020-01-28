@@ -26,7 +26,12 @@ std::optional<ExifInfo> read_exif(const std::string& path) {
         return std::nullopt;
     }
 
-    void* file = ::mmap(nullptr, file_stat_.st_size, PROT_READ, MAP_FILE, fd, 0);
+    void* file = ::mmap(nullptr, file_stat_.st_size, PROT_READ, MAP_SHARED, fd, 0);
+    if (file == MAP_FAILED) {
+        perror("map failed");
+        ::close(fd);
+        return std::nullopt;
+    }
 
     easyexif::EXIFInfo parser;
     int ret = parser.parseFrom(

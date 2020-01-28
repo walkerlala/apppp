@@ -188,7 +188,11 @@ export namespace easyipc {
                 this.ipcToken = token;
 
                 const path = GetDomainSocketPath(token);
-                this.socket = net.createConnection(path, resolve);
+                this.socket = net.createConnection(path, () => {
+                    this.socket.removeListener('error', reject);
+                    resolve();
+                });
+                this.socket.addListener('error', reject);
             });
         }
 
