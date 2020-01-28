@@ -1,7 +1,7 @@
 import { ImageWithThumbnails } from 'common/image';
 import { IDisposable } from 'common/disposable';
 import { ClientMessageType } from 'common/message';
-import { removeElement, turnInvisible, turnVisible, setImageSize } from 'renderer/utils';
+import { removeElement } from 'renderer/utils';
 import { Vector, vec } from '@josh-brown/vector';
 import { ipcRenderer } from 'electron';
 
@@ -11,36 +11,96 @@ import { ipcRenderer } from 'electron';
  */
 export class ImageViewerCanvas implements IDisposable {
 
+  private canvas: HTMLCanvasElement;
+  private canvasCtx: CanvasRenderingContext2D = null;
   private thumbnailElement: HTMLImageElement | null;
   private sourceElement: HTMLImageElement;
   private imageData: ImageWithThumbnails | null = null;
   private imageSize: Vector<number>;
   private __scale: number = 1.0;
+  private __dpr: number = 1;
 
   constructor(
     public readonly container: HTMLDivElement,
     public readonly imageId: number,
     public readonly thumbnailPath: string
   ) {
+    this.canvas = document.createElement('canvas');
+    this.canvas.classList.add('ani-image-viewer-canvas');
+    this.canvas.style.width = '100%';
+    this.canvas.style.height = '100%';
+
+    container.appendChild(this.canvas);
+
     this.imageSize = vec([ 0, 0 ]);
 
-    this.thumbnailElement = document.createElement('img');
+    this.thumbnailElement = new Image();
     this.thumbnailElement.src = thumbnailPath;
     this.thumbnailElement.addEventListener('load', this.handleThumbnailImageLoaded);
-    this.setImageDefaultStyle(this.thumbnailElement);
-    turnInvisible(this.thumbnailElement);
 
-    this.sourceElement = document.createElement('img');
+    this.sourceElement = new Image();
     this.sourceElement.addEventListener('load', this.handleSourceImageLoaded);
-    this.setImageDefaultStyle(this.sourceElement);
-    turnInvisible(this.sourceElement);
-
-    container.appendChild(this.thumbnailElement);
-    container.appendChild(this.sourceElement);
 
     window.addEventListener('wheel', this.handleWheel);
+    window.addEventListener('resize', this.handleWindowResize);
 
     this.fetchDataAndSetSrc(imageId);
+
+    this.setupCanvas();
+  }
+
+  private setupCanvas() {
+    this.__dpr = window.devicePixelRatio || 1;
+    // Get the size of the canvas in CSS pixels.
+    const rect = this.canvas.getBoundingClientRect();
+    // Give the canvas pixel dimensions of their CSS
+    // size * the device pixel ratio.
+    this.canvas.width = rect.width * this.__dpr;
+    this.canvas.height = rect.height * this.__dpr;
+
+    const ctx = this.canvas.getContext('2d');
+    // Scale all drawing operations by the dpr, so you
+    // don't have to worry about the difference.
+    ctx.scale(this.__dpr, this.__dpr);
+    this.canvasCtx = ctx;
+    return this.canvasCtx;
+  }
+
+  private drawOnCanvas() {
+    let img: HTMLImageElement;
+    if (this.thumbnailElement !== null) {
+      img = this.thumbnailElement;
+    } else {
+      img = this.sourceElement;
+    }
+
+    const rect = this.canvas.getBoundingClientRect();
+    const { width: rectWidth, height: rectHeight } = rect;
+    const { width, height } = img;
+
+    const canvasRatio = rectWidth / rectHeight;
+    const imgRatio = width / height;
+
+    let x: number = 0;
+    let y: number = 0;
+    let drawWidth: number = 0;
+    let drawHeight: number = 0;
+    if (imgRatio >= canvasRatio) {
+      drawWidth = rectWidth;
+      drawHeight = Math.floor(rectWidth / imgRatio);
+      y = Math.floor((rectHeight - drawHeight) / 2);
+    } else {
+      drawHeight = rectHeight;
+      drawWidth = Math.floor(rectHeight * imgRatio);
+      x = Math.floor((rectWidth - drawWidth) / 2);
+    }
+    
+    this.canvasCtx.drawImage(img, x, y, drawWidth, drawHeight);
+  }
+
+  private handleWindowResize = (e: UIEvent) => {
+    this.setupCanvas();
+    this.drawOnCanvas();
   }
   
   private handleWheel = (e: WheelEvent) => {
@@ -69,7 +129,7 @@ export class ImageViewerCanvas implements IDisposable {
 
     this.imageSize = properSize.scalarMultiply(this.__scale);
 
-    setImageSize(elm, this.imageSize);
+    // setImageSize(elm, this.imageSize);
   }
 
   get isFilled() {
@@ -81,11 +141,6 @@ export class ImageViewerCanvas implements IDisposable {
       return this.thumbnailElement;
     }
     return this.sourceElement;
-  }
-
-  private setImageDefaultStyle(element: HTMLElement) {
-    element.style.left = '50%';
-    element.style.top = '50%';
   }
 
   private async fetchDataAndSetSrc(imageId: number) {
@@ -118,27 +173,33 @@ export class ImageViewerCanvas implements IDisposable {
   }
 
   private handleThumbnailImageLoaded = () => {
-    const { width, height } = this.thumbnailElement;
+    // const { width, height } = this.thumbnailElement;
 
-    this.imageSize = this.getFixedSize(vec([ width, height ]));
+    // this.imageSize = this.getFixedSize(vec([ width, height ]));
 
-    setImageSize(this.thumbnailElement, this.imageSize);
-    turnVisible(this.thumbnailElement);
+    // setImageSize(this.thumbnailElement, this.imageSize);
+    // turnVisible(this.thumbnailElement);
+
+    // this.setupCanvas();
+    this.drawOnCanvas();
   }
 
   private handleSourceImageLoaded = () => {
-    setImageSize(this.sourceElement, this.imageSize);
-    turnVisible(this.sourceElement);
+    // setImageSize(this.sourceElement, this.imageSize);
+    // turnVisible(this.sourceElement);
 
-    removeElement(this.thumbnailElement);
+    // removeElement(this.thumbnailElement);
     this.thumbnailElement = null;
+
+    this.drawOnCanvas();
   }
 
   dispose() {
-    if (this.thumbnailElement !== null) {
-      removeElement(this.thumbnailElement);
-    }
-    removeElement(this.sourceElement);
+    // if (this.thumbnailElement !== null) {
+    //   removeElement(this.thumbnailElement);
+    // }
+    // removeElement(this.sourceElement);
+    removeElement(this.canvas);
 
     window.removeEventListener('wheel', this.handleWheel);
   }
