@@ -61,7 +61,7 @@ std::optional<ExifInfo> read_exif(const std::string& path) {
     resp.set_flash_used(parser.Flash);
     resp.set_metering_mode(parser.MeteringMode);
     resp.set_lens_focal_length(parser.FocalLength);
-    resp.set__35mm_focal_length(parser.FocalLengthIn35mm);
+    resp.set_focal_length_35mm(parser.FocalLengthIn35mm);
     resp.set_gps_latitude(parser.GeoLocation.Latitude);
     resp.set_gps_longitude(parser.GeoLocation.Longitude);
     resp.set_gps_altitude(parser.GeoLocation.Altitude);

@@ -875,7 +875,7 @@ class ExifInfo :
     kGpsLatitudeFieldNumber = 23,
     kGpsLongitudeFieldNumber = 24,
     kGpsAltitudeFieldNumber = 25,
-    k35MmFocalLengthFieldNumber = 22,
+    kFocalLength35MmFieldNumber = 22,
   };
   // string camera_make = 1;
   void clear_camera_make();
@@ -1156,13 +1156,13 @@ class ExifInfo :
   void _internal_set_gps_altitude(double value);
   public:
 
-  // uint32 _35mm_focal_length = 22;
-  void clear__35mm_focal_length();
-  ::PROTOBUF_NAMESPACE_ID::uint32 _35mm_focal_length() const;
-  void set__35mm_focal_length(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  // uint32 focal_length_35mm = 22;
+  void clear_focal_length_35mm();
+  ::PROTOBUF_NAMESPACE_ID::uint32 focal_length_35mm() const;
+  void set_focal_length_35mm(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::uint32 _internal__35mm_focal_length() const;
-  void _internal_set__35mm_focal_length(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_focal_length_35mm() const;
+  void _internal_set_focal_length_35mm(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:ExifInfo)
@@ -1194,7 +1194,7 @@ class ExifInfo :
   double gps_latitude_;
   double gps_longitude_;
   double gps_altitude_;
-  ::PROTOBUF_NAMESPACE_ID::uint32 _35mm_focal_length_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 focal_length_35mm_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
 };
@@ -2387,24 +2387,24 @@ inline void ExifInfo::set_lens_focal_length(double value) {
   // @@protoc_insertion_point(field_set:ExifInfo.lens_focal_length)
 }
 
-// uint32 _35mm_focal_length = 22;
-inline void ExifInfo::clear__35mm_focal_length() {
-  _35mm_focal_length_ = 0u;
+// uint32 focal_length_35mm = 22;
+inline void ExifInfo::clear_focal_length_35mm() {
+  focal_length_35mm_ = 0u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal__35mm_focal_length() const {
-  return _35mm_focal_length_;
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_focal_length_35mm() const {
+  return focal_length_35mm_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_35mm_focal_length() const {
-  // @@protoc_insertion_point(field_get:ExifInfo._35mm_focal_length)
-  return _internal__35mm_focal_length();
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::focal_length_35mm() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.focal_length_35mm)
+  return _internal_focal_length_35mm();
 }
-inline void ExifInfo::_internal_set__35mm_focal_length(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+inline void ExifInfo::_internal_set_focal_length_35mm(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
-  _35mm_focal_length_ = value;
+  focal_length_35mm_ = value;
 }
-inline void ExifInfo::set__35mm_focal_length(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _internal_set__35mm_focal_length(value);
-  // @@protoc_insertion_point(field_set:ExifInfo._35mm_focal_length)
+inline void ExifInfo::set_focal_length_35mm(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_focal_length_35mm(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.focal_length_35mm)
 }
 
 // double gps_latitude = 23;

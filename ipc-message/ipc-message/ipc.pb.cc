@@ -166,7 +166,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ipc_2eproto::offsets[] PROTOBU
   PROTOBUF_FIELD_OFFSET(::ExifInfo, flash_used_),
   PROTOBUF_FIELD_OFFSET(::ExifInfo, metering_mode_),
   PROTOBUF_FIELD_OFFSET(::ExifInfo, lens_focal_length_),
-  PROTOBUF_FIELD_OFFSET(::ExifInfo, _35mm_focal_length_),
+  PROTOBUF_FIELD_OFFSET(::ExifInfo, focal_length_35mm_),
   PROTOBUF_FIELD_OFFSET(::ExifInfo, gps_latitude_),
   PROTOBUF_FIELD_OFFSET(::ExifInfo, gps_longitude_),
   PROTOBUF_FIELD_OFFSET(::ExifInfo, gps_altitude_),
@@ -195,7 +195,7 @@ const char descriptor_table_protodef_ipc_2eproto[] PROTOBUF_SECTION_VARIABLE(pro
   "\r\n\005width\030\003 \001(\005\022\016\n\006height\030\004 \001(\005\"6\n\032Genera"
   "teThumbnailsResponse\022\030\n\004data\030\001 \003(\0132\n.Thu"
   "mbnail\"\037\n\017ReadExifRequest\022\014\n\004path\030\001 \001(\t\""
-  "\320\004\n\010ExifInfo\022\023\n\013camera_make\030\001 \001(\t\022\024\n\014cam"
+  "\317\004\n\010ExifInfo\022\023\n\013camera_make\030\001 \001(\t\022\024\n\014cam"
   "era_model\030\002 \001(\t\022\020\n\010software\030\003 \001(\t\022\027\n\017bit"
   "s_per_sample\030\004 \001(\r\022\023\n\013image_width\030\005 \001(\r\022"
   "\024\n\014image_height\030\006 \001(\r\022\031\n\021image_descripti"
@@ -207,12 +207,12 @@ const char descriptor_table_protodef_ipc_2eproto[] PROTOBUF_SECTION_VARIABLE(pro
   "\001\022\021\n\tiso_speed\030\020 \001(\r\022\030\n\020subject_distance"
   "\030\021 \001(\001\022\025\n\rexposure_bias\030\022 \001(\001\022\022\n\nflash_u"
   "sed\030\023 \001(\005\022\025\n\rmetering_mode\030\024 \001(\r\022\031\n\021lens"
-  "_focal_length\030\025 \001(\001\022\032\n\022_35mm_focal_lengt"
-  "h\030\026 \001(\r\022\024\n\014gps_latitude\030\027 \001(\001\022\025\n\rgps_lon"
-  "gitude\030\030 \001(\001\022\024\n\014gps_altitude\030\031 \001(\001*=\n\013Me"
-  "ssageType\022\010\n\004Ping\020\000\022\026\n\022GenerateThumbnail"
-  "s\020\001\022\014\n\010ReadExif\020\002*1\n\rThumbnailType\022\t\n\005Sm"
-  "all\020\000\022\n\n\006Medium\020\001\022\t\n\005Large\020\002b\006proto3"
+  "_focal_length\030\025 \001(\001\022\031\n\021focal_length_35mm"
+  "\030\026 \001(\r\022\024\n\014gps_latitude\030\027 \001(\001\022\025\n\rgps_long"
+  "itude\030\030 \001(\001\022\024\n\014gps_altitude\030\031 \001(\001*=\n\013Mes"
+  "sageType\022\010\n\004Ping\020\000\022\026\n\022GenerateThumbnails"
+  "\020\001\022\014\n\010ReadExif\020\002*1\n\rThumbnailType\022\t\n\005Sma"
+  "ll\020\000\022\n\n\006Medium\020\001\022\t\n\005Large\020\002b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_ipc_2eproto_deps[1] = {
 };
@@ -226,7 +226,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_ipc
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_ipc_2eproto_once;
 static bool descriptor_table_ipc_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_ipc_2eproto = {
-  &descriptor_table_ipc_2eproto_initialized, descriptor_table_protodef_ipc_2eproto, "ipc.proto", 996,
+  &descriptor_table_ipc_2eproto_initialized, descriptor_table_protodef_ipc_2eproto, "ipc.proto", 995,
   &descriptor_table_ipc_2eproto_once, descriptor_table_ipc_2eproto_sccs, descriptor_table_ipc_2eproto_deps, 5, 0,
   schemas, file_default_instances, TableStruct_ipc_2eproto::offsets,
   file_level_metadata_ipc_2eproto, 5, file_level_enum_descriptors_ipc_2eproto, file_level_service_descriptors_ipc_2eproto,
@@ -1270,8 +1270,8 @@ ExifInfo::ExifInfo(const ExifInfo& from)
     subsecond_time_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.subsecond_time_);
   }
   ::memcpy(&bits_per_sample_, &from.bits_per_sample_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_35mm_focal_length_) -
-    reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(_35mm_focal_length_));
+    static_cast<size_t>(reinterpret_cast<char*>(&focal_length_35mm_) -
+    reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(focal_length_35mm_));
   // @@protoc_insertion_point(copy_constructor:ExifInfo)
 }
 
@@ -1287,8 +1287,8 @@ void ExifInfo::SharedCtor() {
   digitize_datetime_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   subsecond_time_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&bits_per_sample_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_35mm_focal_length_) -
-      reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(_35mm_focal_length_));
+      reinterpret_cast<char*>(&focal_length_35mm_) -
+      reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(focal_length_35mm_));
 }
 
 ExifInfo::~ExifInfo() {
@@ -1333,8 +1333,8 @@ void ExifInfo::Clear() {
   digitize_datetime_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   subsecond_time_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&bits_per_sample_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_35mm_focal_length_) -
-      reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(_35mm_focal_length_));
+      reinterpret_cast<char*>(&focal_length_35mm_) -
+      reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(focal_length_35mm_));
   _internal_metadata_.Clear();
 }
 
@@ -1510,10 +1510,10 @@ const char* ExifInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
           ptr += sizeof(double);
         } else goto handle_unusual;
         continue;
-      // uint32 _35mm_focal_length = 22;
+      // uint32 focal_length_35mm = 22;
       case 22:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 176)) {
-          _35mm_focal_length_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          focal_length_35mm_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -1726,10 +1726,10 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteDoubleToArray(21, this->_internal_lens_focal_length(), target);
   }
 
-  // uint32 _35mm_focal_length = 22;
-  if (this->_35mm_focal_length() != 0) {
+  // uint32 focal_length_35mm = 22;
+  if (this->focal_length_35mm() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(22, this->_internal__35mm_focal_length(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(22, this->_internal_focal_length_35mm(), target);
   }
 
   // double gps_latitude = 23;
@@ -1920,11 +1920,11 @@ size_t ExifInfo::ByteSizeLong() const {
     total_size += 2 + 8;
   }
 
-  // uint32 _35mm_focal_length = 22;
-  if (this->_35mm_focal_length() != 0) {
+  // uint32 focal_length_35mm = 22;
+  if (this->focal_length_35mm() != 0) {
     total_size += 2 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal__35mm_focal_length());
+        this->_internal_focal_length_35mm());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2039,8 +2039,8 @@ void ExifInfo::MergeFrom(const ExifInfo& from) {
   if (!(from.gps_altitude() <= 0 && from.gps_altitude() >= 0)) {
     _internal_set_gps_altitude(from._internal_gps_altitude());
   }
-  if (from._35mm_focal_length() != 0) {
-    _internal_set__35mm_focal_length(from._internal__35mm_focal_length());
+  if (from.focal_length_35mm() != 0) {
+    _internal_set_focal_length_35mm(from._internal_focal_length_35mm());
   }
 }
 
@@ -2098,7 +2098,7 @@ void ExifInfo::InternalSwap(ExifInfo* other) {
   swap(gps_latitude_, other->gps_latitude_);
   swap(gps_longitude_, other->gps_longitude_);
   swap(gps_altitude_, other->gps_altitude_);
-  swap(_35mm_focal_length_, other->_35mm_focal_length_);
+  swap(focal_length_35mm_, other->focal_length_35mm_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata ExifInfo::GetMetadata() const {

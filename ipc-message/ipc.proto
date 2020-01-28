@@ -58,7 +58,7 @@ message ExifInfo {
     int32 flash_used = 19;
     uint32 metering_mode = 20;
     double lens_focal_length = 21;
-    uint32 _35mm_focal_length = 22;
+    uint32 focal_length_35mm = 22;
     double gps_latitude = 23;
     double gps_longitude = 24;
     double gps_altitude = 25;
