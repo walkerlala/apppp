@@ -5,7 +5,7 @@ import { getDb, BufferToUint8Array, Uint8ArrayToBuffer, getWebContent } from './
 import { easyipc } from './easyipc/easyipc';
 import { MessageType, GenerateThumbnailsRequest, ThumbnailType, GenerateThumbnailsResponse } from 'protos/ipc_pb';
 import { ClientMessageType } from 'common/message';
-import { ipcMain } from 'electron';
+import { getThumbnailsFolder } from './dataFolder';
 import * as fs from 'fs';
 
 export async function importPhotos() {
@@ -41,7 +41,7 @@ async function importPhotosByPath(path: string) {
         await client.connect('thumbnail-service');
         const msg = new GenerateThumbnailsRequest();
         msg.setPath(path);
-        msg.setOutDir('/tmp/');
+        msg.setOutDir(getThumbnailsFolder());
         msg.addTypes(ThumbnailType.SMALL);
         msg.addTypes(ThumbnailType.MEDIUM);
         msg.addTypes(ThumbnailType.LARGE);

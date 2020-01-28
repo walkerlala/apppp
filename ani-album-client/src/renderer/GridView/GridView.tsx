@@ -69,6 +69,9 @@ class GridView extends Component<{}, GridViewState> {
         ipcRenderer.invoke(ClientMessageType.ShowContextMenu, {
           imageId: dataId,
         });
+        this.setState({
+          selectedItemId: Number(dataId),
+        });
         return;
       }
 

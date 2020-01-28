@@ -2,7 +2,7 @@ import { ChildProcess, spawn } from 'child_process';
 import { join } from 'path';
 import { logger } from './logger';
 import { createWriteStream } from 'fs';
-import { getLogsFolder } from './utils';
+import { getLogsFolder } from './dataFolder';
 
 const __PACK_DIR__: string = '__PACK_DIR__'; // wil be replaced
 

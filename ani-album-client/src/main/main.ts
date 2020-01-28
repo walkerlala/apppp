@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Menu, MenuItem, ipcMain, IpcMainInvokeEvent } from "electron";
 import { eventBus, MainProcessEvents } from './events';
-import { getAppDateFolder, setDb, getDb, setWebContent, getWebContent } from './utils';
+import initialFolder, { getDatabasePath } from './dataFolder';
+import { setDb, getDb, setWebContent, getWebContent } from './utils';
 import { importPhotos } from './photos';
 import { SQLiteHelper } from './sqliteHelper';
 import { ImageWithThumbnails } from 'common/image';
@@ -10,7 +11,6 @@ import { logger } from "./logger";
 import MicroService from './microService';
 import * as dal from './dal';
 import * as path from "path";
-import * as fs from 'fs';
 
 let mainWindow: Electron.BrowserWindow;
 
@@ -176,6 +176,8 @@ const showMenu = once(() => {
 });
 
 async function createWindow() {
+  initialFolder();
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 600,
@@ -195,11 +197,7 @@ async function createWindow() {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  const appDataFolder = getAppDateFolder();
-  if (!fs.existsSync(appDataFolder)) {
-    fs.mkdirSync(appDataFolder);
-  }
-  const databasePath = path.join(appDataFolder, 'database.sqlite');
+  const databasePath = getDatabasePath();
   const db = await SQLiteHelper.create(databasePath);
   setDb(db);
 
