@@ -863,19 +863,19 @@ class ExifInfo :
     kBitsPerSampleFieldNumber = 4,
     kImageWidthFieldNumber = 5,
     kImageHeightFieldNumber = 6,
-    kImageOriientationFieldNumber = 8,
-    kExposureTimeFieldNumber = 14,
+    kImageOrientationFieldNumber = 8,
     kFStopFieldNumber = 15,
+    kExposureTimeFieldNumber = 14,
     kIsoSpeedFieldNumber = 16,
     kSubjectDistanceFieldNumber = 17,
     kExposureBiasFieldNumber = 18,
     kFlashUsedFieldNumber = 19,
     kMeteringModeFieldNumber = 20,
     kLensFocalLengthFieldNumber = 21,
-    k35MmFocalLengthFieldNumber = 22,
     kGpsLatitudeFieldNumber = 23,
     kGpsLongitudeFieldNumber = 24,
     kGpsAltitudeFieldNumber = 25,
+    k35MmFocalLengthFieldNumber = 22,
   };
   // string camera_make = 1;
   void clear_camera_make();
@@ -1021,40 +1021,49 @@ class ExifInfo :
   std::string* _internal_mutable_subsecond_time();
   public:
 
-  // int32 bits_per_sample = 4;
+  // uint32 bits_per_sample = 4;
   void clear_bits_per_sample();
-  ::PROTOBUF_NAMESPACE_ID::int32 bits_per_sample() const;
-  void set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 bits_per_sample() const;
+  void set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_bits_per_sample() const;
-  void _internal_set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_bits_per_sample() const;
+  void _internal_set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // int32 image_width = 5;
+  // uint32 image_width = 5;
   void clear_image_width();
-  ::PROTOBUF_NAMESPACE_ID::int32 image_width() const;
-  void set_image_width(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 image_width() const;
+  void set_image_width(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_image_width() const;
-  void _internal_set_image_width(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_image_width() const;
+  void _internal_set_image_width(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // int32 image_height = 6;
+  // uint32 image_height = 6;
   void clear_image_height();
-  ::PROTOBUF_NAMESPACE_ID::int32 image_height() const;
-  void set_image_height(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 image_height() const;
+  void set_image_height(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_image_height() const;
-  void _internal_set_image_height(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_image_height() const;
+  void _internal_set_image_height(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // int32 image_oriientation = 8;
-  void clear_image_oriientation();
-  ::PROTOBUF_NAMESPACE_ID::int32 image_oriientation() const;
-  void set_image_oriientation(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // uint32 image_orientation = 8;
+  void clear_image_orientation();
+  ::PROTOBUF_NAMESPACE_ID::uint32 image_orientation() const;
+  void set_image_orientation(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_image_oriientation() const;
-  void _internal_set_image_oriientation(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_image_orientation() const;
+  void _internal_set_image_orientation(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // double f_stop = 15;
+  void clear_f_stop();
+  double f_stop() const;
+  void set_f_stop(double value);
+  private:
+  double _internal_f_stop() const;
+  void _internal_set_f_stop(double value);
   public:
 
   // int32 exposure_time = 14;
@@ -1066,40 +1075,31 @@ class ExifInfo :
   void _internal_set_exposure_time(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
-  // float f_stop = 15;
-  void clear_f_stop();
-  float f_stop() const;
-  void set_f_stop(float value);
-  private:
-  float _internal_f_stop() const;
-  void _internal_set_f_stop(float value);
-  public:
-
-  // int32 iso_speed = 16;
+  // uint32 iso_speed = 16;
   void clear_iso_speed();
-  ::PROTOBUF_NAMESPACE_ID::int32 iso_speed() const;
-  void set_iso_speed(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 iso_speed() const;
+  void set_iso_speed(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_iso_speed() const;
-  void _internal_set_iso_speed(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_iso_speed() const;
+  void _internal_set_iso_speed(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // float subject_distance = 17;
+  // double subject_distance = 17;
   void clear_subject_distance();
-  float subject_distance() const;
-  void set_subject_distance(float value);
+  double subject_distance() const;
+  void set_subject_distance(double value);
   private:
-  float _internal_subject_distance() const;
-  void _internal_set_subject_distance(float value);
+  double _internal_subject_distance() const;
+  void _internal_set_subject_distance(double value);
   public:
 
-  // float exposure_bias = 18;
+  // double exposure_bias = 18;
   void clear_exposure_bias();
-  float exposure_bias() const;
-  void set_exposure_bias(float value);
+  double exposure_bias() const;
+  void set_exposure_bias(double value);
   private:
-  float _internal_exposure_bias() const;
-  void _internal_set_exposure_bias(float value);
+  double _internal_exposure_bias() const;
+  void _internal_set_exposure_bias(double value);
   public:
 
   // int32 flash_used = 19;
@@ -1111,22 +1111,49 @@ class ExifInfo :
   void _internal_set_flash_used(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
-  // int32 metering_mode = 20;
+  // uint32 metering_mode = 20;
   void clear_metering_mode();
-  ::PROTOBUF_NAMESPACE_ID::int32 metering_mode() const;
-  void set_metering_mode(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 metering_mode() const;
+  void set_metering_mode(::PROTOBUF_NAMESPACE_ID::uint32 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_metering_mode() const;
-  void _internal_set_metering_mode(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_metering_mode() const;
+  void _internal_set_metering_mode(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // float lens_focal_length = 21;
+  // double lens_focal_length = 21;
   void clear_lens_focal_length();
-  float lens_focal_length() const;
-  void set_lens_focal_length(float value);
+  double lens_focal_length() const;
+  void set_lens_focal_length(double value);
   private:
-  float _internal_lens_focal_length() const;
-  void _internal_set_lens_focal_length(float value);
+  double _internal_lens_focal_length() const;
+  void _internal_set_lens_focal_length(double value);
+  public:
+
+  // double gps_latitude = 23;
+  void clear_gps_latitude();
+  double gps_latitude() const;
+  void set_gps_latitude(double value);
+  private:
+  double _internal_gps_latitude() const;
+  void _internal_set_gps_latitude(double value);
+  public:
+
+  // double gps_longitude = 24;
+  void clear_gps_longitude();
+  double gps_longitude() const;
+  void set_gps_longitude(double value);
+  private:
+  double _internal_gps_longitude() const;
+  void _internal_set_gps_longitude(double value);
+  public:
+
+  // double gps_altitude = 25;
+  void clear_gps_altitude();
+  double gps_altitude() const;
+  void set_gps_altitude(double value);
+  private:
+  double _internal_gps_altitude() const;
+  void _internal_set_gps_altitude(double value);
   public:
 
   // uint32 _35mm_focal_length = 22;
@@ -1136,33 +1163,6 @@ class ExifInfo :
   private:
   ::PROTOBUF_NAMESPACE_ID::uint32 _internal__35mm_focal_length() const;
   void _internal_set__35mm_focal_length(::PROTOBUF_NAMESPACE_ID::uint32 value);
-  public:
-
-  // float gps_latitude = 23;
-  void clear_gps_latitude();
-  float gps_latitude() const;
-  void set_gps_latitude(float value);
-  private:
-  float _internal_gps_latitude() const;
-  void _internal_set_gps_latitude(float value);
-  public:
-
-  // float gps_longitude = 24;
-  void clear_gps_longitude();
-  float gps_longitude() const;
-  void set_gps_longitude(float value);
-  private:
-  float _internal_gps_longitude() const;
-  void _internal_set_gps_longitude(float value);
-  public:
-
-  // float gps_altitude = 25;
-  void clear_gps_altitude();
-  float gps_altitude() const;
-  void set_gps_altitude(float value);
-  private:
-  float _internal_gps_altitude() const;
-  void _internal_set_gps_altitude(float value);
   public:
 
   // @@protoc_insertion_point(class_scope:ExifInfo)
@@ -1179,22 +1179,22 @@ class ExifInfo :
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr original_datetime_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr digitize_datetime_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr subsecond_time_;
-  ::PROTOBUF_NAMESPACE_ID::int32 bits_per_sample_;
-  ::PROTOBUF_NAMESPACE_ID::int32 image_width_;
-  ::PROTOBUF_NAMESPACE_ID::int32 image_height_;
-  ::PROTOBUF_NAMESPACE_ID::int32 image_oriientation_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 bits_per_sample_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 image_width_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 image_height_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 image_orientation_;
+  double f_stop_;
   ::PROTOBUF_NAMESPACE_ID::int32 exposure_time_;
-  float f_stop_;
-  ::PROTOBUF_NAMESPACE_ID::int32 iso_speed_;
-  float subject_distance_;
-  float exposure_bias_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 iso_speed_;
+  double subject_distance_;
+  double exposure_bias_;
   ::PROTOBUF_NAMESPACE_ID::int32 flash_used_;
-  ::PROTOBUF_NAMESPACE_ID::int32 metering_mode_;
-  float lens_focal_length_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 metering_mode_;
+  double lens_focal_length_;
+  double gps_latitude_;
+  double gps_longitude_;
+  double gps_altitude_;
   ::PROTOBUF_NAMESPACE_ID::uint32 _35mm_focal_length_;
-  float gps_latitude_;
-  float gps_longitude_;
-  float gps_altitude_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
 };
@@ -1787,62 +1787,62 @@ inline void ExifInfo::set_allocated_software(std::string* software) {
   // @@protoc_insertion_point(field_set_allocated:ExifInfo.software)
 }
 
-// int32 bits_per_sample = 4;
+// uint32 bits_per_sample = 4;
 inline void ExifInfo::clear_bits_per_sample() {
-  bits_per_sample_ = 0;
+  bits_per_sample_ = 0u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_bits_per_sample() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_bits_per_sample() const {
   return bits_per_sample_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::bits_per_sample() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::bits_per_sample() const {
   // @@protoc_insertion_point(field_get:ExifInfo.bits_per_sample)
   return _internal_bits_per_sample();
 }
-inline void ExifInfo::_internal_set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ExifInfo::_internal_set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
   bits_per_sample_ = value;
 }
-inline void ExifInfo::set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ExifInfo::set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_bits_per_sample(value);
   // @@protoc_insertion_point(field_set:ExifInfo.bits_per_sample)
 }
 
-// int32 image_width = 5;
+// uint32 image_width = 5;
 inline void ExifInfo::clear_image_width() {
-  image_width_ = 0;
+  image_width_ = 0u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_image_width() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_image_width() const {
   return image_width_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::image_width() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::image_width() const {
   // @@protoc_insertion_point(field_get:ExifInfo.image_width)
   return _internal_image_width();
 }
-inline void ExifInfo::_internal_set_image_width(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ExifInfo::_internal_set_image_width(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
   image_width_ = value;
 }
-inline void ExifInfo::set_image_width(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ExifInfo::set_image_width(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_image_width(value);
   // @@protoc_insertion_point(field_set:ExifInfo.image_width)
 }
 
-// int32 image_height = 6;
+// uint32 image_height = 6;
 inline void ExifInfo::clear_image_height() {
-  image_height_ = 0;
+  image_height_ = 0u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_image_height() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_image_height() const {
   return image_height_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::image_height() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::image_height() const {
   // @@protoc_insertion_point(field_get:ExifInfo.image_height)
   return _internal_image_height();
 }
-inline void ExifInfo::_internal_set_image_height(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ExifInfo::_internal_set_image_height(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
   image_height_ = value;
 }
-inline void ExifInfo::set_image_height(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ExifInfo::set_image_height(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_image_height(value);
   // @@protoc_insertion_point(field_set:ExifInfo.image_height)
 }
@@ -1907,24 +1907,24 @@ inline void ExifInfo::set_allocated_image_description(std::string* image_descrip
   // @@protoc_insertion_point(field_set_allocated:ExifInfo.image_description)
 }
 
-// int32 image_oriientation = 8;
-inline void ExifInfo::clear_image_oriientation() {
-  image_oriientation_ = 0;
+// uint32 image_orientation = 8;
+inline void ExifInfo::clear_image_orientation() {
+  image_orientation_ = 0u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_image_oriientation() const {
-  return image_oriientation_;
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_image_orientation() const {
+  return image_orientation_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::image_oriientation() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.image_oriientation)
-  return _internal_image_oriientation();
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::image_orientation() const {
+  // @@protoc_insertion_point(field_get:ExifInfo.image_orientation)
+  return _internal_image_orientation();
 }
-inline void ExifInfo::_internal_set_image_oriientation(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ExifInfo::_internal_set_image_orientation(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
-  image_oriientation_ = value;
+  image_orientation_ = value;
 }
-inline void ExifInfo::set_image_oriientation(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_image_oriientation(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.image_oriientation)
+inline void ExifInfo::set_image_orientation(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_image_orientation(value);
+  // @@protoc_insertion_point(field_set:ExifInfo.image_orientation)
 }
 
 // string image_copyright = 9;
@@ -2247,82 +2247,82 @@ inline void ExifInfo::set_exposure_time(::PROTOBUF_NAMESPACE_ID::int32 value) {
   // @@protoc_insertion_point(field_set:ExifInfo.exposure_time)
 }
 
-// float f_stop = 15;
+// double f_stop = 15;
 inline void ExifInfo::clear_f_stop() {
   f_stop_ = 0;
 }
-inline float ExifInfo::_internal_f_stop() const {
+inline double ExifInfo::_internal_f_stop() const {
   return f_stop_;
 }
-inline float ExifInfo::f_stop() const {
+inline double ExifInfo::f_stop() const {
   // @@protoc_insertion_point(field_get:ExifInfo.f_stop)
   return _internal_f_stop();
 }
-inline void ExifInfo::_internal_set_f_stop(float value) {
+inline void ExifInfo::_internal_set_f_stop(double value) {
   
   f_stop_ = value;
 }
-inline void ExifInfo::set_f_stop(float value) {
+inline void ExifInfo::set_f_stop(double value) {
   _internal_set_f_stop(value);
   // @@protoc_insertion_point(field_set:ExifInfo.f_stop)
 }
 
-// int32 iso_speed = 16;
+// uint32 iso_speed = 16;
 inline void ExifInfo::clear_iso_speed() {
-  iso_speed_ = 0;
+  iso_speed_ = 0u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_iso_speed() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_iso_speed() const {
   return iso_speed_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::iso_speed() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::iso_speed() const {
   // @@protoc_insertion_point(field_get:ExifInfo.iso_speed)
   return _internal_iso_speed();
 }
-inline void ExifInfo::_internal_set_iso_speed(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ExifInfo::_internal_set_iso_speed(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
   iso_speed_ = value;
 }
-inline void ExifInfo::set_iso_speed(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ExifInfo::set_iso_speed(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_iso_speed(value);
   // @@protoc_insertion_point(field_set:ExifInfo.iso_speed)
 }
 
-// float subject_distance = 17;
+// double subject_distance = 17;
 inline void ExifInfo::clear_subject_distance() {
   subject_distance_ = 0;
 }
-inline float ExifInfo::_internal_subject_distance() const {
+inline double ExifInfo::_internal_subject_distance() const {
   return subject_distance_;
 }
-inline float ExifInfo::subject_distance() const {
+inline double ExifInfo::subject_distance() const {
   // @@protoc_insertion_point(field_get:ExifInfo.subject_distance)
   return _internal_subject_distance();
 }
-inline void ExifInfo::_internal_set_subject_distance(float value) {
+inline void ExifInfo::_internal_set_subject_distance(double value) {
   
   subject_distance_ = value;
 }
-inline void ExifInfo::set_subject_distance(float value) {
+inline void ExifInfo::set_subject_distance(double value) {
   _internal_set_subject_distance(value);
   // @@protoc_insertion_point(field_set:ExifInfo.subject_distance)
 }
 
-// float exposure_bias = 18;
+// double exposure_bias = 18;
 inline void ExifInfo::clear_exposure_bias() {
   exposure_bias_ = 0;
 }
-inline float ExifInfo::_internal_exposure_bias() const {
+inline double ExifInfo::_internal_exposure_bias() const {
   return exposure_bias_;
 }
-inline float ExifInfo::exposure_bias() const {
+inline double ExifInfo::exposure_bias() const {
   // @@protoc_insertion_point(field_get:ExifInfo.exposure_bias)
   return _internal_exposure_bias();
 }
-inline void ExifInfo::_internal_set_exposure_bias(float value) {
+inline void ExifInfo::_internal_set_exposure_bias(double value) {
   
   exposure_bias_ = value;
 }
-inline void ExifInfo::set_exposure_bias(float value) {
+inline void ExifInfo::set_exposure_bias(double value) {
   _internal_set_exposure_bias(value);
   // @@protoc_insertion_point(field_set:ExifInfo.exposure_bias)
 }
@@ -2347,42 +2347,42 @@ inline void ExifInfo::set_flash_used(::PROTOBUF_NAMESPACE_ID::int32 value) {
   // @@protoc_insertion_point(field_set:ExifInfo.flash_used)
 }
 
-// int32 metering_mode = 20;
+// uint32 metering_mode = 20;
 inline void ExifInfo::clear_metering_mode() {
-  metering_mode_ = 0;
+  metering_mode_ = 0u;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_metering_mode() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_metering_mode() const {
   return metering_mode_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::metering_mode() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::metering_mode() const {
   // @@protoc_insertion_point(field_get:ExifInfo.metering_mode)
   return _internal_metering_mode();
 }
-inline void ExifInfo::_internal_set_metering_mode(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ExifInfo::_internal_set_metering_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   
   metering_mode_ = value;
 }
-inline void ExifInfo::set_metering_mode(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ExifInfo::set_metering_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_metering_mode(value);
   // @@protoc_insertion_point(field_set:ExifInfo.metering_mode)
 }
 
-// float lens_focal_length = 21;
+// double lens_focal_length = 21;
 inline void ExifInfo::clear_lens_focal_length() {
   lens_focal_length_ = 0;
 }
-inline float ExifInfo::_internal_lens_focal_length() const {
+inline double ExifInfo::_internal_lens_focal_length() const {
   return lens_focal_length_;
 }
-inline float ExifInfo::lens_focal_length() const {
+inline double ExifInfo::lens_focal_length() const {
   // @@protoc_insertion_point(field_get:ExifInfo.lens_focal_length)
   return _internal_lens_focal_length();
 }
-inline void ExifInfo::_internal_set_lens_focal_length(float value) {
+inline void ExifInfo::_internal_set_lens_focal_length(double value) {
   
   lens_focal_length_ = value;
 }
-inline void ExifInfo::set_lens_focal_length(float value) {
+inline void ExifInfo::set_lens_focal_length(double value) {
   _internal_set_lens_focal_length(value);
   // @@protoc_insertion_point(field_set:ExifInfo.lens_focal_length)
 }
@@ -2407,62 +2407,62 @@ inline void ExifInfo::set__35mm_focal_length(::PROTOBUF_NAMESPACE_ID::uint32 val
   // @@protoc_insertion_point(field_set:ExifInfo._35mm_focal_length)
 }
 
-// float gps_latitude = 23;
+// double gps_latitude = 23;
 inline void ExifInfo::clear_gps_latitude() {
   gps_latitude_ = 0;
 }
-inline float ExifInfo::_internal_gps_latitude() const {
+inline double ExifInfo::_internal_gps_latitude() const {
   return gps_latitude_;
 }
-inline float ExifInfo::gps_latitude() const {
+inline double ExifInfo::gps_latitude() const {
   // @@protoc_insertion_point(field_get:ExifInfo.gps_latitude)
   return _internal_gps_latitude();
 }
-inline void ExifInfo::_internal_set_gps_latitude(float value) {
+inline void ExifInfo::_internal_set_gps_latitude(double value) {
   
   gps_latitude_ = value;
 }
-inline void ExifInfo::set_gps_latitude(float value) {
+inline void ExifInfo::set_gps_latitude(double value) {
   _internal_set_gps_latitude(value);
   // @@protoc_insertion_point(field_set:ExifInfo.gps_latitude)
 }
 
-// float gps_longitude = 24;
+// double gps_longitude = 24;
 inline void ExifInfo::clear_gps_longitude() {
   gps_longitude_ = 0;
 }
-inline float ExifInfo::_internal_gps_longitude() const {
+inline double ExifInfo::_internal_gps_longitude() const {
   return gps_longitude_;
 }
-inline float ExifInfo::gps_longitude() const {
+inline double ExifInfo::gps_longitude() const {
   // @@protoc_insertion_point(field_get:ExifInfo.gps_longitude)
   return _internal_gps_longitude();
 }
-inline void ExifInfo::_internal_set_gps_longitude(float value) {
+inline void ExifInfo::_internal_set_gps_longitude(double value) {
   
   gps_longitude_ = value;
 }
-inline void ExifInfo::set_gps_longitude(float value) {
+inline void ExifInfo::set_gps_longitude(double value) {
   _internal_set_gps_longitude(value);
   // @@protoc_insertion_point(field_set:ExifInfo.gps_longitude)
 }
 
-// float gps_altitude = 25;
+// double gps_altitude = 25;
 inline void ExifInfo::clear_gps_altitude() {
   gps_altitude_ = 0;
 }
-inline float ExifInfo::_internal_gps_altitude() const {
+inline double ExifInfo::_internal_gps_altitude() const {
   return gps_altitude_;
 }
-inline float ExifInfo::gps_altitude() const {
+inline double ExifInfo::gps_altitude() const {
   // @@protoc_insertion_point(field_get:ExifInfo.gps_altitude)
   return _internal_gps_altitude();
 }
-inline void ExifInfo::_internal_set_gps_altitude(float value) {
+inline void ExifInfo::_internal_set_gps_altitude(double value) {
   
   gps_altitude_ = value;
 }
-inline void ExifInfo::set_gps_altitude(float value) {
+inline void ExifInfo::set_gps_altitude(double value) {
   _internal_set_gps_altitude(value);
   // @@protoc_insertion_point(field_set:ExifInfo.gps_altitude)
 }

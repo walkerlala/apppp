@@ -152,7 +152,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ipc_2eproto::offsets[] PROTOBU
   PROTOBUF_FIELD_OFFSET(::ExifInfo, image_width_),
   PROTOBUF_FIELD_OFFSET(::ExifInfo, image_height_),
   PROTOBUF_FIELD_OFFSET(::ExifInfo, image_description_),
-  PROTOBUF_FIELD_OFFSET(::ExifInfo, image_oriientation_),
+  PROTOBUF_FIELD_OFFSET(::ExifInfo, image_orientation_),
   PROTOBUF_FIELD_OFFSET(::ExifInfo, image_copyright_),
   PROTOBUF_FIELD_OFFSET(::ExifInfo, image_datetime_),
   PROTOBUF_FIELD_OFFSET(::ExifInfo, original_datetime_),
@@ -195,24 +195,24 @@ const char descriptor_table_protodef_ipc_2eproto[] PROTOBUF_SECTION_VARIABLE(pro
   "\r\n\005width\030\003 \001(\005\022\016\n\006height\030\004 \001(\005\"6\n\032Genera"
   "teThumbnailsResponse\022\030\n\004data\030\001 \003(\0132\n.Thu"
   "mbnail\"\037\n\017ReadExifRequest\022\014\n\004path\030\001 \001(\t\""
-  "\321\004\n\010ExifInfo\022\023\n\013camera_make\030\001 \001(\t\022\024\n\014cam"
+  "\320\004\n\010ExifInfo\022\023\n\013camera_make\030\001 \001(\t\022\024\n\014cam"
   "era_model\030\002 \001(\t\022\020\n\010software\030\003 \001(\t\022\027\n\017bit"
-  "s_per_sample\030\004 \001(\005\022\023\n\013image_width\030\005 \001(\005\022"
-  "\024\n\014image_height\030\006 \001(\005\022\031\n\021image_descripti"
-  "on\030\007 \001(\t\022\032\n\022image_oriientation\030\010 \001(\005\022\027\n\017"
-  "image_copyright\030\t \001(\t\022\026\n\016image_datetime\030"
-  "\n \001(\t\022\031\n\021original_datetime\030\013 \001(\t\022\031\n\021digi"
-  "tize_datetime\030\014 \001(\t\022\026\n\016subsecond_time\030\r "
-  "\001(\t\022\025\n\rexposure_time\030\016 \001(\005\022\016\n\006f_stop\030\017 \001"
-  "(\002\022\021\n\tiso_speed\030\020 \001(\005\022\030\n\020subject_distanc"
-  "e\030\021 \001(\002\022\025\n\rexposure_bias\030\022 \001(\002\022\022\n\nflash_"
-  "used\030\023 \001(\005\022\025\n\rmetering_mode\030\024 \001(\005\022\031\n\021len"
-  "s_focal_length\030\025 \001(\002\022\032\n\022_35mm_focal_leng"
-  "th\030\026 \001(\r\022\024\n\014gps_latitude\030\027 \001(\002\022\025\n\rgps_lo"
-  "ngitude\030\030 \001(\002\022\024\n\014gps_altitude\030\031 \001(\002*=\n\013M"
-  "essageType\022\010\n\004Ping\020\000\022\026\n\022GenerateThumbnai"
-  "ls\020\001\022\014\n\010ReadExif\020\002*1\n\rThumbnailType\022\t\n\005S"
-  "mall\020\000\022\n\n\006Medium\020\001\022\t\n\005Large\020\002b\006proto3"
+  "s_per_sample\030\004 \001(\r\022\023\n\013image_width\030\005 \001(\r\022"
+  "\024\n\014image_height\030\006 \001(\r\022\031\n\021image_descripti"
+  "on\030\007 \001(\t\022\031\n\021image_orientation\030\010 \001(\r\022\027\n\017i"
+  "mage_copyright\030\t \001(\t\022\026\n\016image_datetime\030\n"
+  " \001(\t\022\031\n\021original_datetime\030\013 \001(\t\022\031\n\021digit"
+  "ize_datetime\030\014 \001(\t\022\026\n\016subsecond_time\030\r \001"
+  "(\t\022\025\n\rexposure_time\030\016 \001(\005\022\016\n\006f_stop\030\017 \001("
+  "\001\022\021\n\tiso_speed\030\020 \001(\r\022\030\n\020subject_distance"
+  "\030\021 \001(\001\022\025\n\rexposure_bias\030\022 \001(\001\022\022\n\nflash_u"
+  "sed\030\023 \001(\005\022\025\n\rmetering_mode\030\024 \001(\r\022\031\n\021lens"
+  "_focal_length\030\025 \001(\001\022\032\n\022_35mm_focal_lengt"
+  "h\030\026 \001(\r\022\024\n\014gps_latitude\030\027 \001(\001\022\025\n\rgps_lon"
+  "gitude\030\030 \001(\001\022\024\n\014gps_altitude\030\031 \001(\001*=\n\013Me"
+  "ssageType\022\010\n\004Ping\020\000\022\026\n\022GenerateThumbnail"
+  "s\020\001\022\014\n\010ReadExif\020\002*1\n\rThumbnailType\022\t\n\005Sm"
+  "all\020\000\022\n\n\006Medium\020\001\022\t\n\005Large\020\002b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_ipc_2eproto_deps[1] = {
 };
@@ -226,7 +226,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_ipc
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_ipc_2eproto_once;
 static bool descriptor_table_ipc_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_ipc_2eproto = {
-  &descriptor_table_ipc_2eproto_initialized, descriptor_table_protodef_ipc_2eproto, "ipc.proto", 997,
+  &descriptor_table_ipc_2eproto_initialized, descriptor_table_protodef_ipc_2eproto, "ipc.proto", 996,
   &descriptor_table_ipc_2eproto_once, descriptor_table_ipc_2eproto_sccs, descriptor_table_ipc_2eproto_deps, 5, 0,
   schemas, file_default_instances, TableStruct_ipc_2eproto::offsets,
   file_level_metadata_ipc_2eproto, 5, file_level_enum_descriptors_ipc_2eproto, file_level_service_descriptors_ipc_2eproto,
@@ -1270,8 +1270,8 @@ ExifInfo::ExifInfo(const ExifInfo& from)
     subsecond_time_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.subsecond_time_);
   }
   ::memcpy(&bits_per_sample_, &from.bits_per_sample_,
-    static_cast<size_t>(reinterpret_cast<char*>(&gps_altitude_) -
-    reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(gps_altitude_));
+    static_cast<size_t>(reinterpret_cast<char*>(&_35mm_focal_length_) -
+    reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(_35mm_focal_length_));
   // @@protoc_insertion_point(copy_constructor:ExifInfo)
 }
 
@@ -1287,8 +1287,8 @@ void ExifInfo::SharedCtor() {
   digitize_datetime_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   subsecond_time_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&bits_per_sample_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&gps_altitude_) -
-      reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(gps_altitude_));
+      reinterpret_cast<char*>(&_35mm_focal_length_) -
+      reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(_35mm_focal_length_));
 }
 
 ExifInfo::~ExifInfo() {
@@ -1333,8 +1333,8 @@ void ExifInfo::Clear() {
   digitize_datetime_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   subsecond_time_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&bits_per_sample_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&gps_altitude_) -
-      reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(gps_altitude_));
+      reinterpret_cast<char*>(&_35mm_focal_length_) -
+      reinterpret_cast<char*>(&bits_per_sample_)) + sizeof(_35mm_focal_length_));
   _internal_metadata_.Clear();
 }
 
@@ -1372,21 +1372,21 @@ const char* ExifInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // int32 bits_per_sample = 4;
+      // uint32 bits_per_sample = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
           bits_per_sample_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // int32 image_width = 5;
+      // uint32 image_width = 5;
       case 5:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 40)) {
           image_width_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // int32 image_height = 6;
+      // uint32 image_height = 6;
       case 6:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 48)) {
           image_height_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
@@ -1402,10 +1402,10 @@ const char* ExifInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // int32 image_oriientation = 8;
+      // uint32 image_orientation = 8;
       case 8:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 64)) {
-          image_oriientation_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          image_orientation_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -1461,32 +1461,32 @@ const char* ExifInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // float f_stop = 15;
+      // double f_stop = 15;
       case 15:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 125)) {
-          f_stop_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 121)) {
+          f_stop_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
+          ptr += sizeof(double);
         } else goto handle_unusual;
         continue;
-      // int32 iso_speed = 16;
+      // uint32 iso_speed = 16;
       case 16:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 128)) {
           iso_speed_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // float subject_distance = 17;
+      // double subject_distance = 17;
       case 17:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 141)) {
-          subject_distance_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 137)) {
+          subject_distance_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
+          ptr += sizeof(double);
         } else goto handle_unusual;
         continue;
-      // float exposure_bias = 18;
+      // double exposure_bias = 18;
       case 18:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 149)) {
-          exposure_bias_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 145)) {
+          exposure_bias_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
+          ptr += sizeof(double);
         } else goto handle_unusual;
         continue;
       // int32 flash_used = 19;
@@ -1496,18 +1496,18 @@ const char* ExifInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // int32 metering_mode = 20;
+      // uint32 metering_mode = 20;
       case 20:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 160)) {
           metering_mode_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // float lens_focal_length = 21;
+      // double lens_focal_length = 21;
       case 21:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 173)) {
-          lens_focal_length_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 169)) {
+          lens_focal_length_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
+          ptr += sizeof(double);
         } else goto handle_unusual;
         continue;
       // uint32 _35mm_focal_length = 22;
@@ -1517,25 +1517,25 @@ const char* ExifInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // float gps_latitude = 23;
+      // double gps_latitude = 23;
       case 23:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 189)) {
-          gps_latitude_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 185)) {
+          gps_latitude_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
+          ptr += sizeof(double);
         } else goto handle_unusual;
         continue;
-      // float gps_longitude = 24;
+      // double gps_longitude = 24;
       case 24:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 197)) {
-          gps_longitude_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 193)) {
+          gps_longitude_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
+          ptr += sizeof(double);
         } else goto handle_unusual;
         continue;
-      // float gps_altitude = 25;
+      // double gps_altitude = 25;
       case 25:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 205)) {
-          gps_altitude_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 201)) {
+          gps_altitude_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
+          ptr += sizeof(double);
         } else goto handle_unusual;
         continue;
       default: {
@@ -1594,22 +1594,22 @@ failure:
         3, this->_internal_software(), target);
   }
 
-  // int32 bits_per_sample = 4;
+  // uint32 bits_per_sample = 4;
   if (this->bits_per_sample() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(4, this->_internal_bits_per_sample(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(4, this->_internal_bits_per_sample(), target);
   }
 
-  // int32 image_width = 5;
+  // uint32 image_width = 5;
   if (this->image_width() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(5, this->_internal_image_width(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(5, this->_internal_image_width(), target);
   }
 
-  // int32 image_height = 6;
+  // uint32 image_height = 6;
   if (this->image_height() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(6, this->_internal_image_height(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(6, this->_internal_image_height(), target);
   }
 
   // string image_description = 7;
@@ -1622,10 +1622,10 @@ failure:
         7, this->_internal_image_description(), target);
   }
 
-  // int32 image_oriientation = 8;
-  if (this->image_oriientation() != 0) {
+  // uint32 image_orientation = 8;
+  if (this->image_orientation() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(8, this->_internal_image_oriientation(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(8, this->_internal_image_orientation(), target);
   }
 
   // string image_copyright = 9;
@@ -1684,28 +1684,28 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(14, this->_internal_exposure_time(), target);
   }
 
-  // float f_stop = 15;
+  // double f_stop = 15;
   if (!(this->f_stop() <= 0 && this->f_stop() >= 0)) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteFloatToArray(15, this->_internal_f_stop(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteDoubleToArray(15, this->_internal_f_stop(), target);
   }
 
-  // int32 iso_speed = 16;
+  // uint32 iso_speed = 16;
   if (this->iso_speed() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(16, this->_internal_iso_speed(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(16, this->_internal_iso_speed(), target);
   }
 
-  // float subject_distance = 17;
+  // double subject_distance = 17;
   if (!(this->subject_distance() <= 0 && this->subject_distance() >= 0)) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteFloatToArray(17, this->_internal_subject_distance(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteDoubleToArray(17, this->_internal_subject_distance(), target);
   }
 
-  // float exposure_bias = 18;
+  // double exposure_bias = 18;
   if (!(this->exposure_bias() <= 0 && this->exposure_bias() >= 0)) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteFloatToArray(18, this->_internal_exposure_bias(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteDoubleToArray(18, this->_internal_exposure_bias(), target);
   }
 
   // int32 flash_used = 19;
@@ -1714,16 +1714,16 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(19, this->_internal_flash_used(), target);
   }
 
-  // int32 metering_mode = 20;
+  // uint32 metering_mode = 20;
   if (this->metering_mode() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(20, this->_internal_metering_mode(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(20, this->_internal_metering_mode(), target);
   }
 
-  // float lens_focal_length = 21;
+  // double lens_focal_length = 21;
   if (!(this->lens_focal_length() <= 0 && this->lens_focal_length() >= 0)) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteFloatToArray(21, this->_internal_lens_focal_length(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteDoubleToArray(21, this->_internal_lens_focal_length(), target);
   }
 
   // uint32 _35mm_focal_length = 22;
@@ -1732,22 +1732,22 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(22, this->_internal__35mm_focal_length(), target);
   }
 
-  // float gps_latitude = 23;
+  // double gps_latitude = 23;
   if (!(this->gps_latitude() <= 0 && this->gps_latitude() >= 0)) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteFloatToArray(23, this->_internal_gps_latitude(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteDoubleToArray(23, this->_internal_gps_latitude(), target);
   }
 
-  // float gps_longitude = 24;
+  // double gps_longitude = 24;
   if (!(this->gps_longitude() <= 0 && this->gps_longitude() >= 0)) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteFloatToArray(24, this->_internal_gps_longitude(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteDoubleToArray(24, this->_internal_gps_longitude(), target);
   }
 
-  // float gps_altitude = 25;
+  // double gps_altitude = 25;
   if (!(this->gps_altitude() <= 0 && this->gps_altitude() >= 0)) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteFloatToArray(25, this->_internal_gps_altitude(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteDoubleToArray(25, this->_internal_gps_altitude(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1829,32 +1829,37 @@ size_t ExifInfo::ByteSizeLong() const {
         this->_internal_subsecond_time());
   }
 
-  // int32 bits_per_sample = 4;
+  // uint32 bits_per_sample = 4;
   if (this->bits_per_sample() != 0) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_bits_per_sample());
   }
 
-  // int32 image_width = 5;
+  // uint32 image_width = 5;
   if (this->image_width() != 0) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_image_width());
   }
 
-  // int32 image_height = 6;
+  // uint32 image_height = 6;
   if (this->image_height() != 0) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_image_height());
   }
 
-  // int32 image_oriientation = 8;
-  if (this->image_oriientation() != 0) {
+  // uint32 image_orientation = 8;
+  if (this->image_orientation() != 0) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
-        this->_internal_image_oriientation());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_image_orientation());
+  }
+
+  // double f_stop = 15;
+  if (!(this->f_stop() <= 0 && this->f_stop() >= 0)) {
+    total_size += 1 + 8;
   }
 
   // int32 exposure_time = 14;
@@ -1864,26 +1869,21 @@ size_t ExifInfo::ByteSizeLong() const {
         this->_internal_exposure_time());
   }
 
-  // float f_stop = 15;
-  if (!(this->f_stop() <= 0 && this->f_stop() >= 0)) {
-    total_size += 1 + 4;
-  }
-
-  // int32 iso_speed = 16;
+  // uint32 iso_speed = 16;
   if (this->iso_speed() != 0) {
     total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_iso_speed());
   }
 
-  // float subject_distance = 17;
+  // double subject_distance = 17;
   if (!(this->subject_distance() <= 0 && this->subject_distance() >= 0)) {
-    total_size += 2 + 4;
+    total_size += 2 + 8;
   }
 
-  // float exposure_bias = 18;
+  // double exposure_bias = 18;
   if (!(this->exposure_bias() <= 0 && this->exposure_bias() >= 0)) {
-    total_size += 2 + 4;
+    total_size += 2 + 8;
   }
 
   // int32 flash_used = 19;
@@ -1893,16 +1893,31 @@ size_t ExifInfo::ByteSizeLong() const {
         this->_internal_flash_used());
   }
 
-  // int32 metering_mode = 20;
+  // uint32 metering_mode = 20;
   if (this->metering_mode() != 0) {
     total_size += 2 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal_metering_mode());
   }
 
-  // float lens_focal_length = 21;
+  // double lens_focal_length = 21;
   if (!(this->lens_focal_length() <= 0 && this->lens_focal_length() >= 0)) {
-    total_size += 2 + 4;
+    total_size += 2 + 8;
+  }
+
+  // double gps_latitude = 23;
+  if (!(this->gps_latitude() <= 0 && this->gps_latitude() >= 0)) {
+    total_size += 2 + 8;
+  }
+
+  // double gps_longitude = 24;
+  if (!(this->gps_longitude() <= 0 && this->gps_longitude() >= 0)) {
+    total_size += 2 + 8;
+  }
+
+  // double gps_altitude = 25;
+  if (!(this->gps_altitude() <= 0 && this->gps_altitude() >= 0)) {
+    total_size += 2 + 8;
   }
 
   // uint32 _35mm_focal_length = 22;
@@ -1910,21 +1925,6 @@ size_t ExifInfo::ByteSizeLong() const {
     total_size += 2 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->_internal__35mm_focal_length());
-  }
-
-  // float gps_latitude = 23;
-  if (!(this->gps_latitude() <= 0 && this->gps_latitude() >= 0)) {
-    total_size += 2 + 4;
-  }
-
-  // float gps_longitude = 24;
-  if (!(this->gps_longitude() <= 0 && this->gps_longitude() >= 0)) {
-    total_size += 2 + 4;
-  }
-
-  // float gps_altitude = 25;
-  if (!(this->gps_altitude() <= 0 && this->gps_altitude() >= 0)) {
-    total_size += 2 + 4;
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2003,14 +2003,14 @@ void ExifInfo::MergeFrom(const ExifInfo& from) {
   if (from.image_height() != 0) {
     _internal_set_image_height(from._internal_image_height());
   }
-  if (from.image_oriientation() != 0) {
-    _internal_set_image_oriientation(from._internal_image_oriientation());
-  }
-  if (from.exposure_time() != 0) {
-    _internal_set_exposure_time(from._internal_exposure_time());
+  if (from.image_orientation() != 0) {
+    _internal_set_image_orientation(from._internal_image_orientation());
   }
   if (!(from.f_stop() <= 0 && from.f_stop() >= 0)) {
     _internal_set_f_stop(from._internal_f_stop());
+  }
+  if (from.exposure_time() != 0) {
+    _internal_set_exposure_time(from._internal_exposure_time());
   }
   if (from.iso_speed() != 0) {
     _internal_set_iso_speed(from._internal_iso_speed());
@@ -2030,9 +2030,6 @@ void ExifInfo::MergeFrom(const ExifInfo& from) {
   if (!(from.lens_focal_length() <= 0 && from.lens_focal_length() >= 0)) {
     _internal_set_lens_focal_length(from._internal_lens_focal_length());
   }
-  if (from._35mm_focal_length() != 0) {
-    _internal_set__35mm_focal_length(from._internal__35mm_focal_length());
-  }
   if (!(from.gps_latitude() <= 0 && from.gps_latitude() >= 0)) {
     _internal_set_gps_latitude(from._internal_gps_latitude());
   }
@@ -2041,6 +2038,9 @@ void ExifInfo::MergeFrom(const ExifInfo& from) {
   }
   if (!(from.gps_altitude() <= 0 && from.gps_altitude() >= 0)) {
     _internal_set_gps_altitude(from._internal_gps_altitude());
+  }
+  if (from._35mm_focal_length() != 0) {
+    _internal_set__35mm_focal_length(from._internal__35mm_focal_length());
   }
 }
 
@@ -2086,19 +2086,19 @@ void ExifInfo::InternalSwap(ExifInfo* other) {
   swap(bits_per_sample_, other->bits_per_sample_);
   swap(image_width_, other->image_width_);
   swap(image_height_, other->image_height_);
-  swap(image_oriientation_, other->image_oriientation_);
-  swap(exposure_time_, other->exposure_time_);
+  swap(image_orientation_, other->image_orientation_);
   swap(f_stop_, other->f_stop_);
+  swap(exposure_time_, other->exposure_time_);
   swap(iso_speed_, other->iso_speed_);
   swap(subject_distance_, other->subject_distance_);
   swap(exposure_bias_, other->exposure_bias_);
   swap(flash_used_, other->flash_used_);
   swap(metering_mode_, other->metering_mode_);
   swap(lens_focal_length_, other->lens_focal_length_);
-  swap(_35mm_focal_length_, other->_35mm_focal_length_);
   swap(gps_latitude_, other->gps_latitude_);
   swap(gps_longitude_, other->gps_longitude_);
   swap(gps_altitude_, other->gps_altitude_);
+  swap(_35mm_focal_length_, other->_35mm_focal_length_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata ExifInfo::GetMetadata() const {

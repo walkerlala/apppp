@@ -1,5 +1,4 @@
 #include <iostream>
-#include <sstream>
 #include <algorithm>
 
 #include <ThreadPool.h>
@@ -8,6 +7,7 @@
 #include <ipc-message/ipc.pb.h>
 
 #include "./gen_thumbnails.h"
+#include "./read_exif.h"
 
 using EasyIpc::IpcServer;
 
@@ -42,8 +42,11 @@ std::string server_handler(EasyIpc::Context& ctx, const EasyIpc::Message& msg) {
                 return "";
             }
 
-            ExifInfo exif;
-            return exif.SerializeAsString();
+            if (auto opt = read_exif(request.path()); opt != std::nullopt) {
+                return opt->SerializeAsString();
+            }
+
+            return "";
         }
 
         default:

@@ -14,7 +14,7 @@ include_directories(../ipc-message)
 include_directories(../third_party/boost)
 
 set(CMAKE_CXX_FLAGS "-fvisibility-inlines-hidden")
-add_executable(thumbnail main.cpp gen_thumbnails.cpp)
+add_executable(thumbnail main.cpp gen_thumbnails.cpp read_exif.cpp exif.cpp)
 target_link_directories(thumbnail PRIVATE ../third_party/boost/stage/lib)
 target_link_libraries(thumbnail
         easyipc
