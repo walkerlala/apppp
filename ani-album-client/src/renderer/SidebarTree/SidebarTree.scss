@@ -1,11 +1,24 @@
 
   .ani-sidebar-tree {
     .ani-sidebar-tree-item {
+      display: flex;
       padding-left: 12px;
       height: 24px;
       line-height: 24px;
       font-size: 14px;
       color: rgb(90, 90, 90);
+
+      .icon-area {
+        display: block;
+        width: 24px;
+        height: 24px;
+        margin-right: 4px;
+      }
+
+      &.item-selected {
+        font-weight: 500;
+        background-color: rgb(232, 231, 228);
+      }
 
       &:hover {
         background-color: rgb(190, 190, 190);
