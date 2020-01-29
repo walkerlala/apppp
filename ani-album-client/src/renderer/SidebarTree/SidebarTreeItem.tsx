@@ -1,15 +1,9 @@
 import * as React from 'react';
+import { PageKey } from 'renderer/pageKey';
 import AddIcon from '@atlaskit/icon/glyph/add';
 
-export enum TreeItemKey {
-  Root = '__root',
-  MyPhotos = 'my-photos',
-  Albums = 'albums',
-  Workspaces = 'workspaces',
-}
-
 export interface TreeItemData {
-  key: TreeItemKey;
+  key: PageKey;
   label: string;
   icon?: React.ReactNode;
   hasAddIcon?: boolean;

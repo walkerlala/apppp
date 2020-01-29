@@ -6,6 +6,10 @@ import { eventBus, RendererEvents } from 'renderer/events';
 import ImageItem from './ImageItem';
 import './GridView.scss';
 
+interface GridViewProps {
+  show: boolean;
+}
+
 interface GridViewState {
   offset: number;
   length: number;
@@ -13,9 +17,9 @@ interface GridViewState {
   selectedItemId: number;
 }
 
-class GridView extends Component<{}, GridViewState> {
+class GridView extends Component<GridViewProps, GridViewState> {
 
-  constructor(props: {}) {
+  constructor(props: GridViewProps) {
     super(props);
     this.state = {
       offset: 0,
@@ -107,8 +111,12 @@ class GridView extends Component<{}, GridViewState> {
   }
 
   render() {
+    const { show } = this.props;
     return (
-      <div className="ani-grid-view">
+      <div
+        className="ani-grid-view" 
+        style={{ display: show ? 'block' : 'none' }}
+      >
         <div className="ani-grid-content-container">
           {this.renderImages()}
         </div>

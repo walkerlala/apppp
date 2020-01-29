@@ -2,13 +2,17 @@ import React, { Component } from 'react';
 import SidebarTree from 'renderer/SidebarTree';
 import './Sidebar.scss';
 
+interface SidebarProps {
+  pageKey: string;
+}
+
 interface SidebarState {
   isMouseEntered: boolean
 }
 
-class Sidebar extends Component<{}, SidebarState> {
+class Sidebar extends Component<SidebarProps, SidebarState> {
 
-  constructor(props: {}) {
+  constructor(props: SidebarProps) {
     super(props);
     this.state = {
       isMouseEntered: false,
@@ -28,6 +32,7 @@ class Sidebar extends Component<{}, SidebarState> {
   }
 
   render() {
+    const { pageKey } = this.props;
     const { isMouseEntered } = this.state;
     return (
       <div
@@ -35,7 +40,7 @@ class Sidebar extends Component<{}, SidebarState> {
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
-        <SidebarTree isMouseEntered={isMouseEntered} />
+        <SidebarTree pageKey={pageKey} isMouseEntered={isMouseEntered} />
       </div>
     );
   }
