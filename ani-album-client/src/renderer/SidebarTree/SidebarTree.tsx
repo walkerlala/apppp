@@ -6,15 +6,19 @@ import FolderIcon from '@atlaskit/icon/glyph/folder';
 import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
 import './SidebarTree.scss';
 
+export interface SidebarTreeProps {
+  isMouseEntered: boolean
+}
+
 export interface SidebarTreeState {
   childrenMap: Map<string, TreeItemData[]>
   expandedKeys: Set<string>;
   selectedKey: string;
 }
 
-class SidebarTree extends React.Component<{}, SidebarTreeState> {
+class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
 
-  constructor(props: {}) {
+  constructor(props: SidebarTreeProps) {
     super(props);
     const childrenMap: Map<string, TreeItemData[]> = new Map();
     childrenMap.set(TreeItemKey.Root, [
@@ -26,12 +30,14 @@ class SidebarTree extends React.Component<{}, SidebarTreeState> {
       {
         key: TreeItemKey.Albums,
         label: 'Albums',
-        icon: <FolderIcon label="Albums" />
+        icon: <FolderIcon label="Albums" />,
+        hasAddIcon: true,
       },
       {
         key: TreeItemKey.Workspaces,
         label: 'Workspaces',
-        icon: <DashboardIcon label="Workspaces" />
+        icon: <DashboardIcon label="Workspaces" />,
+        hasAddIcon: true,
       }
     ]);
 
@@ -62,7 +68,14 @@ class SidebarTree extends React.Component<{}, SidebarTreeState> {
     });
   }
 
+  private handleAddButtonClick = (key: TreeItemKey) => (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // TODO
+  }
+
   renderChildren(items: TreeItemData[]) {
+    const { isMouseEntered } = this.props;
     const { selectedKey } = this.state;
     return items.map(item => {
       return (
@@ -71,6 +84,8 @@ class SidebarTree extends React.Component<{}, SidebarTreeState> {
           isSelected={item.key === selectedKey}
           data={item}
           onClick={this.handleTreeItemClick(item.key)}
+          onAddButtonClick={this.handleAddButtonClick(item.key)}
+          showAddButton={isMouseEntered}
         />
       );
     })
