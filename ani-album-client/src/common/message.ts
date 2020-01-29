@@ -5,6 +5,7 @@ export enum ClientMessageType {
   ShowContextMenu = 'ShowContextMenu',
   PhotoDeleted = 'PhotoDeleted',
   GetImageById = 'GetImageById',
+  ToggleFullscreen = 'ToggleFullscreen'
 }
 
 export interface MessageRequest {

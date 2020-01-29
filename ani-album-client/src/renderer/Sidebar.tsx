@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import SidebarTree from 'renderer/SidebarTree';
+import { ipcRenderer } from 'electron';
+import { ClientMessageType } from 'common/message';
 import './Sidebar.scss';
 
 interface SidebarProps {
@@ -8,6 +10,7 @@ interface SidebarProps {
 
 interface SidebarState {
   isMouseEntered: boolean
+  isFullscreen: boolean
 }
 
 class Sidebar extends Component<SidebarProps, SidebarState> {
@@ -16,6 +19,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     super(props);
     this.state = {
       isMouseEntered: false,
+      isFullscreen: false
     };
   }
 
@@ -31,15 +35,28 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     });
   }
 
+  componentDidMount() {
+    ipcRenderer.addListener(ClientMessageType.ToggleFullscreen, this.handleToggleFullscreen)
+  }
+
+  componentWillUnmount() {
+    ipcRenderer.removeListener(ClientMessageType.ToggleFullscreen, this.handleToggleFullscreen)
+  }
+
+  private handleToggleFullscreen = (e: any, isFullscreen: boolean) => {
+    this.setState({ isFullscreen })
+  }
+
   render() {
     const { pageKey } = this.props;
-    const { isMouseEntered } = this.state;
+    const { isMouseEntered, isFullscreen } = this.state;
     return (
       <div
         className="ani-sidebar-container"
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
+        { !isFullscreen && <div className="ani-sidebar-toolbar-container"></div> }
         <SidebarTree pageKey={pageKey} isMouseEntered={isMouseEntered} />
       </div>
     );

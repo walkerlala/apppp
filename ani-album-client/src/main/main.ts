@@ -77,11 +77,12 @@ async function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
+    width: 1000,
     height: 720,
+    titleBarStyle: 'hiddenInset',
     webPreferences: {
       nodeIntegration: true,
     },
-    width: 1080,
   });
 
   // and load the index.html of the app.
@@ -105,6 +106,14 @@ async function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  mainWindow.on('enter-full-screen', () => {
+    getWebContent().send(ClientMessageType.ToggleFullscreen, true);
+  })
+
+  mainWindow.on('leave-full-screen', () => {
+    getWebContent().send(ClientMessageType.ToggleFullscreen, false);
+  })
 
   showMenu();
 
