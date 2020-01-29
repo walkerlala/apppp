@@ -1,5 +1,8 @@
 {
-  "extends": "tslint:recommended",
+  "extends": [
+    "tslint-config-standard",
+    "tslint-config-prettier"
+  ],
   "rules": {
     "max-line-length": {
       "options": [
@@ -10,7 +13,17 @@
     "no-arg": true,
     "no-bitwise": true,
     "no-conditional-assignment": true,
-    "no-consecutive-blank-lines": false
+    "no-consecutive-blank-lines": false,
+    "quotemark": [true, "single", "jsx-double"],
+    "ordered-imports": false,
+    "member-access": false,
+    "no-return-await": false,
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "allow-leading-underscore",
+      "allow-pascal-case"
+    ]
   },
   "jsRules": {
     "max-line-length": {
