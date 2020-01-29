@@ -4,6 +4,7 @@ import Sidebar from 'renderer/Sidebar';
 import GridView from 'renderer/GridView';
 import ImageViewer from 'renderer/ImageViewer';
 import { PageKey } from 'renderer/pageKey';
+import Modals from 'renderer/Modals';
 import { eventBus, RendererEvents } from 'renderer/events';
 import './App.scss';
 
@@ -39,6 +40,7 @@ class App extends Component<{}, AppState> {
         <Sidebar pageKey={pageKey} />
         <GridView key={PageKey.MyPhotos} show={pageKey === PageKey.MyPhotos} />
         <ImageViewer />
+        <Modals />
       </div>
     );
   }

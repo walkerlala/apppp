@@ -6,6 +6,7 @@ import { PageKey } from 'renderer/pageKey';
 import MediaServicesScaleLargeIcon from '@atlaskit/icon/glyph/media-services/scale-large';
 import FolderIcon from '@atlaskit/icon/glyph/folder';
 import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
+import { ModalTypes } from 'renderer/Modals';
 import './SidebarTree.scss';
 
 export interface SidebarTreeProps {
@@ -70,7 +71,16 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
   private handleAddButtonClick = (key: PageKey) => (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    // TODO
+
+    switch (key) {
+      case PageKey.Albums:
+        eventBus.emit(RendererEvents.ShowModal, ModalTypes.NewAlbum);
+        break;
+
+      default:
+        // nothing
+
+    }
   }
 
   renderChildren(items: TreeItemData[]) {
