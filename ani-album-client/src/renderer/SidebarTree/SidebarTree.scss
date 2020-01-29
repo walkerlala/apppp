@@ -1,0 +1,15 @@
+
+  .ani-sidebar-tree {
+    .ani-sidebar-tree-item {
+      padding-left: 12px;
+      height: 24px;
+      line-height: 24px;
+      font-size: 14px;
+      color: rgb(90, 90, 90);
+
+      &:hover {
+        background-color: rgb(190, 190, 190);
+      }
+    }
+
+  }
