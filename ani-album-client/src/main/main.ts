@@ -72,11 +72,11 @@ async function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    height: 600,
+    height: 720,
     webPreferences: {
       nodeIntegration: true,
     },
-    width: 800,
+    width: 1080,
   });
 
   // and load the index.html of the app.
