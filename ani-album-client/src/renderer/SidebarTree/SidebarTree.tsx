@@ -28,7 +28,7 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
       {
         key: PageKey.MyPhotos,
         label: 'My Photos',
-        icon: <MediaServicesScaleLargeIcon label='My Photos' />
+        icon: <MediaServicesScaleLargeIcon label="My Photos" />
       },
       {
         key: PageKey.Albums,

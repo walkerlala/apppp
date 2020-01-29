@@ -41,7 +41,7 @@ class SidebarTreeItem extends React.Component<SidebarTreeItemProps> {
     const { label, icon, hasAddIcon } = this.props.data;
     let containerClassName = 'ani-sidebar-tree-item noselect';
     if (this.props.isSelected) {
-      containerClassName += " ani-item-selected";
+      containerClassName += ' ani-item-selected';
     }
     return (
       <div onClick={this.props.onClick} className={containerClassName}>

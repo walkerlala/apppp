@@ -6,6 +6,7 @@ import ImageViewer from 'renderer/ImageViewer';
 import { PageKey } from 'renderer/pageKey';
 import Modals from 'renderer/Modals';
 import { eventBus, RendererEvents } from 'renderer/events';
+import Header from 'renderer/Header';
 import './App.scss';
 
 interface AppState {
@@ -38,7 +39,10 @@ class App extends Component<{}, AppState> {
     return (
       <div className="ani-app">
         <Sidebar pageKey={pageKey} />
-        <GridView key={PageKey.MyPhotos} show={pageKey === PageKey.MyPhotos} />
+        <div className="ani-main-content">
+          <Header />
+          <GridView key={PageKey.MyPhotos} show={pageKey === PageKey.MyPhotos} />
+        </div>
         <ImageViewer />
         <Modals />
       </div>

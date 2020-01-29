@@ -21,7 +21,7 @@ export namespace easyipc {
     }
 
     function parseMessageHeader(data: Buffer): MessageHeader {
-        if (data.length != HeaderSize) {
+        if (data.length !== HeaderSize) {
             throw new Error(`buffer.length should be ${HeaderSize}`);
         }
         const messageType = data.readInt32LE(0);
@@ -136,7 +136,7 @@ export namespace easyipc {
             let readBytes: number;
             conn.on('data', (data: Buffer) => {
                 if (preparedReadHeader) {
-                    if (data.length != HeaderSize) {
+                    if (data.length !== HeaderSize) {
                         conn.destroy();
                         return;
                     }
@@ -145,7 +145,7 @@ export namespace easyipc {
                     bodySize = data.readUInt32LE(12);
                     readBytes = 0;
 
-                    if (bodySize != 0) {
+                    if (bodySize !== 0) {
                         preparedReadHeader = false;
                         remainsBuffer = Buffer.alloc(bodySize);
                     }
@@ -206,16 +206,16 @@ export namespace easyipc {
 
             await writeBufferToSocket(this.socket, headerBuffer);
 
-            if (data.length != 0) {
+            if (data.length !== 0) {
                 await writeBufferToSocket(this.socket, data);
             }
 
             const recvHeaderBuffer = await readBufferFromSocket(this.session, this.socket, HeaderSize);
             const recvHeader = parseMessageHeader(recvHeaderBuffer);
-            if (recvHeader.requestId != header.requestId) {
-                throw new Error(`request id: ${recvHeader.requestId} != ${header.requestId}`)
+            if (recvHeader.requestId !== header.requestId) {
+                throw new Error(`request id: ${recvHeader.requestId} !== ${header.requestId}`)
             }
-            if (recvHeader.bodySize == 0) {
+            if (recvHeader.bodySize === 0) {
                 return Buffer.alloc(0);
             }
 
