@@ -1,12 +1,13 @@
 node_modules
 dist
+build
 
 *log
 
 .DS_Store
+.vscode
 
 cmake-build-debug
 
 .idea
 .vs
-
