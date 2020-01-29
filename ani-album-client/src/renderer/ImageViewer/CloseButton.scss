@@ -1,0 +1,13 @@
+
+.ani-close-button {
+  position: fixed;
+  z-index: 12;
+  top: 12px;
+  right: 12px;
+
+  color: white;
+
+  &:hover {
+    cursor: pointer;
+  }
+}

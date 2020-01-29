@@ -1,33 +1,97 @@
-import { app, BrowserWindow, Menu, MenuItem } from "electron";
-import { getAppDateFolder } from './utils';
+import { app, BrowserWindow, Menu, MenuItem, ipcMain, IpcMainInvokeEvent } from "electron";
+import { eventBus, MainProcessEvents } from './events';
+import initialFolder, { getDatabasePath } from './dataFolder';
+import { setDb, getDb, setWebContent, getWebContent } from './utils';
+import { importPhotos } from './photos';
+import { SQLiteHelper } from './sqliteHelper';
+import { ImageWithThumbnails } from 'common/image';
+import { ClientMessageType, MessageRequest } from 'common/message';
+import { once, get, isUndefined } from 'lodash';
+import { logger } from "./logger";
+import { showMenu } from './menu';
+import MicroService from './microService';
+import * as dal from './dal';
 import * as path from "path";
-import * as sqlite3 from 'sqlite3';
-import * as fs from 'fs';
 
 let mainWindow: Electron.BrowserWindow;
 
-function createWindow() {
+const startMicroService = once(() => {
+  MicroService.initialize();
+  MicroService.startAllServices();
+});
+
+const listenEvents = once(() => {
+  eventBus.addListener(MainProcessEvents.ImportPhotos, importPhotos);
+
+  ipcMain.handle(ClientMessageType.GetAllImages, async (event: IpcMainInvokeEvent, req: MessageRequest) => {
+    const { offset = 0, length = 200 } = req;
+    const images = await dal.queryImageEntities(getDb(), offset, length);
+    const allPromises: Promise<ImageWithThumbnails>[] = images.map(async img => {
+      const thumbnails = await dal.queryThumbnailsByImageId(getDb(), img.id!);
+      return {
+        ...img,
+        thumbnails,
+      } as ImageWithThumbnails;
+    });
+    const content = await Promise.all(allPromises);
+    return { content };
+  });
+
+  ipcMain.handle(ClientMessageType.GetImageById, async (event: IpcMainInvokeEvent, imageId: number) => {
+    const image = await dal.queryImageById(getDb(), imageId);
+    const thumbnails = await dal.queryThumbnailsByImageId(getDb(), imageId);
+    return {
+      ...image,
+      thumbnails,
+    };
+  });
+
+  ipcMain.handle(ClientMessageType.ShowContextMenu, async (event: IpcMainInvokeEvent, data) => {
+    const menu = new Menu()
+    menu.append(new MenuItem({
+      label: 'Delete', 
+      click: async () => {
+        try {
+          const imageId = get(data, 'imageId');
+          if (isUndefined(imageId)) return;
+          logger.info('preparing to delete image id', imageId);
+          await dal.deleteImageById(getDb(), Number(imageId));
+          getWebContent().send(ClientMessageType.PhotoDeleted, imageId);
+          logger.info('delete image successfully: ', imageId);
+        } catch (err) {
+          logger.error(err);
+        }
+      },
+    }));
+    menu.popup();
+  });
+});
+
+async function createWindow() {
+  initialFolder();
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    height: 600,
+    height: 720,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: true,
     },
-    width: 800,
+    width: 1080,
   });
 
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, "../../index.html"));
 
+  mainWindow.webContents.on('did-finish-load', () => {
+    setWebContent(mainWindow.webContents);
+  });
+
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  const appDataFolder = getAppDateFolder();
-  if (!fs.existsSync(appDataFolder)) {
-    fs.mkdirSync(appDataFolder);
-  }
-  const databasePath = path.join(appDataFolder, 'database.sqlite');
-  const db = new sqlite3.Database(databasePath);
+  const databasePath = getDatabasePath();
+  const db = await SQLiteHelper.create(databasePath);
+  setDb(db);
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
@@ -38,20 +102,12 @@ function createWindow() {
   });
 
   showMenu();
+
+  startMicroService();
+
+  listenEvents();
   
-  db.serialize(() => {
-    db.run('CREATE TABLE IF NOT EXISTS global_kv (key TEXT PRIMARY KEY, value TEXT)');
-    db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "1")');
-  });
-
-}
-
-function showMenu() {
-  const menu = new Menu();
-  menu.append(new MenuItem({ label: 'MenuItem1', click() { console.log('item 1 clicked') } }))
-  menu.append(new MenuItem({ type: 'separator' }))
-  menu.append(new MenuItem({ label: 'MenuItem2', type: 'checkbox', checked: true }))
-  // Menu.setApplicationMenu(menu);
+  dal.initData(db);
 }
 
 // This method will be called when Electron has finished

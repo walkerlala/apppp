@@ -6,3 +6,8 @@ build
 
 .DS_Store
 .vscode
+
+cmake-build-debug
+
+.idea
+.vs

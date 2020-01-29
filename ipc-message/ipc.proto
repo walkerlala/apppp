@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+enum MessageType {
+  Ping = 0;
+  
+  GenerateThumbnails = 1;
+
+  ReadExif = 2;
+
+}
+
+enum ThumbnailType {
+  Small = 0;
+  Medium = 1;
+  Large = 2;
+}
+
+message GenerateThumbnailsRequest {
+  string path = 1;
+  string out_dir = 2;
+  repeated ThumbnailType types = 3;
+}
+
+message Thumbnail {
+  ThumbnailType type = 1;
+  string path = 2;
+  int32 width = 3;
+  int32 height = 4;
+}
+
+message GenerateThumbnailsResponse {
+  repeated Thumbnail data = 1;
+}
+
+message ReadExifRequest {
+    string path = 1;
+}
+
+message ExifInfo {
+    string camera_make = 1;
+    string camera_model = 2;
+    string software = 3;
+    uint32 bits_per_sample = 4;
+    uint32 image_width = 5;
+    uint32 image_height = 6;
+    string image_description = 7;
+    uint32 image_orientation = 8;
+    string image_copyright = 9;
+    string image_datetime = 10;
+    string original_datetime = 11;
+    string digitize_datetime = 12;
+    string subsecond_time = 13;
+    int32 exposure_time = 14;
+    double f_stop = 15;
+    uint32 iso_speed = 16;
+    double subject_distance = 17;
+    double exposure_bias = 18;
+    int32 flash_used = 19;
+    uint32 metering_mode = 20;
+    double lens_focal_length = 21;
+    uint32 focal_length_35mm = 22;
+    double gps_latitude = 23;
+    double gps_longitude = 24;
+    double gps_altitude = 25;
+}
