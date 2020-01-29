@@ -1,3 +1,5 @@
+// @ts-ignore for no d.ts
+import ElectronReload from 'electron-reload';
 import { app, BrowserWindow, Menu, MenuItem, ipcMain, IpcMainInvokeEvent } from 'electron';
 import { eventBus, MainProcessEvents } from './events';
 import initialFolder, { getDatabasePath } from './dataFolder';
@@ -14,6 +16,9 @@ import * as dal from './dal';
 import * as path from 'path';
 
 let mainWindow: Electron.BrowserWindow;
+
+// for dev hot reload
+ElectronReload(path.join(__dirname, '../renderer'));
 
 const startMicroService = once(() => {
   MicroService.initialize();

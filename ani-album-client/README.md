@@ -33,3 +33,10 @@ gulp buildRendererPage
 ```sh
 yarn start
 ```
+
+# Hot Reload for Electron
+```sh
+gulp watch
+```
+
+build the complete app and reload if dist/renderer/* changed (a few seconds needed). 
