@@ -129,7 +129,7 @@ function buildRendererPage(cb) {
 }
 
 function buildWatch() {
-    return watch('./src/**/*', parallel(scss, buildRendererPage));
+  return watch('./src/**/*', parallel(buildMainOutput, buildRendererPage));
 }
 
 exports.watch = buildWatch;

@@ -45,7 +45,11 @@ export const initData = once(async (db: SQLiteHelper) => {
   }
 });
 
-export async function queryImageEntities(db: SQLiteHelper, offset: number = 0, limit: number = 200): Promise<ImageEntity[]> {
+export async function queryImageEntities(
+  db: SQLiteHelper,
+  offset: number = 0,
+  limit: number = 200
+): Promise<ImageEntity[]> {
   const result = await db.all(`SELECT
     id, path, createdAt FROM ${ImageEntityTableName} LIMIT ? OFFSET ?`, limit, offset);
   return result.map(({ id, path, createdAt }) => {
