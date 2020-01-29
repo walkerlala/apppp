@@ -31,7 +31,7 @@ export class MicroService {
   }
 
   startAllServices() {
-    // this.startThumbnailsService();
+    this.startThumbnailsService();
   }
 
   startThumbnailsService() {

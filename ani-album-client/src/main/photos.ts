@@ -52,8 +52,8 @@ async function importPhotosByPath(path: string) {
 
         logger.info('imported a photo');
         getWebContent().send(ClientMessageType.PhotoImported);
-        const exifInfo = await microService.readExif(path);
-        logger.info(ExifInfo.toObject(false, exifInfo));
+        // const exifInfo = await microService.readExif(path);
+        // logger.info(ExifInfo.toObject(false, exifInfo));
       } catch (err) {
         logger.error('insert photo failed: ', err, 'path: ', path);
       }
