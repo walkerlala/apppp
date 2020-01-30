@@ -53,7 +53,7 @@ const listenEvents = once(() => {
   });
 
   ipcMain.handle(ClientMessageType.ShowContextMenu, async (event: IpcMainInvokeEvent, data) => {
-    const menu = new Menu()
+    const menu = new Menu();
     menu.append(new MenuItem({
       label: 'Delete', 
       click: async () => {
@@ -77,7 +77,7 @@ const listenEvents = once(() => {
       name: 'Untitled Album',
       description: null,
       createdAt: new Date(),
-    }
+    };
     const id = await dal.insertAlbum(getDb(), album);
     album.id = id;
     return album;
@@ -128,11 +128,11 @@ async function createWindow() {
 
   mainWindow.on('enter-full-screen', () => {
     getWebContent().send(ClientMessageType.ToggleFullscreen, true);
-  })
+  });
 
   mainWindow.on('leave-full-screen', () => {
     getWebContent().send(ClientMessageType.ToggleFullscreen, false);
-  })
+  });
 
   showMenu();
 
