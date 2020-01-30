@@ -23,14 +23,14 @@ class App extends Component<{}, AppState> {
   }
 
   componentDidMount() {
-    eventBus.addListener(RendererEvents.SidebarTreeClicked, this.handleSidebarItemClicked);
+    eventBus.addListener(RendererEvents.NavigatePage, this.handleNavigatePage);
   }
 
   componentWillUnmount() {
-    eventBus.removeListener(RendererEvents.SidebarTreeClicked, this.handleSidebarItemClicked);
+    eventBus.removeListener(RendererEvents.NavigatePage, this.handleNavigatePage);
   }
 
-  private handleSidebarItemClicked = (pageKey: PageKey) => {
+  private handleNavigatePage = (pageKey: PageKey) => {
     this.setState({ pageKey });
   }
 

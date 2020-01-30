@@ -5,6 +5,7 @@ import Slider from 'renderer/Slider';
 import SearchBox from 'renderer/SearchBox';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { debounce } from 'lodash';
+import { PageKey } from 'renderer/pageKey';
 import './Header.scss';
 
 interface HeaderState {
@@ -36,6 +37,10 @@ class Header extends React.Component<{}, HeaderState> {
     return <ZoomButton2 />;
   }
 
+  private searchBoxClicked = (e: React.MouseEvent) => {
+    eventBus.emit(RendererEvents.NavigatePage, PageKey.Search);
+  }
+
   render() {
     return (
       <div className="ani-header">
@@ -43,7 +48,7 @@ class Header extends React.Component<{}, HeaderState> {
           2019 年 1 月 30 日
         </div>
         <div className="ani-header-button-group">
-          <SearchBox />
+          <SearchBox onClick={this.searchBoxClicked} />
           <Slider />
           <button
             className="ani-button ani-scale-to-fit-button"

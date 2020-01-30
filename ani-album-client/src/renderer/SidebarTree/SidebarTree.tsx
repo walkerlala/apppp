@@ -74,7 +74,7 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
   }
 
   private handleTreeItemClick = (key: string) => (e: React.MouseEvent<HTMLDivElement>) => {
-    eventBus.emit(RendererEvents.SidebarTreeClicked, key);
+    eventBus.emit(RendererEvents.NavigatePage, key);
   }
 
   private handleAddButtonClick = (key: string) => async (e: React.MouseEvent<HTMLDivElement>) => {

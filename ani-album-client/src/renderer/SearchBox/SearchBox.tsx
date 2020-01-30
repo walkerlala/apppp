@@ -2,11 +2,15 @@ import * as React from 'react';
 import SearchLogo from './SearchLogo.svg';
 import './SearchBox.scss';
 
-class SearchBox extends React.Component {
+export interface ISearchBoxProps {
+  onClick?: (e: React.MouseEvent) => void,
+}
+
+class SearchBox extends React.Component<ISearchBoxProps> {
 
   render() {
     return (
-      <div className="ani-search-box">
+      <div className="ani-search-box" onClick={this.props.onClick}>
         <div className="ani-logo-container">
           <SearchLogo />
         </div>
