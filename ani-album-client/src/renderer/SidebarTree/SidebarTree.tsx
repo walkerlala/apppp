@@ -6,6 +6,10 @@ import { PageKey } from 'renderer/pageKey';
 import MediaServicesScaleLargeIcon from '@atlaskit/icon/glyph/media-services/scale-large';
 import FolderIcon from '@atlaskit/icon/glyph/folder';
 import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
+import { ipcRenderer } from 'electron';
+import { ClientMessageType } from 'common/message';
+import { isUndefined } from 'lodash';
+import { Album } from 'common/album';
 import './SidebarTree.scss';
 
 export interface SidebarTreeProps {
@@ -27,19 +31,22 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
       {
         key: PageKey.MyPhotos,
         label: 'My Photos',
-        icon: <MediaServicesScaleLargeIcon label='My Photos' />
+        icon: <MediaServicesScaleLargeIcon label="My Photos" />
       },
       {
         key: PageKey.Albums,
         label: 'Albums',
         icon: <FolderIcon label="Albums" />,
         hasAddIcon: true,
+        hasChildren: true,
+        children: this.renderAlbumChildren,
       },
       {
         key: PageKey.Workspaces,
         label: 'Workspaces',
         icon: <DashboardIcon label="Workspaces" />,
         hasAddIcon: true,
+        hasChildren: true,
       }
     ]);
 
@@ -50,6 +57,9 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
   }
 
   private addExpandedKeys = (key: string) => {
+    if (key == PageKey.Albums) {
+      this.fetchAllAlbums();
+    }
     const selectedKeys = produce(this.state.expandedKeys, (draft: Set<string>) => {
       draft.add(key);
     });
@@ -63,14 +73,55 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
     this.setState({ expandedKeys: selectedKeys });
   }
 
-  private handleTreeItemClick = (key: PageKey) => (e: React.MouseEvent<HTMLDivElement>) => {
+  private handleTreeItemClick = (key: string) => (e: React.MouseEvent<HTMLDivElement>) => {
     eventBus.emit(RendererEvents.SidebarTreeClicked, key);
   }
 
-  private handleAddButtonClick = (key: PageKey) => (e: React.MouseEvent<HTMLDivElement>) => {
+  private handleAddButtonClick = (key: string) => async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    // TODO
+
+    switch (key) {
+      case PageKey.Albums:
+        return this.handleAddAlbum(key);
+
+      default:
+        // nothing
+
+    }
+  }
+
+  private async handleAddAlbum(key: PageKey) {
+    try {
+      this.addExpandedKeys(key);
+      await ipcRenderer.invoke(ClientMessageType.CreateAlbum);
+      await this.fetchAllAlbums();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  private renderAlbumChildren = () => {
+    const items = this.state.childrenMap.get(PageKey.Albums);
+    if (isUndefined(items)) {
+      return;
+    }
+
+    return this.renderChildren(items);
+  }
+
+  private async fetchAllAlbums() {
+    const albums: Album[] = await ipcRenderer.invoke(ClientMessageType.GetAllAlbums);
+    const newMap = produce(this.state.childrenMap, (draft: Map<string, TreeItemData[]>) => {
+      const items = albums.map(({ id, name }) => ({
+        key: `Album-${id}`,
+        label: name,
+      }));
+      draft.set(PageKey.Albums, items);
+    });
+    this.setState({
+      childrenMap: newMap,
+    });
   }
 
   renderChildren(items: TreeItemData[]) {
@@ -79,10 +130,13 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
       return (
         <SidebarTreeItem
           key={item.key}
+          isExpanded={this.state.expandedKeys.has(item.key)}
           isSelected={item.key === pageKey}
           data={item}
           onClick={this.handleTreeItemClick(item.key)}
           onAddButtonClick={this.handleAddButtonClick(item.key)}
+          onExpand={() => this.addExpandedKeys(item.key)}
+          onCollapse={() => this.removeExpandedKeys(item.key)}
           showAddButton={isMouseEntered}
         />
       );
@@ -100,4 +154,4 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
 
 }
 
-export default SidebarTree
+export default SidebarTree;

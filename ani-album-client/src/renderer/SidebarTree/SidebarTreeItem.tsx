@@ -1,20 +1,26 @@
 import * as React from 'react';
 import { PageKey } from 'renderer/pageKey';
 import AddIcon from '@atlaskit/icon/glyph/add';
+import Triangle from './triangle.svg';
 
 export interface TreeItemData {
-  key: PageKey;
+  key: string;
   label: string;
   icon?: React.ReactNode;
   hasAddIcon?: boolean;
+  hasChildren?: boolean;
+  children?: () => React.ReactNode,
 }
 
 export interface SidebarTreeItemProps {
   data: TreeItemData,
   isSelected: boolean;
+  isExpanded: boolean;
   showAddButton: boolean;
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   onAddButtonClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onExpand?: () => void;
+  onCollapse?: () => void;
 }
 
 class SidebarTreeItem extends React.Component<SidebarTreeItemProps> {
@@ -37,19 +43,45 @@ class SidebarTreeItem extends React.Component<SidebarTreeItemProps> {
     )
   }
 
+  private onTriangleAreaClicked = (e: React.MouseEvent) => {
+    if (!this.props.data.hasChildren) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (this.props.isExpanded) {
+      if (this.props.onCollapse) {
+        this.props.onCollapse();
+      }
+    } else {
+      if (this.props.onExpand) {
+        this.props.onExpand();
+      }
+    }
+  }
+
   render() {
-    const { label, icon, hasAddIcon } = this.props.data;
+    const { label, icon, hasAddIcon, hasChildren, children } = this.props.data;
     let containerClassName = 'ani-sidebar-tree-item noselect';
     if (this.props.isSelected) {
-      containerClassName += " ani-item-selected";
+      containerClassName += ' ani-item-selected';
+    }
+    let triangleAreaClassName = 'ani-triangle-area';
+    if (this.props.isExpanded) {
+      triangleAreaClassName += ' ani-expanded';
     }
     return (
-      <div onClick={this.props.onClick} className={containerClassName}>
-        <div className="ani-icon-area">
-          {icon}
+      <div className="ani-sidebar-tree-item-container">
+        <div onClick={this.props.onClick} className={containerClassName}>
+          <div className={triangleAreaClassName} onClick={this.onTriangleAreaClicked}>
+            {hasChildren && <Triangle />}
+          </div>
+          <div className="ani-icon-area">
+            {icon}
+          </div>
+          <div className="ani-content-area">{label}</div>
+          {this.props.showAddButton && hasAddIcon && this.renderAddIcon()}
         </div>
-        <div className="ani-content-area">{label}</div>
-        {this.props.showAddButton && hasAddIcon && this.renderAddIcon()}
+        { this.props.isExpanded && children && children() }
       </div>
     );
   }

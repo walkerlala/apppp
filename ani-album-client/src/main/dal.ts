@@ -2,12 +2,14 @@
  * Data Access Layer
  */
 import { ImageEntity, ThumbnailEntity } from 'common/image';
+import { Album } from 'common/album';
 import { logger } from './logger';
 import { SQLiteHelper } from './sqliteHelper';
 import { once, isUndefined } from 'lodash';
 
 const ImageEntityTableName = 'imagesEntity';
 const ThumbnailsTableName = 'thumbnails';
+const AlbumsTableName = 'albums';
 
 export const initData = once(async (db: SQLiteHelper) => {
   try {
@@ -37,6 +39,11 @@ export const initData = once(async (db: SQLiteHelper) => {
     } else {
       dbVersion = Number(dbVersionResult.value);
     }
+
+    if (dbVersion === 1) {
+      await upgradeToVersion2(db);
+      dbVersion = 2;
+    }
     
     logger.info('db version: ', dbVersion);
   } catch (err) {
@@ -45,7 +52,44 @@ export const initData = once(async (db: SQLiteHelper) => {
   }
 });
 
-export async function queryImageEntities(db: SQLiteHelper, offset: number = 0, limit: number = 200): Promise<ImageEntity[]> {
+async function upgradeToVersion2(db: SQLiteHelper) {
+  logger.info('upgrade database to version 2');
+  await db.run(`
+    CREATE TABLE If NOT EXISTS ${AlbumsTableName} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      createdAt DATETIME NOT NULL
+    )
+  `);
+  await db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "2")');
+}
+
+export async function insertAlbum(db: SQLiteHelper, album: Album): Promise<number> {
+  const stmt = await db.prepare(`INSERT INTO ${AlbumsTableName} (name, description, createdAt) VALUES (?, ?, ?)`);
+  const { name, description, createdAt } = album;
+  await stmt.run(name, description, createdAt);
+  await stmt.finalize();
+  const { id } = await db.get(`SELECT id FROM ${AlbumsTableName} WHERE name=? AND createdAt=?`, name, createdAt);
+  return id;
+}
+
+export async function queryAlbums(db: SQLiteHelper): Promise<Album[]> {
+  const result = await db.all(`
+    SELECT id, name, description, createdAt FROM ${AlbumsTableName}
+    ORDER BY createdAt DESC
+  `);
+  return result.map(({ createdAt, ...rest }) => ({
+    ...rest,
+    createdAt: new Date(createdAt),
+  }));
+}
+
+export async function queryImageEntities(
+  db: SQLiteHelper,
+  offset: number = 0,
+  limit: number = 200
+): Promise<ImageEntity[]> {
   const result = await db.all(`SELECT
     id, path, createdAt FROM ${ImageEntityTableName} LIMIT ? OFFSET ?`, limit, offset);
   return result.map(({ id, path, createdAt }) => {
@@ -88,7 +132,7 @@ export async function insertThumbnailEntity(db: SQLiteHelper, thumbnail: Thumbna
 }
 
 export async function queryThumbnailsByImageId(db: SQLiteHelper, imageId: number): Promise<ThumbnailEntity[]> {
-  const result =  await db.all(`SELECT
+  const result = await db.all(`SELECT
     path, type, width, height, createdAt
     FROM ${ThumbnailsTableName} WHERE imageId=?`, imageId);
   return result.map(({ createdAt, ...rst }) => {

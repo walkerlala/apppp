@@ -1,4 +1,6 @@
-import { app, BrowserWindow, Menu, MenuItem, ipcMain, IpcMainInvokeEvent } from "electron";
+// @ts-ignore for no d.ts
+import ElectronReload from 'electron-reload';
+import { app, BrowserWindow, Menu, MenuItem, ipcMain, IpcMainInvokeEvent, IpcMain } from 'electron';
 import { eventBus, MainProcessEvents } from './events';
 import initialFolder, { getDatabasePath } from './dataFolder';
 import { setDb, getDb, setWebContent, getWebContent } from './utils';
@@ -7,13 +9,17 @@ import { SQLiteHelper } from './sqliteHelper';
 import { ImageWithThumbnails } from 'common/image';
 import { ClientMessageType, MessageRequest } from 'common/message';
 import { once, get, isUndefined } from 'lodash';
-import { logger } from "./logger";
+import { logger } from './logger';
 import { showMenu } from './menu';
 import MicroService from './microService';
 import * as dal from './dal';
-import * as path from "path";
+import * as path from 'path';
+import { Album } from 'common/album';
 
 let mainWindow: Electron.BrowserWindow;
+
+// for dev hot reload
+ElectronReload(path.join(__dirname, '../renderer'));
 
 const startMicroService = once(() => {
   MicroService.initialize();
@@ -65,6 +71,22 @@ const listenEvents = once(() => {
     }));
     menu.popup();
   });
+
+  ipcMain.handle(ClientMessageType.CreateAlbum, async (event: IpcMainInvokeEvent) => {
+    const album: Album = {
+      name: 'Untitled Album',
+      description: null,
+      createdAt: new Date(),
+    }
+    const id = await dal.insertAlbum(getDb(), album);
+    album.id = id;
+    return album;
+  });
+
+  ipcMain.handle(ClientMessageType.GetAllAlbums, async (event: IpcMainInvokeEvent) => {
+    return await dal.queryAlbums(getDb());
+  });
+
 });
 
 async function createWindow() {
@@ -72,15 +94,16 @@ async function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
+    width: 1080,
     height: 720,
+    titleBarStyle: 'hiddenInset',
     webPreferences: {
       nodeIntegration: true,
     },
-    width: 1080,
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, "../../index.html"));
+  mainWindow.loadFile(path.join(__dirname, '../../index.html'));
 
   mainWindow.webContents.on('did-finish-load', () => {
     setWebContent(mainWindow.webContents);
@@ -94,12 +117,20 @@ async function createWindow() {
   setDb(db);
 
   // Emitted when the window is closed.
-  mainWindow.on("closed", () => {
+  mainWindow.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  mainWindow.on('enter-full-screen', () => {
+    getWebContent().send(ClientMessageType.ToggleFullscreen, true);
+  })
+
+  mainWindow.on('leave-full-screen', () => {
+    getWebContent().send(ClientMessageType.ToggleFullscreen, false);
+  })
 
   showMenu();
 
@@ -113,18 +144,18 @@ async function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+app.on('ready', createWindow);
 
 // Quit when all windows are closed.
-app.on("window-all-closed", () => {
+app.on('window-all-closed', () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== "darwin") {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
-app.on("activate", () => {
+app.on('activate', () => {
   // On OS X it"s common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {

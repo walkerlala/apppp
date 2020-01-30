@@ -4,4 +4,9 @@
   background-color: rgb(246, 246, 246);
   width: 200px;
 
+  .ani-sidebar-toolbar-container {
+    height: 36px;
+    -webkit-app-region: drag;
+  }
+
 }
