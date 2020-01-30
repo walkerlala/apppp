@@ -1,18 +1,40 @@
 import * as React from 'react';
 import ZoomButton from './zoomButton.svg';
+import ZoomButton2 from './zoomButton2.svg';
 import Slider from 'renderer/Slider';
 import SearchBox from 'renderer/SearchBox';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { debounce } from 'lodash';
 import './Header.scss';
 
-class Header extends React.Component {
+interface HeaderState {
+  isScaledToFit: boolean
+}
+
+class Header extends React.Component<{}, HeaderState> {
+
+  constructor(props: {}) {
+    super({});
+    this.state = {
+      isScaledToFit: true,
+    };
+  }
 
   onScaleToButtonClick = debounce((e: React.MouseEvent) => {
+    this.setState({
+      isScaledToFit: !this.state.isScaledToFit,
+    });
     eventBus.emit(RendererEvents.ToggleScaleToFit);
   }, 100, {
     leading: true
   })
+
+  renderZoomButton() {
+    if (this.state.isScaledToFit) {
+      return <ZoomButton />;
+    }
+    return <ZoomButton2 />;
+  }
 
   render() {
     return (
@@ -27,7 +49,7 @@ class Header extends React.Component {
             className="ani-button ani-scale-to-fit-button"
             onClick={this.onScaleToButtonClick}
           >
-            <ZoomButton />
+            {this.renderZoomButton()}
           </button>
         </div>
       </div>
