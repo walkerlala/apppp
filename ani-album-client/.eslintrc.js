@@ -14,10 +14,6 @@ module.exports = {
     'prettier/react',
     'prettier/@typescript-eslint',
   ],
-  globals: {
-    Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly',
-  }, 
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
