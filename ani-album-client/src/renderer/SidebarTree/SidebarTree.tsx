@@ -7,8 +7,8 @@ import MediaServicesScaleLargeIcon from '@atlaskit/icon/glyph/media-services/sca
 import FolderIcon from '@atlaskit/icon/glyph/folder';
 import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
 import { ipcRenderer } from 'electron';
-import './SidebarTree.scss';
 import { ClientMessageType } from 'common/message';
+import './SidebarTree.scss';
 
 export interface SidebarTreeProps {
   pageKey: string;
@@ -36,12 +36,14 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
         label: 'Albums',
         icon: <FolderIcon label="Albums" />,
         hasAddIcon: true,
+        hasChildren: true,
       },
       {
         key: PageKey.Workspaces,
         label: 'Workspaces',
         icon: <DashboardIcon label="Workspaces" />,
         hasAddIcon: true,
+        hasChildren: true,
       }
     ]);
 
@@ -96,10 +98,13 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
       return (
         <SidebarTreeItem
           key={item.key}
+          isExpanded={this.state.expandedKeys.has(item.key)}
           isSelected={item.key === pageKey}
           data={item}
           onClick={this.handleTreeItemClick(item.key)}
           onAddButtonClick={this.handleAddButtonClick(item.key)}
+          onExpand={() => this.addExpandedKeys(item.key)}
+          onCollapse={() => this.removeExpandedKeys(item.key)}
           showAddButton={isMouseEntered}
         />
       );
@@ -117,4 +122,4 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
 
 }
 
-export default SidebarTree
+export default SidebarTree;

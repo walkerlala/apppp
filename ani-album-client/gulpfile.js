@@ -106,6 +106,20 @@ function buildRendererPage(cb) {
                 "sass-loader" // 将 Sass 编译成 CSS，默认使用 Node Sass
             ]
           },
+          {
+            test: /\.svg$/,
+            use: [
+              {
+                loader: "babel-loader"
+              },
+              {
+                loader: "react-svg-loader",
+                options: {
+                  jsx: false // true outputs JSX tags
+                }
+              }
+            ]
+          },
         ],
       },
       externals: ['electron'],
