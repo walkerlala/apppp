@@ -1,5 +1,5 @@
 import * as React from 'react';
-import SearchLogo from './SearchLogo.svg';
+import SearchLogo from '../SearchLogo.svg';
 import './SearchBox.scss';
 
 export interface ISearchBoxProps {
@@ -14,7 +14,7 @@ class SearchBox extends React.Component<ISearchBoxProps> {
         <div className="ani-logo-container">
           <SearchLogo />
         </div>
-        <div className="ani-search-input">Search images...</div>
+        <div className="ani-search-text">Search images...</div>
       </div>
     );
   }

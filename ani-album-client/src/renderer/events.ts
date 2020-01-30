@@ -7,6 +7,7 @@ export enum RendererEvents {
   CloseModal = 'CloseModal',
   ToggleScaleToFit = 'ToggleScaleToFit',
   NavigatePage = 'NavigatePage',
+  NavigateToPrevPage = 'NavigateToPrevPage',
 };
 
 export const eventBus = new EventEmitter.EventEmitter();

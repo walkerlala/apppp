@@ -1,0 +1,23 @@
+
+.ani-header {
+
+  &.ani-header-search {
+    padding-left: 24px;
+    padding-right: 36px;
+    display: flex;
+
+    .ani-search-input-container {
+      flex-grow: 1;
+    }
+
+    .ani-search-close-button {
+      font-size: 16px;
+      color: #5a5a5a;
+      padding-left: 8px;
+      padding-right: 8px;
+
+      -webkit-app-region: no-drag;
+    }
+  }
+
+}

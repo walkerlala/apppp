@@ -2,7 +2,7 @@ import * as React from 'react';
 import ZoomButton from './zoomButton.svg';
 import ZoomButton2 from './zoomButton2.svg';
 import Slider from 'renderer/Slider';
-import SearchBox from 'renderer/SearchBox';
+import { SearchBox } from 'renderer/Search';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { debounce } from 'lodash';
 import { PageKey } from 'renderer/pageKey';
@@ -15,7 +15,7 @@ interface HeaderState {
 class Header extends React.Component<{}, HeaderState> {
 
   constructor(props: {}) {
-    super({});
+    super(props);
     this.state = {
       isScaledToFit: true,
     };
