@@ -4,11 +4,12 @@ import AddIcon from '@atlaskit/icon/glyph/add';
 import Triangle from './triangle.svg';
 
 export interface TreeItemData {
-  key: PageKey;
+  key: string;
   label: string;
   icon?: React.ReactNode;
   hasAddIcon?: boolean;
   hasChildren?: boolean;
+  children?: () => React.ReactNode,
 }
 
 export interface SidebarTreeItemProps {
@@ -59,7 +60,7 @@ class SidebarTreeItem extends React.Component<SidebarTreeItemProps> {
   }
 
   render() {
-    const { label, icon, hasAddIcon, hasChildren } = this.props.data;
+    const { label, icon, hasAddIcon, hasChildren, children } = this.props.data;
     let containerClassName = 'ani-sidebar-tree-item noselect';
     if (this.props.isSelected) {
       containerClassName += ' ani-item-selected';
@@ -69,15 +70,18 @@ class SidebarTreeItem extends React.Component<SidebarTreeItemProps> {
       triangleAreaClassName += ' ani-expanded';
     }
     return (
-      <div onClick={this.props.onClick} className={containerClassName}>
-        <div className={triangleAreaClassName} onClick={this.onTriangleAreaClicked}>
-          {hasChildren && <Triangle />}
+      <div className="ani-sidebar-tree-item-container">
+        <div onClick={this.props.onClick} className={containerClassName}>
+          <div className={triangleAreaClassName} onClick={this.onTriangleAreaClicked}>
+            {hasChildren && <Triangle />}
+          </div>
+          <div className="ani-icon-area">
+            {icon}
+          </div>
+          <div className="ani-content-area">{label}</div>
+          {this.props.showAddButton && hasAddIcon && this.renderAddIcon()}
         </div>
-        <div className="ani-icon-area">
-          {icon}
-        </div>
-        <div className="ani-content-area">{label}</div>
-        {this.props.showAddButton && hasAddIcon && this.renderAddIcon()}
+        { hasChildren && children && children() }
       </div>
     );
   }

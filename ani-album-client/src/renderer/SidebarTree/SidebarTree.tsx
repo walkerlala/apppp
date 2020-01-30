@@ -8,6 +8,8 @@ import FolderIcon from '@atlaskit/icon/glyph/folder';
 import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
+import { isUndefined } from 'lodash';
+import { Album } from 'common/album';
 import './SidebarTree.scss';
 
 export interface SidebarTreeProps {
@@ -37,6 +39,7 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
         icon: <FolderIcon label="Albums" />,
         hasAddIcon: true,
         hasChildren: true,
+        children: this.renderAlbumChildren,
       },
       {
         key: PageKey.Workspaces,
@@ -67,29 +70,57 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
     this.setState({ expandedKeys: selectedKeys });
   }
 
-  private handleTreeItemClick = (key: PageKey) => (e: React.MouseEvent<HTMLDivElement>) => {
+  private handleTreeItemClick = (key: string) => (e: React.MouseEvent<HTMLDivElement>) => {
     eventBus.emit(RendererEvents.SidebarTreeClicked, key);
   }
 
-  private handleAddButtonClick = (key: PageKey) => async (e: React.MouseEvent<HTMLDivElement>) => {
+  private handleAddButtonClick = (key: string) => async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
     switch (key) {
-      case PageKey.Albums: {
-        try {
-          const album = await ipcRenderer.invoke(ClientMessageType.CreateAlbum);
-          console.log('id: ', album);
-        } catch (err) {
-          console.error(err);
-        }
-        break;
-      }
+      case PageKey.Albums:
+        return this.handleAddAlbum(key);
 
       default:
         // nothing
 
     }
+  }
+
+  private async handleAddAlbum(key: PageKey) {
+    try {
+      this.addExpandedKeys(key);
+      const album: Album = await ipcRenderer.invoke(ClientMessageType.CreateAlbum);
+      const newMap = produce(this.state.childrenMap, (draft: Map<string, TreeItemData[]>) => {
+        let items = draft.get(PageKey.Albums);
+        if (isUndefined(items)) {
+          items = [];
+        }
+        items = [
+          {
+            key: `album-${key}`,
+            label: album.name,
+          },
+          ...items,
+        ]
+        draft.set(PageKey.Albums, items);
+      });
+      this.setState({
+        childrenMap: newMap,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  private renderAlbumChildren = () => {
+    const items = this.state.childrenMap.get(PageKey.Albums);
+    if (isUndefined(items)) {
+      return;
+    }
+
+    return this.renderChildren(items);
   }
 
   renderChildren(items: TreeItemData[]) {
