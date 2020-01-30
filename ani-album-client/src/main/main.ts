@@ -1,5 +1,6 @@
 // @ts-ignore for no d.ts
 import ElectronReload from 'electron-reload';
+import isDev from 'electron-is-dev';
 import { app, BrowserWindow, Menu, MenuItem, ipcMain, IpcMainInvokeEvent, IpcMain } from 'electron';
 import { eventBus, MainProcessEvents } from './events';
 import initialFolder, { getDatabasePath } from './dataFolder';
@@ -18,8 +19,14 @@ import { Album } from 'common/album';
 
 let mainWindow: Electron.BrowserWindow;
 
-// for dev hot reload
-ElectronReload(path.join(__dirname, '../renderer'));
+/**
+ * For dev hot reload
+ * Can manually set ELECTRON_IS_DEV=0 in npm scripts
+ *   to simulate non-development env (avoid hot reload)
+ */
+if (isDev) {
+  ElectronReload(path.join(__dirname, '../renderer'));
+}
 
 const startMicroService = once(() => {
   MicroService.initialize();
