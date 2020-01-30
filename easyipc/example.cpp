@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cstring>
 #include <memory>
 #include "easyipc.h"
 
@@ -12,7 +13,7 @@ using EasyIpc::IpcClient;
 int client_main(int argc, char* argv[]);
 
 int main(int argc, char* argv[]) {
-    if (argc > 1 && strcmp(argv[1], "--client") == 0) {
+    if (argc > 1 && std::strcmp(argv[1], "--client") == 0) {
         return client_main(argc, argv);
     }
 

@@ -6,7 +6,7 @@
 
 #include "utils.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <Windows.h>
 #else
 #include <sys/socket.h>
@@ -29,7 +29,7 @@ namespace EasyIpc {
         memset(buffer, 0, size);
         bool ok = false;
 
-#ifdef WIN32
+#ifdef _WIN32
         while (true) {
             std::size_t remains_bytes = size - index;
 			DWORD read_bytes = 0;
@@ -93,7 +93,7 @@ namespace EasyIpc {
         if (size == 0) return true;
 
 		std::size_t written_count = 0;
-#ifdef WIN32
+#ifdef _WIN32
 		while (written_count < size) {
 			std::size_t remains_count = size - written_count;
 			DWORD tmp_written_count = 0;
@@ -131,7 +131,7 @@ namespace EasyIpc {
     }
 
     inline void CloseTunnel(MessageTunnel tunnel) {
-#ifdef WIN32
+#ifdef _WIN32
 		::CloseHandle(tunnel);
 #else
         ::close(tunnel);
@@ -210,7 +210,7 @@ namespace EasyIpc {
 		}
 	}
 
-#ifdef WIN32
+#ifdef _WIN32
 	inline std::string GetNamedPipedFromIpcToken(const std::string& token) {
 		return "\\\\.\\pipe\\" + std::string(EasyIpcPrefix) + token;
 	}
@@ -234,12 +234,12 @@ namespace EasyIpc {
     bool IpcServer::Run() {
         is_running_ = true;
 
-#ifdef WIN32
+#ifdef _WIN32
 		auto named_pipd_path = GetNamedPipedFromIpcToken(ipc_token);
 		std::wstring wide_path = Utils::ConvertToWstring(named_pipd_path);
 
 		while (is_running_) {
-			handle_ = ::CreateNamedPipeW(
+			auto handle_ = ::CreateNamedPipeW(
 				wide_path.c_str(),
 				PIPE_ACCESS_DUPLEX,       // read/write access 
 				PIPE_TYPE_MESSAGE |       // message type pipe 
@@ -336,7 +336,7 @@ namespace EasyIpc {
 
     void IpcServer::Shutdown() {
         is_running_ = false;
-#ifdef WIN32
+#ifdef _WIN32
 		::CloseHandle(handle_);
 #else
         ::close(fd);
@@ -345,7 +345,7 @@ namespace EasyIpc {
 
     bool IpcClient::Connect(const std::string &token) {
         ipc_token = token;
-#ifdef WIN32
+#ifdef _WIN32
 		auto named_pipd_path = GetNamedPipedFromIpcToken(ipc_token);
 		std::wstring wide_path = Utils::ConvertToWstring(named_pipd_path);
 
@@ -358,7 +358,6 @@ namespace EasyIpc {
 			FILE_ATTRIBUTE_NORMAL,
 			NULL
 		);
-
 		if (tunnel_ == INVALID_HANDLE_VALUE) {
 			return false;
 		}
