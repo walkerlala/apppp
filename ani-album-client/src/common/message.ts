@@ -7,6 +7,7 @@ export enum ClientMessageType {
   GetImageById = 'GetImageById',
   ToggleFullscreen = 'ToggleFullscreen',
   CreateAlbum = 'CreateAlbum',
+  GetAllAlbums = 'GetAllAlbums',
 }
 
 export interface MessageRequest {

@@ -57,6 +57,9 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
   }
 
   private addExpandedKeys = (key: string) => {
+    if (key == PageKey.Albums) {
+      this.fetchAllAlbums();
+    }
     const selectedKeys = produce(this.state.expandedKeys, (draft: Set<string>) => {
       draft.add(key);
     });
@@ -91,24 +94,8 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
   private async handleAddAlbum(key: PageKey) {
     try {
       this.addExpandedKeys(key);
-      const album: Album = await ipcRenderer.invoke(ClientMessageType.CreateAlbum);
-      const newMap = produce(this.state.childrenMap, (draft: Map<string, TreeItemData[]>) => {
-        let items = draft.get(PageKey.Albums);
-        if (isUndefined(items)) {
-          items = [];
-        }
-        items = [
-          {
-            key: `album-${key}`,
-            label: album.name,
-          },
-          ...items,
-        ]
-        draft.set(PageKey.Albums, items);
-      });
-      this.setState({
-        childrenMap: newMap,
-      });
+      await ipcRenderer.invoke(ClientMessageType.CreateAlbum);
+      await this.fetchAllAlbums();
     } catch (err) {
       console.error(err);
     }
@@ -121,6 +108,20 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
     }
 
     return this.renderChildren(items);
+  }
+
+  private async fetchAllAlbums() {
+    const albums: Album[] = await ipcRenderer.invoke(ClientMessageType.GetAllAlbums);
+    const newMap = produce(this.state.childrenMap, (draft: Map<string, TreeItemData[]>) => {
+      const items = albums.map(({ id, name }) => ({
+        key: `Album-${id}`,
+        label: name,
+      }));
+      draft.set(PageKey.Albums, items);
+    });
+    this.setState({
+      childrenMap: newMap,
+    });
   }
 
   renderChildren(items: TreeItemData[]) {

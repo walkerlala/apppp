@@ -1,6 +1,6 @@
 // @ts-ignore for no d.ts
 import ElectronReload from 'electron-reload';
-import { app, BrowserWindow, Menu, MenuItem, ipcMain, IpcMainInvokeEvent } from 'electron';
+import { app, BrowserWindow, Menu, MenuItem, ipcMain, IpcMainInvokeEvent, IpcMain } from 'electron';
 import { eventBus, MainProcessEvents } from './events';
 import initialFolder, { getDatabasePath } from './dataFolder';
 import { setDb, getDb, setWebContent, getWebContent } from './utils';
@@ -83,6 +83,10 @@ const listenEvents = once(() => {
     return album;
   });
 
+  ipcMain.handle(ClientMessageType.GetAllAlbums, async (event: IpcMainInvokeEvent) => {
+    return await dal.queryAlbums(getDb());
+  });
+
 });
 
 async function createWindow() {
@@ -90,7 +94,7 @@ async function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1000,
+    width: 1080,
     height: 720,
     titleBarStyle: 'hiddenInset',
     webPreferences: {

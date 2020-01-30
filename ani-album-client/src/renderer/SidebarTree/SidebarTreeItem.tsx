@@ -81,7 +81,7 @@ class SidebarTreeItem extends React.Component<SidebarTreeItemProps> {
           <div className="ani-content-area">{label}</div>
           {this.props.showAddButton && hasAddIcon && this.renderAddIcon()}
         </div>
-        { hasChildren && children && children() }
+        { this.props.isExpanded && children && children() }
       </div>
     );
   }

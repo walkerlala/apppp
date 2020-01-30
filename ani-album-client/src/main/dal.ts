@@ -74,6 +74,17 @@ export async function insertAlbum(db: SQLiteHelper, album: Album): Promise<numbe
   return id;
 }
 
+export async function queryAlbums(db: SQLiteHelper): Promise<Album[]> {
+  const result = await db.all(`
+    SELECT id, name, description, createdAt FROM ${AlbumsTableName}
+    ORDER BY createdAt DESC
+  `);
+  return result.map(({ createdAt, ...rest }) => ({
+    ...rest,
+    createdAt: new Date(createdAt),
+  }));
+}
+
 export async function queryImageEntities(
   db: SQLiteHelper,
   offset: number = 0,
@@ -121,7 +132,7 @@ export async function insertThumbnailEntity(db: SQLiteHelper, thumbnail: Thumbna
 }
 
 export async function queryThumbnailsByImageId(db: SQLiteHelper, imageId: number): Promise<ThumbnailEntity[]> {
-  const result =  await db.all(`SELECT
+  const result = await db.all(`SELECT
     path, type, width, height, createdAt
     FROM ${ThumbnailsTableName} WHERE imageId=?`, imageId);
   return result.map(({ createdAt, ...rst }) => {
