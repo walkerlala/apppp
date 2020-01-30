@@ -11,6 +11,7 @@ interface GridViewProps {
 }
 
 interface GridViewState {
+  scaleToFit: boolean;
   offset: number;
   length: number;
   images: ImageWithThumbnails[];
@@ -22,6 +23,7 @@ class GridView extends Component<GridViewProps, GridViewState> {
   constructor(props: GridViewProps) {
     super(props);
     this.state = {
+      scaleToFit: true,
       offset: 0,
       length: 200,
       images: [],
@@ -34,6 +36,7 @@ class GridView extends Component<GridViewProps, GridViewState> {
     ipcRenderer.addListener(ClientMessageType.PhotoDeleted, this.handlePhotoDeleted);
     window.addEventListener('contextmenu', this.handleContextMenu);
     eventBus.addListener(RendererEvents.PhotoItemClicked, this.handlePhotoItemClicked);
+    eventBus.addListener(RendererEvents.ToggleScaleToFit, this.handleToggleScaleToFit);
 
     this.fetchInitialImages();
   }
@@ -43,6 +46,14 @@ class GridView extends Component<GridViewProps, GridViewState> {
     ipcRenderer.removeListener(ClientMessageType.PhotoDeleted, this.handlePhotoDeleted);
     window.removeEventListener('contextmenu', this.handleContextMenu);
     eventBus.removeListener(RendererEvents.PhotoItemClicked, this.handlePhotoItemClicked);
+    eventBus.removeListener(RendererEvents.ToggleScaleToFit, this.handleToggleScaleToFit);
+  }
+
+  private handleToggleScaleToFit = () => {
+    const { scaleToFit } = this.state;
+    this.setState({
+      scaleToFit: !scaleToFit,
+    });
   }
 
   private handlePhotoItemClicked = (imageId: number) => {
@@ -98,13 +109,14 @@ class GridView extends Component<GridViewProps, GridViewState> {
   }
 
   private renderImages() {
-    const { images, selectedItemId } = this.state;
+    const { images, selectedItemId, scaleToFit } = this.state;
     return images.map(data => {
       return (
         <ImageItem
           key={`item-${data.id}`}
           data={data}
           isSelected={selectedItemId === data.id}
+          scaleToFit={scaleToFit}
         />
       );
     })

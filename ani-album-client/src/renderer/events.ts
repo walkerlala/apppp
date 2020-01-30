@@ -6,6 +6,7 @@ export enum RendererEvents {
   SidebarTreeClicked = 'SidebarTreeClicked',
   ShowModal = 'ShowModal',
   CloseModal = 'CloseModal',
+  ToggleScaleToFit = 'ToggleScaleToFit',
 };
 
 export const eventBus = new EventEmitter.EventEmitter();

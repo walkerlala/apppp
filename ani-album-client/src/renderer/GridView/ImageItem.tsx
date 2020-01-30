@@ -6,6 +6,7 @@ import { eventBus, RendererEvents } from 'renderer/events';
 export interface ImageItemProps {
   data: ImageWithThumbnails;
   isSelected: boolean;
+  scaleToFit: boolean;
 }
 
 class ImageItem extends Component<ImageItemProps> {
@@ -39,12 +40,17 @@ class ImageItem extends Component<ImageItemProps> {
   }
 
   render() {
-    const { data, isSelected } = this.props;
+    const { data, isSelected, scaleToFit } = this.props;
     const thumbnailPath = this.getMediumThumbnail(data);
+    let className = 'ani-img';
+    if (scaleToFit) {
+      className += ' ani-img-cover';
+    }
     return (
       <div className={`ani-grid-item ${isSelected ? 'selected' : ''}`} data-id={data.id.toString()}>
         <div className="ani-img-container">
           <img
+            className={className}
             src={`file://${thumbnailPath}`}
             onClick={this.handleImageClicked}
             onDoubleClick={this.handleImageDoubleClicked}

@@ -4,8 +4,9 @@
   -webkit-app-region: drag;
 
   .ani-big-heading {
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 500;
+    padding-left: 24px;
   }
 
   .ani-header-button-group {
@@ -24,10 +25,14 @@
   flex-direction: row;
   padding-top: 4px;;
 
-  .ani-zoom-button {
+  .ani-scale-to-fit-button {
     height: 28px;
 
     padding: 4px;
     margin-left: 12px;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 }
