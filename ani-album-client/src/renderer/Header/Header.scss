@@ -1,10 +1,15 @@
 
 .ani-header {
   -webkit-app-region: drag;
+  display: flex;
+  flex-direction: row;
+  padding-top: 8px;;
+  height: 40px;
+
 
   .ani-big-heading {
-    font-size: 20px;
-    line-height: 28px;
+    font-size: 24px;
+    line-height: 40px;
     font-weight: 500;
     padding-left: 24px;
   }
@@ -14,20 +19,15 @@
 
     padding-right: 36px;
 
-    height: 28px;
+    height: 100%;
     display: flex;
     align-items: center;
 
     -webkit-app-region: no-drag;
   }
 
-  display: flex;
-  flex-direction: row;
-  padding-top: 8px;;
-  height: 28px;
-
   .ani-scale-to-fit-button {
-    height: 28px;
+    height: 32px;
 
     padding: 4px;
     margin-left: 12px;

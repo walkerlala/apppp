@@ -14,7 +14,7 @@ class SearchBox extends React.Component<ISearchBoxProps> {
         <div className="ani-logo-container">
           <SearchLogo />
         </div>
-        <div className="ani-search-text">Search images...</div>
+        <div className="ani-search-text noselect">Search images...</div>
       </div>
     );
   }
