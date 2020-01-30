@@ -27,6 +27,21 @@
 
 }
 
+.ani-button {
+  background: none;
+  padding: 2px;
+  border-radius: 4px;
+  border-style: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover {
+    background-color: rgb(246, 246, 246);
+  }
+}
+
 .noselect {
   user-select: none; /* Non-prefixed version, currently
                         supported by Chrome, Opera and Firefox */

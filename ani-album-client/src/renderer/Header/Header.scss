@@ -2,4 +2,27 @@
 .ani-header {
   height: 36px;
   -webkit-app-region: drag;
+
+  .ani-header-button-group {
+    margin-left: auto;
+
+    padding-right: 36px;
+
+    height: 32px;
+    display: flex;
+    align-items: center;
+
+    -webkit-app-region: no-drag;
+  }
+
+  display: flex;
+  flex-direction: row;
+  padding-top: 4px;;
+
+  .ani-zoom-button {
+    height: 28px;
+
+    padding: 4px;
+    margin-left: 12px;
+  }
 }
