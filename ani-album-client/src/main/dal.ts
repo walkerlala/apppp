@@ -2,12 +2,14 @@
  * Data Access Layer
  */
 import { ImageEntity, ThumbnailEntity } from 'common/image';
+import { Album } from 'common/album';
 import { logger } from './logger';
 import { SQLiteHelper } from './sqliteHelper';
 import { once, isUndefined } from 'lodash';
 
 const ImageEntityTableName = 'imagesEntity';
 const ThumbnailsTableName = 'thumbnails';
+const AlbumsTableName = 'albums';
 
 export const initData = once(async (db: SQLiteHelper) => {
   try {
@@ -37,6 +39,11 @@ export const initData = once(async (db: SQLiteHelper) => {
     } else {
       dbVersion = Number(dbVersionResult.value);
     }
+
+    if (dbVersion === 1) {
+      await upgradeToVersion2(db);
+      dbVersion = 2;
+    }
     
     logger.info('db version: ', dbVersion);
   } catch (err) {
@@ -44,6 +51,28 @@ export const initData = once(async (db: SQLiteHelper) => {
     process.exit(1);
   }
 });
+
+async function upgradeToVersion2(db: SQLiteHelper) {
+  logger.info('upgrade database to version 2');
+  await db.run(`
+    CREATE TABLE If NOT EXISTS ${AlbumsTableName} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      createdAt DATETIME NOT NULL
+    )
+  `);
+  await db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "2")');
+}
+
+export async function insertAlbum(db: SQLiteHelper, album: Album): Promise<number> {
+  const stmt = await db.prepare(`INSERT INTO ${AlbumsTableName} (name, description, createdAt) VALUES (?, ?, ?)`);
+  const { name, description, createdAt } = album;
+  await stmt.run(name, description, createdAt);
+  await stmt.finalize();
+  const { id } = await db.get(`SELECT id FROM ${AlbumsTableName} WHERE name=? AND createdAt=?`, name, createdAt);
+  return id;
+}
 
 export async function queryImageEntities(
   db: SQLiteHelper,

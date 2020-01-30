@@ -6,8 +6,9 @@ import { PageKey } from 'renderer/pageKey';
 import MediaServicesScaleLargeIcon from '@atlaskit/icon/glyph/media-services/scale-large';
 import FolderIcon from '@atlaskit/icon/glyph/folder';
 import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
-import { ModalTypes } from 'renderer/Modals';
+import { ipcRenderer } from 'electron';
 import './SidebarTree.scss';
+import { ClientMessageType } from 'common/message';
 
 export interface SidebarTreeProps {
   pageKey: string;
@@ -68,14 +69,20 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
     eventBus.emit(RendererEvents.SidebarTreeClicked, key);
   }
 
-  private handleAddButtonClick = (key: PageKey) => (e: React.MouseEvent<HTMLDivElement>) => {
+  private handleAddButtonClick = (key: PageKey) => async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
     switch (key) {
-      case PageKey.Albums:
-        eventBus.emit(RendererEvents.ShowModal, ModalTypes.NewAlbum);
+      case PageKey.Albums: {
+        try {
+          const album = await ipcRenderer.invoke(ClientMessageType.CreateAlbum);
+          console.log('id: ', album);
+        } catch (err) {
+          console.error(err);
+        }
         break;
+      }
 
       default:
         // nothing

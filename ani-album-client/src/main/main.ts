@@ -14,6 +14,7 @@ import { showMenu } from './menu';
 import MicroService from './microService';
 import * as dal from './dal';
 import * as path from 'path';
+import { Album } from 'common/album';
 
 let mainWindow: Electron.BrowserWindow;
 
@@ -70,6 +71,18 @@ const listenEvents = once(() => {
     }));
     menu.popup();
   });
+
+  ipcMain.handle(ClientMessageType.CreateAlbum, async (event: IpcMainInvokeEvent) => {
+    const album: Album = {
+      name: 'Untitled Album',
+      description: null,
+      createdAt: new Date(),
+    }
+    const id = await dal.insertAlbum(getDb(), album);
+    album.id = id;
+    return album;
+  });
+
 });
 
 async function createWindow() {
