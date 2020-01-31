@@ -5,7 +5,7 @@ import Slider from 'renderer/Slider';
 import { SearchBox } from 'renderer/Search';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { debounce } from 'lodash';
-import { PageKey } from 'renderer/pageKey';
+import { PageKey, isAAlbum, getAlbumToken } from 'renderer/pageKey';
 import { Album } from 'common/album';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
@@ -38,9 +38,9 @@ class Header extends React.Component<HeaderProps, HeaderState> {
   componentDidMount() {
     eventBus.addListener(RendererEvents.NavigatePage, this.handlePageNavigation);
 
-    if (this.props.pageKey.startsWith('Album-')) {
-      const suffix = this.props.pageKey.slice('Album-'.length);
-      this.fetchAlbumData(Number(suffix));
+    const { pageKey } = this.props;
+    if (isAAlbum(pageKey)) {
+      this.fetchAlbumData(Number(getAlbumToken(pageKey)));
     }
   }
 
@@ -65,9 +65,8 @@ class Header extends React.Component<HeaderProps, HeaderState> {
   }
 
   private handlePageNavigation = (pageKey: string) => {
-    if (pageKey.startsWith('Album-')) {
-      const suffix = pageKey.slice('Album-'.length);
-      this.fetchAlbumData(Number(suffix));
+    if (isAAlbum(pageKey)) {
+      this.fetchAlbumData(Number(getAlbumToken(pageKey)));
     }
   }
 
@@ -116,7 +115,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
 
     if (pageKey === PageKey.Albums) {
       content = 'Albums';
-    } else if (pageKey.startsWith('Album-')) {
+    } else if (isAAlbum(pageKey)) {
       if (albumData) {
         canEdit = true;
         content = albumData.name;

@@ -3,6 +3,7 @@
  */
 import { ImageEntity, ThumbnailEntity } from 'common/image';
 import { Album } from 'common/album';
+import { Workspace } from 'common/workspace';
 import { logger } from './logger';
 import { SQLiteHelper } from './sqliteHelper';
 import { once, isUndefined } from 'lodash';
@@ -11,6 +12,7 @@ const GlobalKvTableName = 'globalKv';
 const ImageEntityTableName = 'imagesEntity';
 const ThumbnailsTableName = 'thumbnails';
 const AlbumsTableName = 'albums';
+const WorkspacesTableName = 'workspaces';
 
 export const initData = once(async (db: SQLiteHelper) => {
   try {
@@ -45,6 +47,11 @@ export const initData = once(async (db: SQLiteHelper) => {
       await upgradeToVersion2(db);
       dbVersion = 2;
     }
+
+    if (dbVersion === 2) {
+      await upgradeToVersion3(db);
+      dbVersion = 3;
+    }
     
     logger.info('db version: ', dbVersion);
   } catch (err) {
@@ -64,6 +71,42 @@ async function upgradeToVersion2(db: SQLiteHelper) {
     )
   `);
   await db.run(`INSERT OR REPLACE INTO ${GlobalKvTableName} (key, value) VALUES ("version", "2")`);
+}
+
+async function upgradeToVersion3(db: SQLiteHelper) {
+  logger.info('upgrade database to version 3');
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS ${WorkspacesTableName} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      parentId INTEGER NOT NULL DEFAULT 0,
+      name TEXT NOT NULL,
+      createdAt DATETIME NOT NULL
+    )
+  `);
+  await db.run(`INSERT OR REPLACE INTO ${GlobalKvTableName} (key, value) VALUES ("version", "3")`);
+}
+
+export async function insertWorkspace(db: SQLiteHelper, workspace: Workspace) {
+  const stmt = await db.prepare(`
+    INSERT INTO ${WorkspacesTableName}
+    (parentId, name, createdAt) VALUES (?, ?, ?)
+  `);
+  const { parentId, name, createdAt } = workspace;
+  await stmt.run(parentId, name, createdAt);
+  await stmt.finalize();
+  const { id } = await db.get(`SELECT id FROM ${WorkspacesTableName} WHERE name=? AND createdAt=?`, name, createdAt);
+  return id;
+}
+
+export async function queryWorkspacesByParentId(db: SQLiteHelper, parentId: number) {
+  const result = await db.all(`
+    SELECT id, parentId, name, createdAt FROM ${WorkspacesTableName}
+    WHERE parentId=?
+  `, parentId);
+  return result.map(({ createdAt, ...rest }) => ({
+    createdAt: new Date(createdAt),
+    ...rest,
+  }));
 }
 
 export async function insertAlbum(db: SQLiteHelper, album: Album): Promise<number> {

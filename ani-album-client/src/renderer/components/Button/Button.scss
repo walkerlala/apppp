@@ -5,6 +5,8 @@
   border-radius: 4px;
   border-style: none;
   color: #5a5a5a;
+  display: flex;
+  align-items: center;
 
   &:focus {
     outline: none;
@@ -17,10 +19,7 @@
 
   &.ani-button-large {
     font-size: 16px;
-    height: 36px;
-    display: flex;
     height: 32px;
-    align-items: center;
     border-radius: 4px;
     padding-left: 8px;
     padding-right: 8px;

@@ -8,7 +8,7 @@ export interface ISearchBoxProps {
   style?: React.CSSProperties,
 }
 
-class SearchBox extends React.Component<ISearchBoxProps> {
+class SearchBox extends React.PureComponent<ISearchBoxProps> {
 
   render() {
     return (

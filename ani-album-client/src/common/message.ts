@@ -10,6 +10,8 @@ export enum ClientMessageType {
   GetAllAlbums = 'GetAllAlbums',
   GetAlbumById = 'GetAlbumById',
   UpdateAlbumById = 'UpdateAlbumById',
+  CreateWorkspace = 'CreateWorkspace',
+  GetWorkspacesByParentId = 'GetWorkspacesByParentId',
 }
 
 export interface MessageRequest {
