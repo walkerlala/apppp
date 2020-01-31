@@ -35,10 +35,7 @@ class App extends Component<{}, AppState> {
   }
 
   private handleNavigateToPrevPage = () => {
-    this.setState({
-      prevPageKey: PageKey.MyPhotos,
-      pageKey: this.state.prevPageKey,
-    });
+    eventBus.emit(RendererEvents.NavigatePage, this.state.prevPageKey);
   }
 
   private handleNavigatePage = (pageKey: PageKey) => {

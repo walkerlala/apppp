@@ -101,6 +101,15 @@ export async function queryAlbumById(db: SQLiteHelper, id: number): Promise<Albu
   };
 }
 
+export async function updateAlbumById(db: SQLiteHelper, album: Album): Promise<void> {
+  if (isUndefined(album.id)) {
+    return;
+  }
+  await db.run(`UPDATE ${AlbumsTableName} SET name=?, description=? WHERE id=?`,
+    album.name, album.description, album.id,
+  );
+}
+
 export async function queryImageEntities(
   db: SQLiteHelper,
   offset: number = 0,

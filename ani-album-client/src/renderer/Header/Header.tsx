@@ -9,6 +9,7 @@ import { PageKey } from 'renderer/pageKey';
 import { Album } from 'common/album';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
+import EditableTitle from './EditableTitle';
 import { isUndefined } from 'lodash';
 
 import './Header.scss';
@@ -19,6 +20,7 @@ interface HeaderProps {
 
 interface HeaderState {
   isScaledToFit: boolean;
+  isMouseEntered: boolean;
   albumData: Album | null;
 }
 
@@ -28,8 +30,22 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     super(props);
     this.state = {
       isScaledToFit: true,
+      isMouseEntered: false,
       albumData: null,
     };
+  }
+
+  componentDidMount() {
+    eventBus.addListener(RendererEvents.NavigatePage, this.handlePageNavigation);
+
+    if (this.props.pageKey.startsWith('Album-')) {
+      const suffix = this.props.pageKey.slice('Album-'.length);
+      this.fetchAlbumData(Number(suffix));
+    }
+  }
+
+  componentWillUnmount() {
+    eventBus.removeListener(RendererEvents.NavigatePage, this.handlePageNavigation);
   }
 
   onScaleToButtonClick = debounce((e: React.MouseEvent) => {
@@ -38,7 +54,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     });
     eventBus.emit(RendererEvents.ToggleScaleToFit);
   }, 100, {
-    leading: true
+    leading: true,
   })
 
   renderZoomButton() {
@@ -46,6 +62,13 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       return <ZoomButton />;
     }
     return <ZoomButton2 />;
+  }
+
+  private handlePageNavigation = (pageKey: string) => {
+    if (pageKey.startsWith('Album-')) {
+      const suffix = pageKey.slice('Album-'.length);
+      this.fetchAlbumData(Number(suffix));
+    }
   }
 
   private searchBoxClicked = (e: React.MouseEvent) => {
@@ -66,33 +89,74 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     }
   }
 
+  private handleTitleContentChanged = async (content: string) => {
+    if (!this.state.albumData) {
+      return;
+    }
+    const albumData = {
+      ...this.state.albumData,
+      name: content,
+    }
+    this.setState({
+      albumData,
+    });
+    try {
+      await ipcRenderer.invoke(ClientMessageType.UpdateAlbumById, albumData);
+      eventBus.emit(RendererEvents.AlbumInfoUpdated, albumData.id);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   private renderBidHeaderContent() {
     const { pageKey } = this.props;
-    const { albumData } = this.state;
+    const { albumData, isMouseEntered } = this.state;
     let content = '2019 年 1 月 30 日';
+    let canEdit: boolean = false;
 
     if (pageKey === PageKey.Albums) {
       content = 'Albums';
     } else if (pageKey.startsWith('Album-')) {
-      const suffix = pageKey.slice('Album-'.length);
-      this.fetchAlbumData(Number(suffix));
       if (albumData) {
+        canEdit = true;
         content = albumData.name;
       } else {
-        content = 'Albums';
+        content = '';
       }
     }
 
     return (
-      <div className="ani-big-heading noselect">
-        {content}
+      <div className="ani-editable-title-container">
+        <EditableTitle
+          key={pageKey} // remount if pageKey is different
+          canEdit={canEdit}
+          showEditButton={isMouseEntered}
+          defaultContent={content}
+          onConfirmChange={this.handleTitleContentChanged}
+        />
       </div>
     );
   }
 
+  private handleMouseEnter = (e: React.MouseEvent) => {
+    this.setState({
+      isMouseEntered: true,
+    });
+  }
+
+  private handleMouseLeave = (e: React.MouseEvent) => {
+    this.setState({
+      isMouseEntered: false,
+    });
+  }
+
   render() {
     return (
-      <div className="ani-header">
+      <div
+        className="ani-header"
+        onMouseEnter={this.handleMouseEnter}
+        onMouseLeave={this.handleMouseLeave}
+      >
         {this.renderBidHeaderContent()}
         <div className="ani-header-button-group">
           <SearchBox onClick={this.searchBoxClicked} />

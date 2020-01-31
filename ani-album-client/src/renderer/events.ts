@@ -8,6 +8,7 @@ export enum RendererEvents {
   ToggleScaleToFit = 'ToggleScaleToFit',
   NavigatePage = 'NavigatePage',
   NavigateToPrevPage = 'NavigateToPrevPage',
+  AlbumInfoUpdated = 'AlbumInfoUpdated',
 };
 
 export const eventBus = new EventEmitter.EventEmitter();

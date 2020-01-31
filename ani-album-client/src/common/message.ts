@@ -9,6 +9,7 @@ export enum ClientMessageType {
   CreateAlbum = 'CreateAlbum',
   GetAllAlbums = 'GetAllAlbums',
   GetAlbumById = 'GetAlbumById',
+  UpdateAlbumById = 'UpdateAlbumById',
 }
 
 export interface MessageRequest {
