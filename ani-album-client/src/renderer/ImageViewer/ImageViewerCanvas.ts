@@ -17,6 +17,7 @@ export class ImageViewerCanvas implements IDisposable {
   private sourceElement: HTMLImageElement;
   private imageData: ImageWithThumbnails | null = null;
   private imageSize: Vector<number>;
+  private __translate: [number, number] = [0, 0];
   private __scale: number = 1.0;
   private __dpr: number = 1;
 
@@ -68,6 +69,14 @@ export class ImageViewerCanvas implements IDisposable {
   }
 
   private drawOnCanvas() {
+    this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.canvasCtx.save();
+
+    const [ transX, transY ] = this.__translate;
+    this.canvasCtx.scale(this.scale, this.scale);
+    this.canvasCtx.translate(-transX, -transY);
+
     let img: HTMLImageElement;
     if (this.thumbnailElement !== null) {
       img = this.thumbnailElement;
@@ -95,8 +104,8 @@ export class ImageViewerCanvas implements IDisposable {
       drawWidth = Math.floor(rectHeight * imgRatio);
       x = Math.floor((rectWidth - drawWidth) / 2);
     }
-    
     this.canvasCtx.drawImage(img, x, y, drawWidth, drawHeight);
+    this.canvasCtx.restore();
   }
 
   private handleWindowResize = (e: UIEvent) => {
@@ -107,6 +116,11 @@ export class ImageViewerCanvas implements IDisposable {
   private handleWheel = (e: WheelEvent) => {
     if (e.ctrlKey) { // zooming
       this.scale = this.scale + e.deltaY * -0.1;
+
+      // const rect = this.canvas.getBoundingClientRect();
+      this.__translate = [e.offsetX - e.offsetX / this.scale, e.offsetY - e.offsetY / this.scale];
+
+      this.drawOnCanvas();
     }
   }
 
