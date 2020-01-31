@@ -7,18 +7,19 @@ import { logger } from './logger';
 import { SQLiteHelper } from './sqliteHelper';
 import { once, isUndefined } from 'lodash';
 
+const GlobalKvTableName = 'globalKv';
 const ImageEntityTableName = 'imagesEntity';
 const ThumbnailsTableName = 'thumbnails';
 const AlbumsTableName = 'albums';
 
 export const initData = once(async (db: SQLiteHelper) => {
   try {
-    await db.run('CREATE TABLE IF NOT EXISTS global_kv (key TEXT PRIMARY KEY, value TEXT)');
-    const dbVersionResult = await db.get('SELECT value FROM global_kv WHERE key="version"');
+    await db.run(`CREATE TABLE IF NOT EXISTS ${GlobalKvTableName} (key TEXT PRIMARY KEY, value TEXT)`);
+    const dbVersionResult = await db.get(`SELECT value FROM ${GlobalKvTableName} WHERE key="version"`);
 
     let dbVersion: number = 1;
-    if (isUndefined(dbVersion)) {
-      await db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "1")');
+    if (isUndefined(dbVersionResult)) {
+      await db.run(`INSERT OR REPLACE INTO ${GlobalKvTableName} (key, value) VALUES ("version", "1")`);
       await db.run(`
         CREATE TABLE IF NOT EXISTS ${ImageEntityTableName} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,7 +63,7 @@ async function upgradeToVersion2(db: SQLiteHelper) {
       createdAt DATETIME NOT NULL
     )
   `);
-  await db.run('INSERT OR REPLACE INTO global_kv (key, value) VALUES ("version", "2")');
+  await db.run(`INSERT OR REPLACE INTO ${GlobalKvTableName} (key, value) VALUES ("version", "2")`);
 }
 
 export async function insertAlbum(db: SQLiteHelper, album: Album): Promise<number> {
