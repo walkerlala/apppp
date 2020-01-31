@@ -90,8 +90,6 @@ const listenEvents = once(() => {
 });
 
 async function createWindow() {
-  initialFolder();
-
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1080,
@@ -112,10 +110,6 @@ async function createWindow() {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  const databasePath = getDatabasePath();
-  const db = await SQLiteHelper.create(databasePath);
-  setDb(db);
-
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
     // Dereference the window object, usually you would store windows
@@ -134,17 +128,29 @@ async function createWindow() {
 
   showMenu();
 
-  startMicroService();
-
   listenEvents();
-  
-  dal.initData(db);
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', async () => {
+  try {
+    initialFolder();
+    const databasePath = getDatabasePath();
+    const db = await SQLiteHelper.create(databasePath);
+    setDb(db);
+
+    await dal.initData(db);
+    
+    createWindow();
+
+    startMicroService();
+  } catch (err) {
+    logger.fatal(err);
+    process.exit(1);
+  }
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
