@@ -42,6 +42,10 @@
   }
 }
 
+.ani-no-drag {
+  -webkit-app-region: no-drag;
+}
+
 .noselect {
   user-select: none; /* Non-prefixed version, currently
                         supported by Chrome, Opera and Firefox */

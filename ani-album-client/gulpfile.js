@@ -54,6 +54,7 @@ const babelConfig = {
         ]
       }
     ],
+    'babel-plugin-styled-components',
   ],
 };
 

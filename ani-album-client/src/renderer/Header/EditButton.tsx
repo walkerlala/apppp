@@ -1,5 +1,6 @@
 import React from 'react';
 import EditIcon from '@atlaskit/icon/glyph/edit';
+import styled from 'styled-components';
 
 export interface EditButtonProps {
   onClick?: (e: React.MouseEvent) => void;
@@ -8,6 +9,15 @@ export interface EditButtonProps {
 interface EditButtonState {
   isMouseEntered: boolean;
 }
+
+const Container = styled.div`
+  -webkit-app-region: no-drag;
+  margin-left: 4px;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
 
 class EditButton extends React.Component<EditButtonProps, EditButtonState> {
 
@@ -34,14 +44,14 @@ class EditButton extends React.Component<EditButtonProps, EditButtonState> {
     const { isMouseEntered } = this.state;
     const primaryColor = isMouseEntered ? 'black' : '#a0a0a0';
     return (
-      <div
-        className="ani-edit-icon-container"
+      <Container
+        className="ani-no-drag"
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
         onClick={this.props.onClick}
       >
         <EditIcon primaryColor={primaryColor} label="edit-title" />
-      </div>
+      </Container>
     );
   }
 

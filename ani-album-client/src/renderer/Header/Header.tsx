@@ -10,9 +10,8 @@ import { Album } from 'common/album';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
 import EditableTitle from './EditableTitle';
+import { HeaderContainer, ScaleToFitButton, HeaderButtonGroup, EditableTitleContainer } from './styles';
 import { isUndefined } from 'lodash';
-
-import './Header.scss';
 
 interface HeaderProps {
   pageKey: string;
@@ -126,7 +125,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     }
 
     return (
-      <div className="ani-editable-title-container">
+      <EditableTitleContainer>
         <EditableTitle
           key={pageKey} // remount if pageKey is different
           canEdit={canEdit}
@@ -134,7 +133,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
           defaultContent={content}
           onConfirmChange={this.handleTitleContentChanged}
         />
-      </div>
+      </EditableTitleContainer>
     );
   }
 
@@ -152,23 +151,22 @@ class Header extends React.Component<HeaderProps, HeaderState> {
 
   render() {
     return (
-      <div
-        className="ani-header"
+      <HeaderContainer
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
         {this.renderBidHeaderContent()}
-        <div className="ani-header-button-group">
+        <HeaderButtonGroup>
           <SearchBox onClick={this.searchBoxClicked} />
           <Slider />
-          <button
-            className="ani-button ani-scale-to-fit-button"
+          <ScaleToFitButton
+            className="ani-button"
             onClick={this.onScaleToButtonClick}
           >
             {this.renderZoomButton()}
-          </button>
-        </div>
-      </div>
+          </ScaleToFitButton>
+        </HeaderButtonGroup>
+      </HeaderContainer>
     );
   }
 

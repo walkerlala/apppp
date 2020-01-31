@@ -1,6 +1,6 @@
 import * as React from 'react';
 import SearchLogo from '../SearchLogo.svg';
-import './SearchInput.scss';
+import { SearchInputContainer, LogoContainer, Input } from './styled';
 
 export interface SearchInputProps {
   autoFocus?: boolean;
@@ -22,12 +22,12 @@ class SearchInput extends React.Component<SearchInputProps> {
   
   render() {
     return (
-      <div className="ani-search-input">
-        <div className="ani-search-input-logo-container">
+      <SearchInputContainer className="ani-no-drag">
+        <LogoContainer>
           <SearchLogo />
-        </div>
-        <input ref={this.__inputRef} placeholder="Search images..." />
-      </div>
+        </LogoContainer>
+        <Input ref={this.__inputRef} placeholder="Search images..." />
+      </SearchInputContainer>
     );
   }
 

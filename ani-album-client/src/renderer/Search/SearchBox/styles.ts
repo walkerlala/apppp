@@ -1,5 +1,6 @@
+import styled from 'styled-components';
 
-.ani-search-box {
+export const Container = styled.div`
   display: flex;
   margin-right: 36px;
   height: 32px;
@@ -12,13 +13,13 @@
     background-color: rgb(246, 246, 246);
     cursor: pointer;
   }
+`;
 
-  .ani-logo-container {
-    margin-right: 8px;
-  }
+export const LogoContainer = styled.div`
+  margin-right: 8px;
+`;
 
-  .ani-search-text {
-    font-size: 16px;
-    color: #5a5a5a;
-  }
-}
+export const Text = styled.div`
+  font-size: 16px;
+  color: #5a5a5a;
+`;

@@ -2,6 +2,7 @@ import * as React from 'react';
 import EditButton from './EditButton';
 import CheckIcon from '@atlaskit/icon/glyph/check';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
+import { BigHeadingTitle } from './styles';
 import { produce } from 'immer';
 
 export interface EditableTitleProps {
@@ -133,15 +134,15 @@ class EditableTitle extends React.Component<EditableTitleProps, EditableTitleSta
 
   render() {
     const { isEditing } = this.state;
-    let className = 'ani-big-heading noselect';
+    let className = 'noselect';
     if (isEditing) {
       className += ' ani-no-drag';
     }
     return (
-      <div className={className}>
+      <BigHeadingTitle className={className}>
         {this.renderContent()}
         {this.renderButtonGroups()}
-      </div>
+      </BigHeadingTitle>
     );
   }
 
