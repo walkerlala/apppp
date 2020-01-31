@@ -101,7 +101,7 @@ export async function insertWorkspace(db: SQLiteHelper, workspace: Workspace) {
 export async function queryWorkspacesByParentId(db: SQLiteHelper, parentId: number) {
   const result = await db.all(`
     SELECT id, parentId, name, createdAt FROM ${WorkspacesTableName}
-    WHERE parentId=?
+    WHERE parentId=? ORDER BY createdAt DESC
   `, parentId);
   return result.map(({ createdAt, ...rest }) => ({
     createdAt: new Date(createdAt),

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { produce } from 'immer';
 import SidebarTreeItem, { TreeItemData  } from './SidebarTreeItem';
 import { eventBus, RendererEvents } from 'renderer/events';
-import { PageKey } from 'renderer/pageKey';
+import { PageKey, AlbumPrefix, getWorkspaceToken, isAWorkspace, WorkspacePrefix } from 'renderer/pageKey';
 import MediaServicesScaleLargeIcon from '@atlaskit/icon/glyph/media-services/scale-large';
 import FolderIcon from '@atlaskit/icon/glyph/folder';
 import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
@@ -10,6 +10,8 @@ import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
 import { isUndefined } from 'lodash';
 import { Album } from 'common/album';
+import { Workspace } from 'common/workspace';
+
 import './SidebarTree.scss';
 
 export interface SidebarTreeProps {
@@ -39,7 +41,7 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
         icon: <FolderIcon label="Albums" />,
         hasAddIcon: true,
         hasChildren: true,
-        children: this.renderAlbumChildren,
+        children: () => this.renderChildrenByParentKey(PageKey.Albums),
       },
       {
         key: PageKey.Workspaces,
@@ -47,6 +49,7 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
         icon: <DashboardIcon label="Workspaces" />,
         hasAddIcon: true,
         hasChildren: true,
+        children: () => this.renderChildrenByParentKey(PageKey.Workspaces),
       }
     ]);
 
@@ -65,9 +68,6 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
   }
 
   private addExpandedKeys = (key: string) => {
-    if (key == PageKey.Albums) {
-      this.fetchAllAlbums();
-    }
     const selectedKeys = produce(this.state.expandedKeys, (draft: Set<string>) => {
       draft.add(key);
     });
@@ -93,6 +93,10 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
       case PageKey.Albums:
         return this.handleAddAlbum(key);
 
+
+      case PageKey.Workspaces:
+        return this.handleAddWorkspace(key);
+
       default:
         // nothing
 
@@ -104,17 +108,35 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
   }
 
   private async handleAddAlbum(key: PageKey) {
+    this.addExpandedKeys(key);
     try {
-      this.addExpandedKeys(key);
-      await ipcRenderer.invoke(ClientMessageType.CreateAlbum);
+      const album: Album = await ipcRenderer.invoke(ClientMessageType.CreateAlbum);
       await this.fetchAllAlbums();
+      const newPageKey = AlbumPrefix + album.id.toString();
+      eventBus.emit(RendererEvents.NavigatePage, newPageKey);
     } catch (err) {
       console.error(err);
     }
   }
 
-  private renderAlbumChildren = () => {
-    const items = this.state.childrenMap.get(PageKey.Albums);
+  private async handleAddWorkspace(parentKey: PageKey) {
+    if (!isAWorkspace(parentKey)) {
+      return;
+    }
+    this.addExpandedKeys(parentKey);
+    try {
+      const parentToken = getWorkspaceToken(parentKey);
+      const wp: Workspace = await ipcRenderer.invoke(ClientMessageType.CreateWorkspace, Number(parentToken));
+      await this.fetchWorkspaces(parentKey);
+      const newPageKey = WorkspacePrefix + wp.id.toString();
+      eventBus.emit(RendererEvents.NavigatePage, newPageKey);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  private renderChildrenByParentKey(key: PageKey) {
+    const items = this.state.childrenMap.get(key);
     if (isUndefined(items)) {
       return;
     }
@@ -136,6 +158,39 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
     });
   }
 
+  private async fetchWorkspaces(parentKey: string) {
+    if (!isAWorkspace(parentKey)) {
+      return;
+    }
+    const parentToken = getWorkspaceToken(parentKey);
+    try {
+      const result: Workspace[] = await ipcRenderer.invoke(
+        ClientMessageType.GetWorkspacesByParentId, Number(parentToken),
+      );
+      const newMap = produce(this.state.childrenMap, (draft: Map<string, TreeItemData[]>) => {
+        const items = result.map(({ id, name }) => ({
+          key: WorkspacePrefix + id.toString(),
+          label: name,
+        }));
+        draft.set(parentKey, items);
+      });
+      this.setState({
+        childrenMap: newMap,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  private handleItemExpanded = (key: string) => {
+    if (key === PageKey.Albums) {
+      this.fetchAllAlbums();
+    } else if (isAWorkspace(key)) {
+      this.fetchWorkspaces(key);
+    }
+    this.addExpandedKeys(key);
+  }
+
   renderChildren(items: TreeItemData[]) {
     const { isMouseEntered, pageKey } = this.props;
     return items.map(item => {
@@ -147,7 +202,7 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
           data={item}
           onClick={this.handleTreeItemClick(item.key)}
           onAddButtonClick={this.handleAddButtonClick(item.key)}
-          onExpand={() => this.addExpandedKeys(item.key)}
+          onExpand={() => this.handleItemExpanded(item.key)}
           onCollapse={() => this.removeExpandedKeys(item.key)}
           showAddButton={isMouseEntered}
         />
