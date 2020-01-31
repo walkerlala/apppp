@@ -122,13 +122,8 @@ const webpackBaseConfig = {
   ],
 };
 
-const webpackWatchConfig = webpackMerge(webpackBaseConfig, {
-  watch: true,
-  plugins: [
-    new ForkTsCheckerWebpackPlugin(),
-    new HardSourceWebpackPlugin()
-  ]
-})
+let webpackCompiler = null;
+let webpackWatcher = null;
 
 function webpackCallback(err, stats, cb) {
   // Stats Object
@@ -157,18 +152,35 @@ function buildRendererPageWatcher(cb) {
 }
 
 function buildRendererPage(cb, needWatch = false) {
-  const config = needWatch
-    ? webpackWatchConfig
-    : webpackBaseConfig
 
-  webpack(config, (err, stats) => webpackCallback(err, stats, cb));
+  const handler = (err, status) => webpackCallback(err, status, cb);
+
+  if (!needWatch) {
+    return webpack(webpackBaseConfig, handler);
+  }
+
+  if (!webpackCompiler || !webpackWatcher) {
+    webpackCompiler = webpack(webpackBaseConfig);
+
+    webpackWatcher = webpackCompiler.watch({
+      ignored: ['node_modules']
+    }, handler);
+  } else {
+    // make sure webpackWatcher.handler use new gulp's cb
+    webpackWatcher.handler = handler;
+  }
+
 }
 
-function buildWatch() {
-  return watch('./src/**/*', parallel(buildMainOutput, buildRendererPageWatcher));
+function watchingMain() {
+  return watch(['./src/common/*', './src/main/*'], buildMainOutput);
 }
 
-exports.watch = buildWatch;
+function watchingRenderer() {
+  return watch('./src/renderer/*', buildRendererPageWatcher)
+}
+
+exports.watch = parallel(watchingMain, watchingRenderer);
 exports.buildMain = buildMainOutput;
 exports.buildRendererPage = buildRendererPage;
 exports.build = parallel(buildMainOutput, buildRendererPage);
