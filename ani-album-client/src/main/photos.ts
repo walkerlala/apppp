@@ -6,7 +6,6 @@ import { ClientMessageType } from 'common/message';
 import { getThumbnailsFolder } from './dataFolder';
 import microService from './microService';
 import * as fs from 'fs';
-import { ExifInfo } from 'protos/ipc_pb';
 
 export async function importPhotos() {
   try {

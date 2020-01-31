@@ -8,10 +8,27 @@
 
 
   .ani-big-heading {
+    display: flex;
+
     font-size: 24px;
     line-height: 40px;
     font-weight: 500;
     padding-left: 24px;
+
+    .ani-edit-icon-container {
+      -webkit-app-region: no-drag;
+      margin-left: 4px;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+    }
+
+    &.ani-no-drag {
+      -webkit-app-region: no-drag;
+    }
+
   }
 
   .ani-header-button-group {
