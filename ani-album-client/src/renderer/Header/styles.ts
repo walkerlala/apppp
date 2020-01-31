@@ -17,17 +17,6 @@ export const BigHeadingTitle = styled.div`
   padding-left: 24px;
 `;
 
-export const ScaleToFitButton = styled.button`
-  height: 32px;
-
-  padding: 4px;
-  margin-left: 12px;
-
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
 export const HeaderButtonGroup = styled.div`
   margin-left: auto;
 

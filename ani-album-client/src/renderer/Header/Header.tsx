@@ -10,7 +10,8 @@ import { Album } from 'common/album';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
 import EditableTitle from './EditableTitle';
-import { HeaderContainer, ScaleToFitButton, HeaderButtonGroup, EditableTitleContainer } from './styles';
+import Button from 'renderer/components/Button';
+import { HeaderContainer, HeaderButtonGroup, EditableTitleContainer } from './styles';
 import { isUndefined } from 'lodash';
 
 interface HeaderProps {
@@ -157,14 +158,23 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       >
         {this.renderBidHeaderContent()}
         <HeaderButtonGroup>
-          <SearchBox onClick={this.searchBoxClicked} />
+          <SearchBox
+            style={{
+              marginRight: '36px',
+            }}
+            onClick={this.searchBoxClicked}
+          />
           <Slider />
-          <ScaleToFitButton
+          <Button
             className="ani-button"
+            size="large"
             onClick={this.onScaleToButtonClick}
+            style={{
+              marginLeft: '12px',
+            }}
           >
             {this.renderZoomButton()}
-          </ScaleToFitButton>
+          </Button>
         </HeaderButtonGroup>
       </HeaderContainer>
     );
