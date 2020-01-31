@@ -87,6 +87,10 @@ const listenEvents = once(() => {
     return await dal.queryAlbums(getDb());
   });
 
+  ipcMain.handle(ClientMessageType.GetAlbumById, async (event: IpcMainInvokeEvent, id: number) => {
+    return await dal.queryAlbumById(getDb(), id);
+  });
+
 });
 
 async function createWindow() {

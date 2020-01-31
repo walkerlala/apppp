@@ -52,10 +52,11 @@ class App extends Component<{}, AppState> {
   }
 
   private renderHeader() {
-    if (this.state.pageKey === PageKey.Search) {
+    const { pageKey } = this.state;
+    if (pageKey === PageKey.Search) {
       return <SearchHeader />
     }
-    return <Header />;
+    return <Header pageKey={pageKey} />;
   }
 
   render() {

@@ -6,18 +6,29 @@ import { SearchBox } from 'renderer/Search';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { debounce } from 'lodash';
 import { PageKey } from 'renderer/pageKey';
+import { Album } from 'common/album';
+import { ipcRenderer } from 'electron';
+import { ClientMessageType } from 'common/message';
+import { isUndefined } from 'lodash';
+
 import './Header.scss';
 
-interface HeaderState {
-  isScaledToFit: boolean
+interface HeaderProps {
+  pageKey: string;
 }
 
-class Header extends React.Component<{}, HeaderState> {
+interface HeaderState {
+  isScaledToFit: boolean;
+  albumData: Album | null;
+}
 
-  constructor(props: {}) {
+class Header extends React.Component<HeaderProps, HeaderState> {
+
+  constructor(props: HeaderProps) {
     super(props);
     this.state = {
       isScaledToFit: true,
+      albumData: null,
     };
   }
 
@@ -41,12 +52,48 @@ class Header extends React.Component<{}, HeaderState> {
     eventBus.emit(RendererEvents.NavigatePage, PageKey.Search);
   }
 
+  private async fetchAlbumData(albumId: number) {
+    try {
+      const albumData = await ipcRenderer.invoke(ClientMessageType.GetAlbumById, albumId);
+      if (isUndefined(albumData)) {
+        return;
+      }
+      this.setState({
+        albumData,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  private renderBidHeaderContent() {
+    const { pageKey } = this.props;
+    const { albumData } = this.state;
+    let content = '2019 年 1 月 30 日';
+
+    if (pageKey === PageKey.Albums) {
+      content = 'Albums';
+    } else if (pageKey.startsWith('Album-')) {
+      const suffix = pageKey.slice('Album-'.length);
+      this.fetchAlbumData(Number(suffix));
+      if (albumData) {
+        content = albumData.name;
+      } else {
+        content = 'Albums';
+      }
+    }
+
+    return (
+      <div className="ani-big-heading noselect">
+        {content}
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className="ani-header">
-        <div className="ani-big-heading noselect">
-          2019 年 1 月 30 日
-        </div>
+        {this.renderBidHeaderContent()}
         <div className="ani-header-button-group">
           <SearchBox onClick={this.searchBoxClicked} />
           <Slider />

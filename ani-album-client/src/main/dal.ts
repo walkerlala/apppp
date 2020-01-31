@@ -86,6 +86,21 @@ export async function queryAlbums(db: SQLiteHelper): Promise<Album[]> {
   }));
 }
 
+export async function queryAlbumById(db: SQLiteHelper, id: number): Promise<Album | undefined> {
+  const result = await db.get(`
+    SELECT id, name, description, createdAt FROM ${AlbumsTableName}
+    WHERE id=?
+  `, id);
+  if (isUndefined(result)) {
+    return undefined;
+  }
+  const { createdAt, ...rest } = result;
+  return {
+    ...rest,
+    createdAt: new Date(createdAt),
+  };
+}
+
 export async function queryImageEntities(
   db: SQLiteHelper,
   offset: number = 0,
@@ -107,6 +122,9 @@ export async function queryImageById(db: SQLiteHelper, imageId: number) {
     id, path, createdAt FROM ${ImageEntityTableName} WHERE id=?`,
     imageId
   );
+  if (isUndefined(result)) {
+    return undefined;
+  }
   const { createdAt, ...rest } = result;
   return {
     ...rest,
