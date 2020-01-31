@@ -3,6 +3,7 @@
     .ani-sidebar-tree-item {
       display: flex;
       padding-left: 10px;
+      padding-right: 4px;
       height: 26px;
       line-height: 26px;
       font-size: 14px;
@@ -11,6 +12,7 @@
       .ani-triangle-area {
         height: 100%;
         width: 16px;
+        min-width: 16px;
 
         display: flex;
         align-items: center;
@@ -26,9 +28,16 @@
       .ani-icon-area {
         display: flex;
         width: 24px;
+        min-width: 24px;
         height: 100%;
         margin-right: 4px;
         align-items: center;
+      }
+
+      .ani-content-area {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
 
       .ani-add-icon-area {

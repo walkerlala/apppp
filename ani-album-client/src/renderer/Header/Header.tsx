@@ -37,6 +37,11 @@ class Header extends React.Component<HeaderProps, HeaderState> {
 
   componentDidMount() {
     eventBus.addListener(RendererEvents.NavigatePage, this.handlePageNavigation);
+
+    if (this.props.pageKey.startsWith('Album-')) {
+      const suffix = this.props.pageKey.slice('Album-'.length);
+      this.fetchAlbumData(Number(suffix));
+    }
   }
 
   componentWillUnmount() {
@@ -97,6 +102,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     });
     try {
       await ipcRenderer.invoke(ClientMessageType.UpdateAlbumById, albumData);
+      eventBus.emit(RendererEvents.AlbumInfoUpdated, albumData.id);
     } catch (err) {
       console.error(err);
     }
@@ -122,7 +128,9 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     return (
       <div className="ani-editable-title-container">
         <EditableTitle
-          canEdit={isMouseEntered && canEdit}
+          key={pageKey} // remount if pageKey is different
+          canEdit={canEdit}
+          showEditButton={isMouseEntered}
           defaultContent={content}
           onConfirmChange={this.handleTitleContentChanged}
         />

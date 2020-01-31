@@ -56,6 +56,14 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
     };
   }
 
+  componentDidMount() {
+    eventBus.addListener(RendererEvents.AlbumInfoUpdated, this.handleAlbumInfoUpdated);
+  }
+
+  componentWillUnmount() {
+    eventBus.removeListener(RendererEvents.AlbumInfoUpdated, this.handleAlbumInfoUpdated);
+  }
+
   private addExpandedKeys = (key: string) => {
     if (key == PageKey.Albums) {
       this.fetchAllAlbums();
@@ -89,6 +97,10 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
         // nothing
 
     }
+  }
+
+  private handleAlbumInfoUpdated = (albumId: number) => {
+    this.fetchAllAlbums();
   }
 
   private async handleAddAlbum(key: PageKey) {

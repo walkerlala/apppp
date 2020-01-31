@@ -1,11 +1,13 @@
 import * as React from 'react';
 import EditButton from './EditButton';
 import CheckIcon from '@atlaskit/icon/glyph/check';
+import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import { produce } from 'immer';
 
 export interface EditableTitleProps {
   // pageKey: string;
   canEdit?: boolean;
+  showEditButton?: boolean;
   defaultContent?: string;
   onConfirmChange?: (content: string) => void;
 }
@@ -29,8 +31,14 @@ class EditableTitle extends React.Component<EditableTitleProps, EditableTitleSta
       }
 
       draft.prevCanEdit = Boolean(props.canEdit);
+
+      if (!draft.isEditing) {
+        draft.content = props.defaultContent;
+      }
     });
   }
+
+  private __inputRef = React.createRef<HTMLInputElement>();
 
   constructor(props: EditableTitleProps) {
     super(props);
@@ -44,6 +52,8 @@ class EditableTitle extends React.Component<EditableTitleProps, EditableTitleSta
   private handleEditButtonClicked = (e: React.MouseEvent) => {
     this.setState({
       isEditing: true,
+    }, () => {
+      this.focusInput();
     });
   }
   
@@ -62,9 +72,23 @@ class EditableTitle extends React.Component<EditableTitleProps, EditableTitleSta
   private renderContent() {
     const { isEditing, content } = this.state;
     if (isEditing) {
-      return <input value={content} onChange={this.handleInputChanged} />
+      return (
+        <input
+          className="ani-input"
+          value={content}
+          onChange={this.handleInputChanged}
+          ref={this.__inputRef}
+        />
+      );
     }
     return content;
+  }
+
+  private focusInput() {
+    if (!this.__inputRef.current) {
+      return;
+    }
+    this.__inputRef.current.focus();
   }
 
   private confirmInput = () => {
@@ -76,19 +100,31 @@ class EditableTitle extends React.Component<EditableTitleProps, EditableTitleSta
     });
   }
 
+  private handleCancelInput = () => {
+    this.setState({
+      content: this.props.defaultContent || '',
+      isEditing: false,
+    });
+  }
+
   private renderButtonGroups() {
-    const { canEdit } = this.props;
+    const { canEdit, showEditButton } = this.props;
     const { isEditing } = this.state;
 
     if (isEditing) {
       return (
-        <div className="ani-confirm-button" onClick={this.confirmInput}>
-          <CheckIcon label="check" />
-        </div>
+        <React.Fragment>
+          <div className="ani-confirm-button" onClick={this.confirmInput}>
+            <CheckIcon label="check" />
+          </div>
+          <div className="ani-confirm-button" onClick={this.handleCancelInput}>
+            <EditorCloseIcon label="cross" />
+          </div>
+        </React.Fragment>
       )
     }
 
-    if (canEdit) {
+    if (canEdit && showEditButton) {
       return this.renderEditIcon();
     }
 
