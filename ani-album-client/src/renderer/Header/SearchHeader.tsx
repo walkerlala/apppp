@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { SearchInput } from 'renderer/Search';
-import { eventBus, RendererEvents } from 'renderer/events'
+import { eventBus, RendererEvents } from 'renderer/events';
+import Button from 'renderer/components/Button';
 import { SearchHeaderContainer, SearchInputContainer, SearchCloseButton } from './styles';
 
 class SearchHeader extends React.Component {
@@ -15,11 +16,15 @@ class SearchHeader extends React.Component {
         <SearchInputContainer>
           <SearchInput />
         </SearchInputContainer>
-        <SearchCloseButton className="ani-button noselect" onClick={this.handleCloseClicked} >
+        <Button
+          className="ani-no-drag"
+          onClick={this.handleCloseClicked}
+          size="large"
+        >
           Close
-        </SearchCloseButton>
+        </Button>
       </SearchHeaderContainer>
-    )
+    );
   }
 
 }

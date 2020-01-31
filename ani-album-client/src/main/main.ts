@@ -16,6 +16,7 @@ import MicroService from './microService';
 import * as dal from './dal';
 import * as path from 'path';
 import { Album } from 'common/album';
+import { Workspace } from 'common/workspace';
 
 let mainWindow: Electron.BrowserWindow;
 
@@ -100,6 +101,21 @@ const listenEvents = once(() => {
 
   ipcMain.handle(ClientMessageType.UpdateAlbumById, async (event: IpcMainInvokeEvent, album: Album) => {
     return await dal.updateAlbumById(getDb(), album);
+  });
+
+  ipcMain.handle(ClientMessageType.CreateWorkspace, async (event: IpcMainInvokeEvent, parentId: number) => {
+    const wp: Workspace = {
+      name: 'Untitled Workspace',
+      parentId,
+      createdAt: new Date(),
+    };
+    const id = await dal.insertWorkspace(getDb(), wp);
+    wp.id = id;
+    return wp;
+  });
+
+  ipcMain.handle(ClientMessageType.GetWorkspacesByParentId, async (event: IpcMainInvokeEvent, parentId: number) => {
+    return await dal.queryWorkspacesByParentId(getDb(), parentId);
   });
 
 });

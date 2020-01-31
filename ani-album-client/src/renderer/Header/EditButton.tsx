@@ -19,7 +19,7 @@ const Container = styled.div`
   }
 `;
 
-class EditButton extends React.Component<EditButtonProps, EditButtonState> {
+class EditButton extends React.PureComponent<EditButtonProps, EditButtonState> {
 
   constructor(props: EditButtonProps) {
     super(props);

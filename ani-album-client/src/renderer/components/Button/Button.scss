@@ -1,0 +1,28 @@
+
+.ani-std-button {
+  background: none;
+  padding: 2px;
+  border-radius: 4px;
+  border-style: none;
+  color: #5a5a5a;
+  display: flex;
+  align-items: center;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover {
+    background-color: rgb(246, 246, 246);
+    cursor: pointer;
+  }
+
+  &.ani-button-large {
+    font-size: 16px;
+    height: 32px;
+    border-radius: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
