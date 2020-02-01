@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import TrafficLight from 'renderer/TrafficLight';
 import SidebarTree from 'renderer/SidebarTree';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
@@ -36,15 +37,15 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
   }
 
   componentDidMount() {
-    ipcRenderer.addListener(ClientMessageType.ToggleFullscreen, this.handleToggleFullscreen)
+    ipcRenderer.addListener(ClientMessageType.ToggleFullscreen, this.handleToggleFullscreen);
   }
 
   componentWillUnmount() {
-    ipcRenderer.removeListener(ClientMessageType.ToggleFullscreen, this.handleToggleFullscreen)
+    ipcRenderer.removeListener(ClientMessageType.ToggleFullscreen, this.handleToggleFullscreen);
   }
 
   private handleToggleFullscreen = (e: any, isFullscreen: boolean) => {
-    this.setState({ isFullscreen })
+    this.setState({ isFullscreen });
   }
 
   render() {
@@ -56,7 +57,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
-        { !isFullscreen && <div className="ani-sidebar-toolbar-container"></div> }
+        { !isFullscreen && <TrafficLight></TrafficLight> }
         <SidebarTree pageKey={pageKey} isMouseEntered={isMouseEntered} />
       </div>
     );
