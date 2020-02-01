@@ -125,7 +125,7 @@ async function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1080,
     height: 720,
-    titleBarStyle: 'hiddenInset',
+    frame: false,
     webPreferences: {
       nodeIntegration: true,
     },
@@ -155,6 +155,19 @@ async function createWindow() {
 
   mainWindow.on('leave-full-screen', () => {
     getWebContent().send(ClientMessageType.ToggleFullscreen, false);
+  });
+  
+  ipcMain.on('close', () => {
+    mainWindow = null;
+    app.quit();
+  });
+
+  ipcMain.on('min', () => {
+    mainWindow.minimize();
+  });
+
+  ipcMain.on('fullscreen', () => {
+    mainWindow.setFullScreen(true);
   });
 
   showMenu();

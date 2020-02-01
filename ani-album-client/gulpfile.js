@@ -4,10 +4,7 @@ const changed = require('gulp-changed')
 const path = require('path');
 const babel = require('gulp-babel');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
-
 const webpack = require('webpack');
-const webpackMerge = require('webpack-merge');
  
 // const source = require('vinyl-source-stream');
                 
