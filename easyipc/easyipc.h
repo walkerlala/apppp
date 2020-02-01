@@ -5,9 +5,9 @@
 #include <string>
 #include <functional>
 
-#include <ThreadPool.h>
+#include "ThreadPool.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <Windows.h>
 typedef HANDLE MessageTunnel;
 #else

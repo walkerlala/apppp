@@ -3,47 +3,26 @@
 //
 
 #include "read_exif.h"
-#include "./exif.h"
+#include "exif.h"
 
 #include <iostream>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <unistd.h>
+#include <fstream>
+#include <sstream>
 
 std::optional<ExifInfo> read_exif(const std::string& path) {
-    int fd = open(path.c_str(), O_RDONLY);
-    if (fd < 0) {
-        perror("read exif");
-        return std::nullopt;
-    }
 
-    struct stat file_stat_;
-    int error = fstat(fd, &file_stat_);
-    if (error < 0) {
-        perror("stat failed");
-        ::close(fd);
-        return std::nullopt;
-    }
-
-    void* file = ::mmap(nullptr, file_stat_.st_size, PROT_READ, MAP_SHARED, fd, 0);
-    if (file == MAP_FAILED) {
-        perror("map failed");
-        ::close(fd);
-        return std::nullopt;
-    }
+    std::ifstream fstrm(path);
+    std::stringstream buffer;
+    buffer << fstrm.rdbuf();
 
     easyexif::EXIFInfo parser;
-    int ret = parser.parseFrom(
-        reinterpret_cast<const unsigned char *>(file), static_cast<unsigned int>(file_stat_.st_size));
+    int ret = parser.parseFrom(buffer.str());
 
     if (ret != PARSE_EXIF_SUCCESS) {
         std::cerr << "parse error" << std::endl;
-        ::close(fd);
         return std::nullopt;
     }
 
-    ::close(fd);
     ExifInfo resp;
     resp.set_camera_make(parser.Make);
     resp.set_camera_model(parser.Model);

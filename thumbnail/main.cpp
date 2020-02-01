@@ -3,11 +3,11 @@
 
 #include <ThreadPool.h>
 
-#include <easyipc.h>
-#include <ipc-message/ipc.pb.h>
+#include "easyipc.h"
+#include "ipc-message/ipc.pb.h"
 
-#include "./gen_thumbnails.h"
-#include "./read_exif.h"
+#include "gen_thumbnails.h"
+#include "read_exif.h"
 
 using EasyIpc::IpcServer;
 

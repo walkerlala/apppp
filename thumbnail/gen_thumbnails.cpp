@@ -1,7 +1,7 @@
 //
 // Created by Duzhong Chen on 2020/1/26.
 //
-
+#include <sstream>
 #include "gen_thumbnails.h"
 
 #include <boost/gil.hpp>
