@@ -9,4 +9,8 @@ file(GLOB source_files
         "./ipc-message/*.cc")
 
 add_library(ipc_message STATIC ${source_files})
-target_link_libraries(ipc_message protobuf::libprotobuf protobuf::libprotobuf-lite)
+if (WIN32)
+    target_link_libraries(ipc_message protobuf::libprotobuf protobuf::libprotobuf-lite)
+else()
+    target_link_libraries(ipc_message protobuf)
+endif()
