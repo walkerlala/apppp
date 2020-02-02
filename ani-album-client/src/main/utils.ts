@@ -1,3 +1,4 @@
+import * as os from 'os';
 import { SQLiteHelper} from './sqliteHelper';
 import { WebContents } from 'electron';
 
@@ -5,29 +6,41 @@ let global_db: SQLiteHelper;
 let globalWebContent: WebContents; 
 
 export function setWebContent(wc: WebContents) {
-    globalWebContent = wc;
+  globalWebContent = wc;
 }
 
 export function getWebContent(): WebContents {
-    return globalWebContent;
+  return globalWebContent;
 }
 
 export function setDb(db: SQLiteHelper) {
-    global_db = db;
+  global_db = db;
 }
 
 export function getDb(): SQLiteHelper {
-    return global_db;
+  return global_db;
 }
 
 export function Uint8ArrayToBuffer(arr: Uint8Array): Buffer {
-    return Buffer.from(arr.buffer);
+  return Buffer.from(arr.buffer);
 }
 
 export function BufferToUint8Array(buffer: Buffer): Uint8Array {
-    const uint8Arr = new Uint8Array(buffer.length);
-    for (let i = 0; i < buffer.length; i++) {
-        uint8Arr[i] = buffer[i];
-    }
-    return uint8Arr;
+  const uint8Arr = new Uint8Array(buffer.length);
+  for (let i = 0; i < buffer.length; i++) {
+    uint8Arr[i] = buffer[i];
+  }
+  return uint8Arr;
+}
+
+export function isMacOS(): boolean {
+  return os.platform() === 'darwin';
+}
+
+export function isWindows(): boolean {
+  return os.platform() === 'win32';
+}
+
+export function isLinux(): boolean {
+  return os.platform() === 'linux';
 }

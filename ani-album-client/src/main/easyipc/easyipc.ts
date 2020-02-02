@@ -1,4 +1,6 @@
 import * as net from 'net';
+import { join } from 'path';
+import { isWindows } from '../utils';
 
 export namespace easyipc {
 
@@ -6,6 +8,9 @@ export namespace easyipc {
     const HeaderSize = 24;
 
     function GetDomainSocketPath(ipcToken: string) {
+        if (isWindows()) {
+            return join('\\\\?\\pipe', `ani-${ipcToken}`);
+        }
         return `/tmp/ani-${ipcToken}`;
     }
 

@@ -1,10 +1,18 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import { join } from 'path';
+import { isWindows, isMacOS } from './utils';
 
 export function getAppDateFolder(): string {
-  const home = os.homedir();
-  return join(home, 'Library', 'Application Support', 'SmartNotebook');
+  if (isMacOS()) {
+    const home = os.homedir();
+    return join(home, 'Library', 'Application Support', 'SmartNotebook');
+  } else if (isWindows()) {
+    const home = os.homedir();
+    return join(home, 'AppData', 'Local', 'SmartNotebook');
+  } else {
+    throw new Error("not support");
+  }
 }
 
 export function getLogsFolder(): string {

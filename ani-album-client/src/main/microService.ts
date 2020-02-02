@@ -1,3 +1,4 @@
+import * as os from 'os';
 import { ChildProcess, spawn } from 'child_process';
 import { join } from 'path';
 import { logger } from './logger';
@@ -6,7 +7,7 @@ import { getLogsFolder } from './dataFolder';
 import { easyipc } from './easyipc/easyipc';
 import { MessageType, GenerateThumbnailsRequest, ThumbnailType,
   GenerateThumbnailsResponse, ReadExifRequest, ExifInfo } from 'protos/ipc_pb';
-import { BufferToUint8Array, Uint8ArrayToBuffer } from './utils';
+import { BufferToUint8Array, Uint8ArrayToBuffer, isWindows } from './utils';
 
 const __PACK_DIR__: string = '__PACK_DIR__'; // wil be replaced
 
@@ -14,8 +15,13 @@ interface ServiceBinaryPath {
   thumbnails: string;
 }
 
+let binaryName = 'thumbnail';
+if (isWindows()) {
+  binaryName = 'ani-thumbnail.exe';
+}
+
 const defaultPath: ServiceBinaryPath = {
-  thumbnails: join(__PACK_DIR__, 'bin', 'thumbnail'),
+  thumbnails: join(__PACK_DIR__, 'bin', os.platform(), binaryName),
 }
 
 export class MicroService {

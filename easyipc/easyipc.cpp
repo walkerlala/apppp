@@ -239,7 +239,7 @@ namespace EasyIpc {
 		std::wstring wide_path = Utils::ConvertToWstring(named_pipd_path);
 
 		while (is_running_) {
-			auto handle_ = ::CreateNamedPipeW(
+			handle_ = ::CreateNamedPipeW(
 				wide_path.c_str(),
 				PIPE_ACCESS_DUPLEX,       // read/write access 
 				PIPE_TYPE_MESSAGE |       // message type pipe 

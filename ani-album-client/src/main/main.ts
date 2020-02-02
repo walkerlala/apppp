@@ -4,7 +4,7 @@ import isDev from 'electron-is-dev';
 import { app, BrowserWindow, Menu, MenuItem, ipcMain, IpcMainInvokeEvent, IpcMain } from 'electron';
 import { eventBus, MainProcessEvents } from './events';
 import initialFolder, { getDatabasePath } from './dataFolder';
-import { setDb, getDb, setWebContent, getWebContent } from './utils';
+import { setDb, getDb, setWebContent, getWebContent, isWindows } from './utils';
 import { importPhotos } from './photos';
 import { SQLiteHelper } from './sqliteHelper';
 import { ImageWithThumbnails } from 'common/image';
@@ -121,11 +121,16 @@ const listenEvents = once(() => {
 });
 
 async function createWindow() {
+  let frame: boolean = false;
+  if (isWindows()) {
+    frame = true;
+  }
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1080,
     height: 720,
-    frame: false,
+    frame,
     webPreferences: {
       nodeIntegration: true,
     },
