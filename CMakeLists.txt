@@ -24,8 +24,11 @@ if (WIN32)
 endif()
 find_package(protobuf PATHS ${ANI_THIRDPARTY_INSTALL_DIR})
 find_package(ZLIB PATHS ${ANI_THIRDPARTY_INSTALL_DIR})
-# the Boost_LIBRARIES variable will define the components below
-find_package(Boost 1.70 REQUIRED COMPONENTS filesystem random PATHS ${ANI_BOOST_INSTALL_DIR})
+
+set(Boost_USE_STATIC_LIBS ON)
+find_package(Boost 1.70 REQUIRED
+             COMPONENTS filesystem random # Boost_LIBRARIES will define these components
+             PATHS ${ANI_BOOST_INSTALL_DIR})
 
 add_subdirectory(thirdparty)
 #add_subdirectory(daemon)
