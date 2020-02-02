@@ -10,6 +10,13 @@ set(ANI_THIRDPARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty)
 set(ANI_THIRDPARTY_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty)
 set(ANI_THUMBNAIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thumbnail)
 
+if (NOT DEFINED ANI_THIRDPARTY_INSTALL_DIR)
+    MESSAGE(FATAL_ERROR "ANI_THIRDPARTY_INSTALL_DIR not defined. Forget to add -DANI_THIRDPARTY_INSTALL_DIR to cmake command ?")
+endif()
+if (NOT DEFINED ANI_BOOST_INSTALL_DIR)
+    MESSAGE(FATAL_ERROR "ANI_BOOST_INSTALL_DIR not defined. Forget to add -DANI_BOOST_INSTALL_DIR to cmake command ?")
+endif()
+
 include_directories("${ANI_THIRDPARTY_INSTALL_DIR}/include")
 link_directories("${ANI_THIRDPARTY_INSTALL_DIR}/lib")
 if (WIN32)
@@ -17,6 +24,8 @@ if (WIN32)
 endif()
 find_package(protobuf PATHS ${ANI_THIRDPARTY_INSTALL_DIR})
 find_package(ZLIB PATHS ${ANI_THIRDPARTY_INSTALL_DIR})
+# the Boost_LIBRARIES variable will define the components below
+find_package(Boost 1.70 REQUIRED COMPONENTS filesystem random PATHS ${ANI_BOOST_INSTALL_DIR})
 
 add_subdirectory(thirdparty)
 #add_subdirectory(daemon)
