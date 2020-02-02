@@ -15,7 +15,7 @@ interface ServiceBinaryPath {
   thumbnails: string;
 }
 
-let binaryName = 'thumbnail';
+let binaryName = 'ani-thumbnail';
 if (isWindows()) {
   binaryName = 'ani-thumbnail.exe';
 }
