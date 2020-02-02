@@ -19,11 +19,17 @@ endif()
 
 include_directories("${ANI_THIRDPARTY_INSTALL_DIR}/include")
 link_directories("${ANI_THIRDPARTY_INSTALL_DIR}/lib")
-if (WIN32)
-    include("${ANI_THIRDPARTY_INSTALL_DIR}/lib/libpng/libpng16.cmake")
-endif()
 find_package(protobuf PATHS ${ANI_THIRDPARTY_INSTALL_DIR})
 find_package(ZLIB PATHS ${ANI_THIRDPARTY_INSTALL_DIR})
+find_library(Z_LIB
+             NAMES "libz.a" "zlibstatic.lib"
+             PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/lib)
+find_library(PNG_LIB
+             NAMES "libpng.a" "libpng16_static.lib"
+             PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/lib)
+find_library(JPEG_LIB
+             NAMES "libjpeg.a" "jpeg-static.lib"
+             PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/lib)
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.70 REQUIRED
