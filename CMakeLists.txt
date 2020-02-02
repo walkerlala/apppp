@@ -36,6 +36,10 @@ find_package(Boost 1.70 REQUIRED
              COMPONENTS filesystem random # Boost_LIBRARIES will define these components
              PATHS ${ANI_BOOST_INSTALL_DIR})
 
+if (UNIX AND NOT APPLE)
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+endif()
+
 add_subdirectory(thirdparty)
 #add_subdirectory(daemon)
 add_subdirectory(easyipc)
