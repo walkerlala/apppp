@@ -1,6 +1,15 @@
 
 # Bootstrap
 
+## Use Chinese Mirror
+
+```sh
+$ npm config set ELECTRON_MIRROR=https://cdn.npm.taobao.org/dist/electron/
+$ npm config set sass_binary_site=https://npm.taobao.org/mirrors/node-sass/
+$ npm config set sqlite3_binary_site=https://npm.taobao.org/mirrors/sqlite3/
+$ npm config set node_sqlite3_binary_host_mirror=https://npm.taobao.org/mirrors
+```
+
 Install yarn and gulp
 
 ```sh
