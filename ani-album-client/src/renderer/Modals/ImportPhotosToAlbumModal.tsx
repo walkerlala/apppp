@@ -3,7 +3,7 @@ import Modal from 'renderer/components/Modal';
 import GridView from 'renderer/components/GridView';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
-import { getAlbumToken } from 'renderer/pageKey'
+import { getAlbumToken } from 'renderer/pageKey';
 import { GridContainer } from './styles';
 
 export interface ImportPhotosToAlbumModalProps {
@@ -64,7 +64,7 @@ class ImportPhotosToAlbumModal extends React.Component<ImportPhotosToAlbumModalP
           <GridView selectedIds={selectedIds} onSelectedIdsChanged={this.handleSelectedIdsUpdate} />
         </GridContainer>
       </Modal>
-    )
+    );
   }
 
 }

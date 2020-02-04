@@ -24,44 +24,44 @@ export async function importPhotos() {
 }
 
 async function importPhotosByPath(path: string) {
-    const stat = await fs.promises.lstat(path);
-    if (stat.isDirectory()) {
-        return await traverseDirToImport(path);
-    } else if (stat.isFile()) {
-      try {
-        const imageId = await insertImageEntity(getDb(), {
-          path,
-          createdAt: new Date(),
+  const stat = await fs.promises.lstat(path);
+  if (stat.isDirectory()) {
+    return await traverseDirToImport(path);
+  } else if (stat.isFile()) {
+    try {
+      const imageId = await insertImageEntity(getDb(), {
+        path,
+        createdAt: new Date(),
+      });
+
+      logger.info('new entity: ', imageId);
+      const resp = await microService.generateThumbnails(path, getThumbnailsFolder());
+
+      for (const thumbnail of resp.getDataList()) {
+        logger.debug('get a thumbnail', thumbnail.getPath());
+        await insertThumbnailEntity(getDb(), {
+          path: thumbnail.getPath(),
+          type: thumbnail.getType(),
+          imageId,
+          width: thumbnail.getWidth(),
+          height: thumbnail.getHeight(),
+          createAt: new Date(),
         });
+      };
 
-        logger.info(`new entity: `, imageId);
-        const resp = await microService.generateThumbnails(path, getThumbnailsFolder());
-
-        for (const thumbnail of resp.getDataList()) {
-          logger.debug('get a thumbnail', thumbnail.getPath());
-          await insertThumbnailEntity(getDb(), {
-            path: thumbnail.getPath(),
-            type: thumbnail.getType(),
-            imageId,
-            width: thumbnail.getWidth(),
-            height: thumbnail.getHeight(),
-            createAt: new Date(),
-          });
-        };
-
-        logger.info('imported a photo');
-        getWebContent().send(ClientMessageType.PhotoImported);
-        // const exifInfo = await microService.readExif(path);
-        // logger.info(ExifInfo.toObject(false, exifInfo));
-      } catch (err) {
-        logger.error('insert photo failed: ', err, 'path: ', path);
-      }
+      logger.info('imported a photo');
+      getWebContent().send(ClientMessageType.PhotoImported);
+      // const exifInfo = await microService.readExif(path);
+      // logger.info(ExifInfo.toObject(false, exifInfo));
+    } catch (err) {
+      logger.error('insert photo failed: ', err, 'path: ', path);
     }
+  }
 }
 
 async function traverseDirToImport(path: string) {
-    const children = await fs.promises.readdir(path);
-    for (const child of children) {
-        await importPhotosByPath(child);
-    }
+  const children = await fs.promises.readdir(path);
+  for (const child of children) {
+    await importPhotosByPath(child);
+  }
 }

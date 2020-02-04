@@ -23,7 +23,7 @@ class AlbumContentPage extends React.Component<AlbumContentPageProps> {
           textContent="Add images from My Photos to Album..."
         />
       </MainContentContainer>
-    )
+    );
   }
 
 }

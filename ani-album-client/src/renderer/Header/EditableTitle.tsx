@@ -130,7 +130,7 @@ class EditableTitle extends React.Component<EditableTitleProps, EditableTitleSta
             <EditorCloseIcon label="cross" />
           </div>
         </React.Fragment>
-      )
+      );
     }
 
     if (canEdit && showEditButton) {

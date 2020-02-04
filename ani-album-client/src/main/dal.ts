@@ -209,7 +209,7 @@ export async function queryImageEntities(
 export async function queryImageById(db: SQLiteHelper, imageId: number) {
   const result = await db.get(`SELECT
     id, path, createdAt FROM ${ImageEntityTableName} WHERE id=?`,
-    imageId
+  imageId
   );
   if (isUndefined(result)) {
     return undefined;

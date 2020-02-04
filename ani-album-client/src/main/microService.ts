@@ -22,7 +22,7 @@ if (isWindows()) {
 
 const defaultPath: ServiceBinaryPath = {
   thumbnails: join(__PACK_DIR__, 'bin', os.platform(), binaryName),
-}
+};
 
 export class MicroService {
 

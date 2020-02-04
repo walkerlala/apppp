@@ -53,7 +53,7 @@ class GridView extends Component<GridViewProps, GridViewState> {
 
   private handlePhotoItemClicked = (imageId: number) => {
     if (!this.props.onSelectedIdsChanged) {
-      return
+      return;
     }
     const newSet = produce(this.props.selectedIds, (draft: Set<number>) => {
       draft.clear();
@@ -85,7 +85,7 @@ class GridView extends Component<GridViewProps, GridViewState> {
           imageId: dataId,
         });
         if (!this.props.onSelectedIdsChanged) {
-          return
+          return;
         }
         const newSet = produce(this.props.selectedIds, (draft: Set<number>) => {
           draft.clear();
@@ -126,7 +126,7 @@ class GridView extends Component<GridViewProps, GridViewState> {
           onImageDoubleClicked={onImageDoubleClicked}
         />
       );
-    })
+    });
   }
 
   render() {

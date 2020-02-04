@@ -11,7 +11,7 @@ export function getAppDateFolder(): string {
     const home = os.homedir();
     return join(home, 'AppData', 'Local', 'SmartNotebook');
   } else {
-    throw new Error("not support");
+    throw new Error('not support');
   }
 }
 

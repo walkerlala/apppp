@@ -19,7 +19,7 @@ class NewAlbumModal extends React.Component {
       >
         Hello
       </Modal>
-    )
+    );
   }
 
 }

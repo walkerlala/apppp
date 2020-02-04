@@ -207,7 +207,7 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
           showAddButton={isMouseEntered}
         />
       );
-    })
+    });
   }
 
   render() {

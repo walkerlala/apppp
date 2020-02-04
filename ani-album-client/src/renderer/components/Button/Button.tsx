@@ -14,11 +14,11 @@ class Button extends React.Component<ButtonProps> {
   }
 
   render() {
-    let { className = '', size, ...rest } = this.props;
-    className += ` ani-std-button ani-button-${size}`;
+    const { className = '', size, ...rest } = this.props;
+    const newClassName = `${className} ani-std-button ani-button-${size}`;
     return (
       <button
-        className={className}
+        className={newClassName}
         {...rest}
       />
     );

@@ -7,7 +7,7 @@ export const showMenu = once(() => {
 
   const template: any = [
     // { role: 'appMenu' }
-    ...(isMac ? [{
+    ...isMac ? [{
       label: 'AniAlbum',
       submenu: [
         { role: 'about' },
@@ -20,7 +20,7 @@ export const showMenu = once(() => {
         { type: 'separator' },
         { role: 'quit' }
       ]
-    }] : []),
+    }] : [],
     // { role: 'fileMenu' }
     {
       label: 'File',
@@ -43,7 +43,7 @@ export const showMenu = once(() => {
         { role: 'cut' },
         { role: 'copy' },
         { role: 'paste' },
-        ...(isMac ? [
+        ...isMac ? [
           { role: 'pasteAndMatchStyle' },
           { role: 'delete' },
           { role: 'selectAll' },
@@ -59,7 +59,7 @@ export const showMenu = once(() => {
           { role: 'delete' },
           { type: 'separator' },
           { role: 'selectAll' }
-        ])
+        ]
       ]
     },
     // { role: 'viewMenu' }
@@ -83,14 +83,14 @@ export const showMenu = once(() => {
       submenu: [
         { role: 'minimize' },
         { role: 'zoom' },
-        ...(isMac ? [
+        ...isMac ? [
           { type: 'separator' },
           { role: 'front' },
           { type: 'separator' },
           { role: 'window' }
         ] : [
           { role: 'close' }
-        ])
+        ]
       ]
     },
     {
@@ -99,8 +99,8 @@ export const showMenu = once(() => {
         {
           label: 'Learn More',
           click: async () => {
-            const { shell } = require('electron')
-            await shell.openExternal('https://electronjs.org')
+            const { shell } = require('electron');
+            await shell.openExternal('https://electronjs.org');
           }
         }
       ]

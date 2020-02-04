@@ -134,7 +134,7 @@ export class ImageViewerCanvas implements IDisposable {
     } else {
       this.__scale = value;
     }
-    console.log()
+    console.log();
 
     const elm = this.getAImageElement();
     const properSize = this.getFixedSize(vec([

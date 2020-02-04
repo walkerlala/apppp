@@ -67,7 +67,7 @@ class Modals extends React.Component<{}, ModalsState> {
       <div className="ani-modals">
         {this.renderModal()}
       </div>
-    )
+    );
   }
 
 }

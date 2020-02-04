@@ -20,7 +20,7 @@ class Modal extends React.Component<ModalProps> {
   }
 
   private renderChildren() {
-    const { children } = this.props
+    const { children } = this.props;
     return (
       <div className="ani-modal">
         {children}
@@ -46,10 +46,9 @@ class Modal extends React.Component<ModalProps> {
 
   render() {
     return (
-      <Mask
-        children={this.renderChildren()}
-        onMaskClick={this.handleMaskClicked}
-      />
+      <Mask onMaskClick={this.handleMaskClicked}>
+        {this.renderChildren()}
+      </Mask>
     );
   }
 

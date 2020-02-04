@@ -14,8 +14,8 @@ export class SQLiteHelperStmt {
       this.stmt.run(...params, function (err: Error) {
         if (err) return reject(err);
         return resolve(this);
-      })
-    })
+      });
+    });
   }
 
   async finalize() {

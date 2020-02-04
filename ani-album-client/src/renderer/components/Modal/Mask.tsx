@@ -28,7 +28,7 @@ class Mask extends React.Component<IMaskProps> {
   }
 
   private renderMaskContent() {
-    const { children } = this.props
+    const { children } = this.props;
     return (
       <div
         className="ani-modal-mask"

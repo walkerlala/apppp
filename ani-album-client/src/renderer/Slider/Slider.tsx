@@ -57,7 +57,7 @@ class Slider extends React.Component<{}, ISliderState> {
     const mouseX = e.clientX;
     let ratio: number = 0;
     if (mouseX <= rect.x) {
-      ratio = 0
+      ratio = 0;
     } else if (mouseX >= rect.x + rect.width) {
       ratio = 1;
     } else {
@@ -69,7 +69,7 @@ class Slider extends React.Component<{}, ISliderState> {
   }
   
   render() {
-    const CircleWidth = CircleRadius * 2
+    const CircleWidth = CircleRadius * 2;
     const { offsetX } = this.state;
     return (
       <div 
@@ -92,7 +92,7 @@ class Slider extends React.Component<{}, ISliderState> {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
 }

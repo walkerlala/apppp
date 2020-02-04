@@ -40,7 +40,7 @@ class SidebarTreeItem extends React.Component<SidebarTreeItemProps> {
           <AddIcon primaryColor={primaryColor} label="add-icon" size="small" />
         </div>
       </div>
-    )
+    );
   }
 
   private onTriangleAreaClicked = (e: React.MouseEvent) => {

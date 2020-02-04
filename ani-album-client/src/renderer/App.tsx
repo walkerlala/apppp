@@ -52,7 +52,7 @@ class App extends Component<{}, AppState> {
   private renderHeader() {
     const { pageKey } = this.state;
     if (pageKey === PageKey.Search) {
-      return <SearchHeader />
+      return <SearchHeader />;
     }
     return <Header pageKey={pageKey} />;
   }
@@ -61,7 +61,7 @@ class App extends Component<{}, AppState> {
     const { pageKey } = this.state;
 
     if (isAAlbum(pageKey)) {
-      return <AlbumContentPage pageKey={pageKey} />
+      return <AlbumContentPage pageKey={pageKey} />;
     }
 
     return null;

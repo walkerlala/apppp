@@ -12,6 +12,6 @@ const CloseButton = (props: CloseButtonProps) => {
       Close
     </div>
   );
-}
+};
 
 export default CloseButton;

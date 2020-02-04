@@ -95,7 +95,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     const albumData = {
       ...this.state.albumData,
       name: content,
-    }
+    };
     this.setState({
       albumData,
     });

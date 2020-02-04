@@ -20,7 +20,7 @@ class ImportButton extends React.PureComponent<ImportButtonProps> {
           {textContent}
         </div>
       </div>
-    )
+    );
   }
 
 }

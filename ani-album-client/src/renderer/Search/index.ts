@@ -4,4 +4,4 @@ import SearchInput from './SearchInput';
 export {
   SearchBox,
   SearchInput,
-}
+};
