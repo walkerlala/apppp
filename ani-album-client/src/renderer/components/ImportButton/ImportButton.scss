@@ -1,0 +1,24 @@
+
+
+.ani-import-button {
+  display: flex;
+  flex-direction: column;
+  color: #5a5a5a;
+
+  .ani-import-button-icon-container {
+    padding: 24px 12px; 
+    border-radius: 8px;
+    border-style: none;
+    &:hover {
+      background-color: rgb(246, 246, 246);
+      cursor: pointer;
+    }
+  }
+
+  .ani-import-button-text-content {
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+  }
+
+}

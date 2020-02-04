@@ -170,11 +170,11 @@ function buildRendererPage(cb, needWatch = false) {
 }
 
 function watchingMain() {
-  return watch(['./src/common/*', './src/main/*'], buildMainOutput);
+  return watch(['./src/common/**/*', './src/main/**/*'], buildMainOutput);
 }
 
 function watchingRenderer() {
-  return watch('./src/renderer/*', buildRendererPageWatcher)
+  return watch(['./src/common/**/*', './src/renderer/**/*'], buildRendererPageWatcher)
 }
 
 exports.watch = parallel(watchingMain, watchingRenderer);
