@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Modal from 'renderer/components/Modal';
+import GridView from 'renderer/components/GridView';
 import { GridContainer } from './styles';
 
 export interface ImportPhotosToAlbumModalProps {
@@ -23,7 +24,7 @@ class ImportPhotosToAlbumModal extends React.Component<ImportPhotosToAlbumModalP
     return (
       <Modal onClose={onClose} onConfirm={this.handleConfirm}>
         <GridContainer>
-          Hello
+          <GridView show={true} />
         </GridContainer>
       </Modal>
     )

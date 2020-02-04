@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Sidebar from 'renderer/Sidebar';
-import GridView from 'renderer/GridView';
+import MyPhotosPage from 'renderer/MyPhotosPage';
 import ImageViewer from 'renderer/ImageViewer';
 import { PageKey, isAAlbum } from 'renderer/pageKey';
 import AlbumContentPage from 'renderer/AlbumContentPage';
@@ -75,7 +75,7 @@ class App extends Component<{}, AppState> {
         <Sidebar pageKey={pageKey} />
         <CentralArea>
           {this.renderHeader()} 
-          <GridView key={PageKey.MyPhotos} show={pageKey === PageKey.MyPhotos} />
+          <MyPhotosPage key={PageKey.MyPhotos} show={pageKey === PageKey.MyPhotos} />
           {this.renderMainContent()}
         </CentralArea>
         <ImageViewer />

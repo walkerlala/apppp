@@ -4,4 +4,5 @@ export const GridContainer = styled.div`
   background-color: #DCDCDC;
   min-height: 400px;
   max-height: 400px;
+  padding: 8px;
 `;
