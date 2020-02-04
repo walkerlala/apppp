@@ -1,13 +1,11 @@
 import * as React from 'react';
-import Modal from 'react-modal';
+import Modal from 'renderer/components/Modal';
 import { eventBus, RendererEvents } from 'renderer/events';
-import './NewAlbumModal.scss';
 
 class NewAlbumModal extends React.Component {
 
   constructor(props: {}) {
     super(props);
-    Modal.setAppElement(document.getElementById('app'));
   }
 
   private handleClose = () => {
@@ -17,10 +15,7 @@ class NewAlbumModal extends React.Component {
   render() {
     return (
       <Modal
-        isOpen
-        onRequestClose={this.handleClose}
-        className="ani-modal ani-new-album-modal"
-        overlayClassName="ani-modal-overlay"
+        onClose={this.handleClose}
       >
         Hello
       </Modal>

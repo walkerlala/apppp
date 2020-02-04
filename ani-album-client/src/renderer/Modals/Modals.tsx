@@ -2,7 +2,7 @@ import * as React from 'react';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { ModalTypes } from './modalTypes';
 import NewAlbumModal from './NewAlbumModal';
-import './Modals.scss';
+import ImportPhotosToAlbumModal from './ImportPhotosToAlbumModal';
 
 interface ModalsState {
   currentModalType: ModalTypes | undefined
@@ -30,7 +30,6 @@ class Modals extends React.Component<{}, ModalsState> {
   }
 
   private handleShow = (type: ModalTypes, ...params: any[]) => {
-    console.log(type);
     this.__params = params;
     this.setState({
       currentModalType: type,
@@ -47,7 +46,15 @@ class Modals extends React.Component<{}, ModalsState> {
   renderModal() {
     switch (this.state.currentModalType) {
       case ModalTypes.NewAlbum:
-        return <NewAlbumModal />
+        return <NewAlbumModal />;
+
+      case ModalTypes.ImportPhotosToAlbum:
+        return (
+          <ImportPhotosToAlbumModal
+            params={this.__params}
+            onClose={this.handleClose}
+          />
+        );
 
       default:
         return <React.Fragment />;

@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom';
 import Sidebar from 'renderer/Sidebar';
 import GridView from 'renderer/GridView';
 import ImageViewer from 'renderer/ImageViewer';
-import { PageKey } from 'renderer/pageKey';
+import { PageKey, isAAlbum } from 'renderer/pageKey';
+import AlbumContentPage from 'renderer/AlbumContentPage';
 import Modals from 'renderer/Modals';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { Header, SearchHeader} from 'renderer/Header';
-import { GlobalStyles, AppContainer, CentralArea, MainContentContainer } from './styles';
-import ImportButton from 'renderer/components/ImportButton';
+import { GlobalStyles, AppContainer, CentralArea } from './styles';
 
 interface AppState {
   prevPageKey: string;
@@ -59,15 +59,12 @@ class App extends Component<{}, AppState> {
 
   private renderMainContent() {
     const { pageKey } = this.state;
-    if (pageKey === PageKey.MyPhotos) {
-      return null;
+
+    if (isAAlbum(pageKey)) {
+      return <AlbumContentPage pageKey={pageKey} />
     }
 
-    return (
-      <MainContentContainer>
-        <ImportButton textContent="Add images from My Photos to Album..." />
-      </MainContentContainer>
-    );
+    return null;
   }
 
   render() {
