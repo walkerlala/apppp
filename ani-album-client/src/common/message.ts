@@ -12,6 +12,8 @@ export enum ClientMessageType {
   UpdateAlbumById = 'UpdateAlbumById',
   CreateWorkspace = 'CreateWorkspace',
   GetWorkspacesByParentId = 'GetWorkspacesByParentId',
+  AddImageToAlbum = 'AddImageToAlbum',
+  AddImageToWorkspace = 'AddImageToWorkspace',
 }
 
 export interface MessageRequest {

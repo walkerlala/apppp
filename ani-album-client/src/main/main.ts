@@ -118,6 +118,10 @@ const listenEvents = once(() => {
     return await dal.queryWorkspacesByParentId(getDb(), parentId);
   });
 
+  ipcMain.handle(ClientMessageType.AddImageToAlbum, async (event: IpcMainInvokeEvent, imageId: number, albumId) => {
+    return await dal.addImageToAlbum(getDb(), imageId, albumId);
+  });
+
 });
 
 async function createWindow() {

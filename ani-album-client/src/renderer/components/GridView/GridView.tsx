@@ -4,30 +4,34 @@ import { ClientMessageType } from 'common/message';
 import { ImageWithThumbnails } from 'common/image';
 import { eventBus, RendererEvents } from 'renderer/events';
 import ImageItem from './ImageItem';
+import { produce } from 'immer';
 import './GridView.scss';
 
 interface GridViewProps {
-  show: boolean;
+  selectedIds: Set<number>;
+  scaleToFit?: boolean,
+  onImageDoubleClicked?: (imageId: number, thumbnailPath: string) => void;
+  onSelectedIdsChanged?: (ids: Set<number>) => void;
 }
 
 interface GridViewState {
-  scaleToFit: boolean;
   offset: number;
   length: number;
   images: ImageWithThumbnails[];
-  selectedItemId: number;
 }
 
 class GridView extends Component<GridViewProps, GridViewState> {
 
+  static defaultProps: Partial<GridViewProps> = {
+    scaleToFit: true,
+  }
+
   constructor(props: GridViewProps) {
     super(props);
     this.state = {
-      scaleToFit: true,
       offset: 0,
       length: 200,
       images: [],
-      selectedItemId: -1,
     };
   }
 
@@ -36,7 +40,6 @@ class GridView extends Component<GridViewProps, GridViewState> {
     ipcRenderer.addListener(ClientMessageType.PhotoDeleted, this.handlePhotoDeleted);
     window.addEventListener('contextmenu', this.handleContextMenu);
     eventBus.addListener(RendererEvents.PhotoItemClicked, this.handlePhotoItemClicked);
-    eventBus.addListener(RendererEvents.ToggleScaleToFit, this.handleToggleScaleToFit);
 
     this.fetchInitialImages();
   }
@@ -46,20 +49,17 @@ class GridView extends Component<GridViewProps, GridViewState> {
     ipcRenderer.removeListener(ClientMessageType.PhotoDeleted, this.handlePhotoDeleted);
     window.removeEventListener('contextmenu', this.handleContextMenu);
     eventBus.removeListener(RendererEvents.PhotoItemClicked, this.handlePhotoItemClicked);
-    eventBus.removeListener(RendererEvents.ToggleScaleToFit, this.handleToggleScaleToFit);
-  }
-
-  private handleToggleScaleToFit = () => {
-    const { scaleToFit } = this.state;
-    this.setState({
-      scaleToFit: !scaleToFit,
-    });
   }
 
   private handlePhotoItemClicked = (imageId: number) => {
-    this.setState({
-      selectedItemId: imageId,
+    if (!this.props.onSelectedIdsChanged) {
+      return
+    }
+    const newSet = produce(this.props.selectedIds, (draft: Set<number>) => {
+      draft.clear();
+      draft.add(imageId);
     });
+    this.props.onSelectedIdsChanged(newSet);
   }
 
   private handlePhotoImported = () => {
@@ -84,9 +84,14 @@ class GridView extends Component<GridViewProps, GridViewState> {
         ipcRenderer.invoke(ClientMessageType.ShowContextMenu, {
           imageId: dataId,
         });
-        this.setState({
-          selectedItemId: Number(dataId),
+        if (!this.props.onSelectedIdsChanged) {
+          return
+        }
+        const newSet = produce(this.props.selectedIds, (draft: Set<number>) => {
+          draft.clear();
+          draft.add(dataId);
         });
+        this.props.onSelectedIdsChanged(newSet);
         return;
       }
 
@@ -109,26 +114,24 @@ class GridView extends Component<GridViewProps, GridViewState> {
   }
 
   private renderImages() {
-    const { images, selectedItemId, scaleToFit } = this.state;
+    const { onImageDoubleClicked, scaleToFit, selectedIds } = this.props;
+    const { images } = this.state;
     return images.map(data => {
       return (
         <ImageItem
           key={`item-${data.id}`}
           data={data}
-          isSelected={selectedItemId === data.id}
+          isSelected={selectedIds.has(data.id)}
           scaleToFit={scaleToFit}
+          onImageDoubleClicked={onImageDoubleClicked}
         />
       );
     })
   }
 
   render() {
-    const { show } = this.props;
     return (
-      <div
-        className="ani-grid-view" 
-        style={{ display: show ? 'block' : 'none' }}
-      >
+      <div className="ani-grid-view">
         <div className="ani-grid-content-container">
           {this.renderImages()}
         </div>

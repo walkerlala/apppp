@@ -13,6 +13,8 @@ const ImageEntityTableName = 'imagesEntity';
 const ThumbnailsTableName = 'thumbnails';
 const AlbumsTableName = 'albums';
 const WorkspacesTableName = 'workspaces';
+const ImageToAlbumTableName = 'imageToAlbum';
+const ImageToWorkspaceTableName = 'imageToWorkspace';
 
 export const initData = once(async (db: SQLiteHelper) => {
   try {
@@ -52,6 +54,11 @@ export const initData = once(async (db: SQLiteHelper) => {
       await upgradeToVersion3(db);
       dbVersion = 3;
     }
+
+    if (dbVersion === 3) {
+      await upgradeToVersion4(db);
+      dbVersion = 4;
+    }
     
     logger.info('db version: ', dbVersion);
   } catch (err) {
@@ -86,6 +93,29 @@ async function upgradeToVersion3(db: SQLiteHelper) {
   await db.run(`INSERT OR REPLACE INTO ${GlobalKvTableName} (key, value) VALUES ("version", "3")`);
 }
 
+async function upgradeToVersion4(db: SQLiteHelper) {
+  logger.info('upgrade database to version 4');
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS ${ImageToAlbumTableName} (
+      imageId INTEGER NOT NULL,
+      albumId INTEGER NOT NULL,
+      createdAt DATETIME NOT NULL,
+      PRIMARY KEY (imageId, albumId)
+    )
+  `);
+
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS ${ImageToWorkspaceTableName} (
+      imageId INTEGER NOT NULL,
+      workspaceId INTEGER NOT NULL,
+      createdAt DATETIME NOT NULL,
+      PRIMARY KEY (imageId, workspaceId)
+    )
+  `);
+
+  await db.run(`INSERT OR REPLACE INTO ${GlobalKvTableName} (key, value) VALUES ("version", "4")`);
+}
+
 export async function insertWorkspace(db: SQLiteHelper, workspace: Workspace) {
   const stmt = await db.prepare(`
     INSERT INTO ${WorkspacesTableName}
@@ -107,6 +137,13 @@ export async function queryWorkspacesByParentId(db: SQLiteHelper, parentId: numb
     createdAt: new Date(createdAt),
     ...rest,
   }));
+}
+
+export async function addImageToAlbum(db: SQLiteHelper, imageId: number, albumId: number) {
+  await db.run(`
+    INSERT OR REPLACE INTO ${ImageToAlbumTableName} (imageId, albumId, createdAt)
+    VALUES (?, ?, ?)
+  `, imageId, albumId, new Date());
 }
 
 export async function insertAlbum(db: SQLiteHelper, album: Album): Promise<number> {

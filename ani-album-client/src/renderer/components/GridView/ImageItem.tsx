@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { ImageWithThumbnails } from 'common/image';
 import { ThumbnailType } from 'protos/ipc_pb';
 import { eventBus, RendererEvents } from 'renderer/events';
+import { isUndefined } from 'lodash';
 
 export interface ImageItemProps {
   data: ImageWithThumbnails;
   isSelected: boolean;
   scaleToFit: boolean;
+  onImageDoubleClicked?: (imageId: number, thumbnailPath: string) => void;
 }
 
 class ImageItem extends Component<ImageItemProps> {
@@ -19,9 +21,12 @@ class ImageItem extends Component<ImageItemProps> {
 
   private handleImageDoubleClicked = (e: React.MouseEvent<HTMLImageElement>) => {
     e.preventDefault();
-    const { data } = this.props;
+    const { data, onImageDoubleClicked } = this.props;
+
+    if (isUndefined(onImageDoubleClicked)) return;
+
     const thumbnailPath = this.getMediumThumbnail(data);
-    eventBus.emit(RendererEvents.PhotoItemDoubleClicked, data.id, thumbnailPath);
+    onImageDoubleClicked(data.id, thumbnailPath);
   }
 
   private getMediumThumbnail(image: ImageWithThumbnails): string {
