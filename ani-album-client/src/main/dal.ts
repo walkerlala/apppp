@@ -190,13 +190,7 @@ export async function updateAlbumById(db: SQLiteHelper, album: Album): Promise<v
   );
 }
 
-export async function queryImageEntities(
-  db: SQLiteHelper,
-  offset: number = 0,
-  limit: number = 200
-): Promise<ImageEntity[]> {
-  const result = await db.all(`SELECT
-    id, path, createdAt FROM ${ImageEntityTableName} LIMIT ? OFFSET ?`, limit, offset);
+function imagesResultToInterface(result: any[]) {
   return result.map(({ id, path, createdAt }) => {
     return {
       id,
@@ -206,10 +200,20 @@ export async function queryImageEntities(
   });
 }
 
+export async function queryImageEntities(
+  db: SQLiteHelper,
+  offset: number = 0,
+  limit: number = 200
+): Promise<ImageEntity[]> {
+  const result = await db.all(`SELECT
+    id, path, createdAt FROM ${ImageEntityTableName} LIMIT ? OFFSET ?`, limit, offset);
+  return imagesResultToInterface(result);
+}
+
 export async function queryImageById(db: SQLiteHelper, imageId: number) {
-  const result = await db.get(`SELECT
-    id, path, createdAt FROM ${ImageEntityTableName} WHERE id=?`,
-  imageId
+  const result = await db.get(
+    `SELECT id, path, createdAt FROM ${ImageEntityTableName} WHERE id=?`,
+    imageId,
   );
   if (isUndefined(result)) {
     return undefined;
@@ -219,6 +223,17 @@ export async function queryImageById(db: SQLiteHelper, imageId: number) {
     ...rest,
     createdAt: new Date(createdAt),
   };
+}
+
+export async function queryImagesByAlbumId(db: SQLiteHelper, albumId: number) {
+  const result = await db.all(
+    `SELECT
+      imagesEntity.id, imagesEntity.path, imagesEntity.createdAt
+    FROM imagesEntity, imageToAlbum 
+    WHERE imagesEntity.id = imageToAlbum.imageId AND albumId = ?`,
+    albumId,
+  );
+  return imagesResultToInterface(result);
 }
 
 export async function insertImageEntity(db: SQLiteHelper, entity: ImageEntity): Promise<number> {

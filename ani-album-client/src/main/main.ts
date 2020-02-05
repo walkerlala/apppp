@@ -122,6 +122,11 @@ const listenEvents = once(() => {
     return await dal.addImageToAlbum(getDb(), imageId, albumId);
   });
 
+  ipcMain.handle(ClientMessageType.GetImagesByAlbumId, async (event: IpcMainInvokeEvent, albumId: number) => {
+    logger.debug('GetImagesByAlbumId: ', albumId);
+    return await dal.queryImagesByAlbumId(getDb(), albumId);
+  });
+
 });
 
 async function createWindow() {
