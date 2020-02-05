@@ -1,12 +1,11 @@
-#include <iostream>
-#include <algorithm>
+#include <ThreadPool/ThreadPool.h>
 
-#include <ThreadPool.h>
+#include <algorithm>
+#include <iostream>
 
 #include "easyipc.h"
-#include "ipc-message/ipc.pb.h"
-
 #include "gen_thumbnails.h"
+#include "ipc-message/ipc.pb.h"
 #include "read_exif.h"
 
 using EasyIpc::IpcServer;
@@ -56,19 +55,17 @@ std::string server_handler(EasyIpc::Context& ctx, const EasyIpc::Message& msg) {
 
 template <typename T>
 class plus_when_dtor {
-public:
-
-    plus_when_dtor(T& ref, std::condition_variable& cv): ref_(ref), cv_(cv) {}
+   public:
+    plus_when_dtor(T& ref, std::condition_variable& cv) : ref_(ref), cv_(cv) {}
 
     ~plus_when_dtor() {
         ref_++;
         cv_.notify_one();
     }
 
-private:
+   private:
     std::condition_variable& cv_;
     T& ref_;
-
 };
 
 static std::string gen_thumbnails(const GenerateThumbnailsRequest& req) {
@@ -91,9 +88,7 @@ static std::string gen_thumbnails(const GenerateThumbnailsRequest& req) {
     }
 
     std::unique_lock<std::mutex> lk(resp_mutex);
-    resp_cv.wait(lk, [&finished_count, &req] {
-        return finished_count >= req.types().size();
-    });
+    resp_cv.wait(lk, [&finished_count, &req] { return finished_count >= req.types().size(); });
 
     return resp.SerializeAsString();
 }

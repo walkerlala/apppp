@@ -48,13 +48,19 @@ struct TableStruct_ipc_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[5]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[9]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
   static const ::PROTOBUF_NAMESPACE_ID::uint32 offsets[];
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_ipc_2eproto;
+class ClassifyRequest;
+class ClassifyRequestDefaultTypeInternal;
+extern ClassifyRequestDefaultTypeInternal _ClassifyRequest_default_instance_;
+class ClassifyResponse;
+class ClassifyResponseDefaultTypeInternal;
+extern ClassifyResponseDefaultTypeInternal _ClassifyResponse_default_instance_;
 class ExifInfo;
 class ExifInfoDefaultTypeInternal;
 extern ExifInfoDefaultTypeInternal _ExifInfo_default_instance_;
@@ -64,6 +70,12 @@ extern GenerateThumbnailsRequestDefaultTypeInternal _GenerateThumbnailsRequest_d
 class GenerateThumbnailsResponse;
 class GenerateThumbnailsResponseDefaultTypeInternal;
 extern GenerateThumbnailsResponseDefaultTypeInternal _GenerateThumbnailsResponse_default_instance_;
+class ImageClass;
+class ImageClassDefaultTypeInternal;
+extern ImageClassDefaultTypeInternal _ImageClass_default_instance_;
+class ImageInfo;
+class ImageInfoDefaultTypeInternal;
+extern ImageInfoDefaultTypeInternal _ImageInfo_default_instance_;
 class ReadExifRequest;
 class ReadExifRequestDefaultTypeInternal;
 extern ReadExifRequestDefaultTypeInternal _ReadExifRequest_default_instance_;
@@ -71,9 +83,13 @@ class Thumbnail;
 class ThumbnailDefaultTypeInternal;
 extern ThumbnailDefaultTypeInternal _Thumbnail_default_instance_;
 PROTOBUF_NAMESPACE_OPEN
+template<> ::ClassifyRequest* Arena::CreateMaybeMessage<::ClassifyRequest>(Arena*);
+template<> ::ClassifyResponse* Arena::CreateMaybeMessage<::ClassifyResponse>(Arena*);
 template<> ::ExifInfo* Arena::CreateMaybeMessage<::ExifInfo>(Arena*);
 template<> ::GenerateThumbnailsRequest* Arena::CreateMaybeMessage<::GenerateThumbnailsRequest>(Arena*);
 template<> ::GenerateThumbnailsResponse* Arena::CreateMaybeMessage<::GenerateThumbnailsResponse>(Arena*);
+template<> ::ImageClass* Arena::CreateMaybeMessage<::ImageClass>(Arena*);
+template<> ::ImageInfo* Arena::CreateMaybeMessage<::ImageInfo>(Arena*);
 template<> ::ReadExifRequest* Arena::CreateMaybeMessage<::ReadExifRequest>(Arena*);
 template<> ::Thumbnail* Arena::CreateMaybeMessage<::Thumbnail>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
@@ -82,12 +98,13 @@ enum MessageType : int {
   Ping = 0,
   GenerateThumbnails = 1,
   ReadExif = 2,
+  ClassifyImage = 3,
   MessageType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
   MessageType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
 };
 bool MessageType_IsValid(int value);
 constexpr MessageType MessageType_MIN = Ping;
-constexpr MessageType MessageType_MAX = ReadExif;
+constexpr MessageType MessageType_MAX = ClassifyImage;
 constexpr int MessageType_ARRAYSIZE = MessageType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MessageType_descriptor();
@@ -1195,6 +1212,599 @@ class ExifInfo :
   double gps_longitude_;
   double gps_altitude_;
   ::PROTOBUF_NAMESPACE_ID::uint32 focal_length_35mm_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_ipc_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ImageInfo :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ImageInfo) */ {
+ public:
+  ImageInfo();
+  virtual ~ImageInfo();
+
+  ImageInfo(const ImageInfo& from);
+  ImageInfo(ImageInfo&& from) noexcept
+    : ImageInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline ImageInfo& operator=(const ImageInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ImageInfo& operator=(ImageInfo&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const ImageInfo& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ImageInfo* internal_default_instance() {
+    return reinterpret_cast<const ImageInfo*>(
+               &_ImageInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    5;
+
+  friend void swap(ImageInfo& a, ImageInfo& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ImageInfo* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ImageInfo* New() const final {
+    return CreateMaybeMessage<ImageInfo>(nullptr);
+  }
+
+  ImageInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ImageInfo>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const ImageInfo& from);
+  void MergeFrom(const ImageInfo& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ImageInfo* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "ImageInfo";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ipc_2eproto);
+    return ::descriptor_table_ipc_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kThumbnailFieldNumber = 2,
+    kSourcePathFieldNumber = 1,
+  };
+  // repeated .Thumbnail thumbnail = 2;
+  int thumbnail_size() const;
+  private:
+  int _internal_thumbnail_size() const;
+  public:
+  void clear_thumbnail();
+  ::Thumbnail* mutable_thumbnail(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >*
+      mutable_thumbnail();
+  private:
+  const ::Thumbnail& _internal_thumbnail(int index) const;
+  ::Thumbnail* _internal_add_thumbnail();
+  public:
+  const ::Thumbnail& thumbnail(int index) const;
+  ::Thumbnail* add_thumbnail();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >&
+      thumbnail() const;
+
+  // string source_path = 1;
+  void clear_source_path();
+  const std::string& source_path() const;
+  void set_source_path(const std::string& value);
+  void set_source_path(std::string&& value);
+  void set_source_path(const char* value);
+  void set_source_path(const char* value, size_t size);
+  std::string* mutable_source_path();
+  std::string* release_source_path();
+  void set_allocated_source_path(std::string* source_path);
+  private:
+  const std::string& _internal_source_path() const;
+  void _internal_set_source_path(const std::string& value);
+  std::string* _internal_mutable_source_path();
+  public:
+
+  // @@protoc_insertion_point(class_scope:ImageInfo)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail > thumbnail_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr source_path_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_ipc_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ClassifyRequest :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ClassifyRequest) */ {
+ public:
+  ClassifyRequest();
+  virtual ~ClassifyRequest();
+
+  ClassifyRequest(const ClassifyRequest& from);
+  ClassifyRequest(ClassifyRequest&& from) noexcept
+    : ClassifyRequest() {
+    *this = ::std::move(from);
+  }
+
+  inline ClassifyRequest& operator=(const ClassifyRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ClassifyRequest& operator=(ClassifyRequest&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const ClassifyRequest& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ClassifyRequest* internal_default_instance() {
+    return reinterpret_cast<const ClassifyRequest*>(
+               &_ClassifyRequest_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    6;
+
+  friend void swap(ClassifyRequest& a, ClassifyRequest& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ClassifyRequest* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ClassifyRequest* New() const final {
+    return CreateMaybeMessage<ClassifyRequest>(nullptr);
+  }
+
+  ClassifyRequest* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ClassifyRequest>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const ClassifyRequest& from);
+  void MergeFrom(const ClassifyRequest& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ClassifyRequest* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "ClassifyRequest";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ipc_2eproto);
+    return ::descriptor_table_ipc_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kInfosFieldNumber = 1,
+  };
+  // repeated .ImageInfo infos = 1;
+  int infos_size() const;
+  private:
+  int _internal_infos_size() const;
+  public:
+  void clear_infos();
+  ::ImageInfo* mutable_infos(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageInfo >*
+      mutable_infos();
+  private:
+  const ::ImageInfo& _internal_infos(int index) const;
+  ::ImageInfo* _internal_add_infos();
+  public:
+  const ::ImageInfo& infos(int index) const;
+  ::ImageInfo* add_infos();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageInfo >&
+      infos() const;
+
+  // @@protoc_insertion_point(class_scope:ClassifyRequest)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageInfo > infos_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_ipc_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ImageClass :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ImageClass) */ {
+ public:
+  ImageClass();
+  virtual ~ImageClass();
+
+  ImageClass(const ImageClass& from);
+  ImageClass(ImageClass&& from) noexcept
+    : ImageClass() {
+    *this = ::std::move(from);
+  }
+
+  inline ImageClass& operator=(const ImageClass& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ImageClass& operator=(ImageClass&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const ImageClass& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ImageClass* internal_default_instance() {
+    return reinterpret_cast<const ImageClass*>(
+               &_ImageClass_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    7;
+
+  friend void swap(ImageClass& a, ImageClass& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ImageClass* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ImageClass* New() const final {
+    return CreateMaybeMessage<ImageClass>(nullptr);
+  }
+
+  ImageClass* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ImageClass>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const ImageClass& from);
+  void MergeFrom(const ImageClass& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ImageClass* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "ImageClass";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ipc_2eproto);
+    return ::descriptor_table_ipc_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kPathFieldNumber = 1,
+    kClassNameFieldNumber = 2,
+    kClassConfidenceFieldNumber = 3,
+  };
+  // string path = 1;
+  void clear_path();
+  const std::string& path() const;
+  void set_path(const std::string& value);
+  void set_path(std::string&& value);
+  void set_path(const char* value);
+  void set_path(const char* value, size_t size);
+  std::string* mutable_path();
+  std::string* release_path();
+  void set_allocated_path(std::string* path);
+  private:
+  const std::string& _internal_path() const;
+  void _internal_set_path(const std::string& value);
+  std::string* _internal_mutable_path();
+  public:
+
+  // string class_name = 2;
+  void clear_class_name();
+  const std::string& class_name() const;
+  void set_class_name(const std::string& value);
+  void set_class_name(std::string&& value);
+  void set_class_name(const char* value);
+  void set_class_name(const char* value, size_t size);
+  std::string* mutable_class_name();
+  std::string* release_class_name();
+  void set_allocated_class_name(std::string* class_name);
+  private:
+  const std::string& _internal_class_name() const;
+  void _internal_set_class_name(const std::string& value);
+  std::string* _internal_mutable_class_name();
+  public:
+
+  // float class_confidence = 3;
+  void clear_class_confidence();
+  float class_confidence() const;
+  void set_class_confidence(float value);
+  private:
+  float _internal_class_confidence() const;
+  void _internal_set_class_confidence(float value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:ImageClass)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr class_name_;
+  float class_confidence_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_ipc_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ClassifyResponse :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ClassifyResponse) */ {
+ public:
+  ClassifyResponse();
+  virtual ~ClassifyResponse();
+
+  ClassifyResponse(const ClassifyResponse& from);
+  ClassifyResponse(ClassifyResponse&& from) noexcept
+    : ClassifyResponse() {
+    *this = ::std::move(from);
+  }
+
+  inline ClassifyResponse& operator=(const ClassifyResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ClassifyResponse& operator=(ClassifyResponse&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const ClassifyResponse& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ClassifyResponse* internal_default_instance() {
+    return reinterpret_cast<const ClassifyResponse*>(
+               &_ClassifyResponse_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    8;
+
+  friend void swap(ClassifyResponse& a, ClassifyResponse& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ClassifyResponse* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ClassifyResponse* New() const final {
+    return CreateMaybeMessage<ClassifyResponse>(nullptr);
+  }
+
+  ClassifyResponse* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ClassifyResponse>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const ClassifyResponse& from);
+  void MergeFrom(const ClassifyResponse& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ClassifyResponse* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "ClassifyResponse";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ipc_2eproto);
+    return ::descriptor_table_ipc_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kResultFieldNumber = 1,
+  };
+  // repeated .ImageClass result = 1;
+  int result_size() const;
+  private:
+  int _internal_result_size() const;
+  public:
+  void clear_result();
+  ::ImageClass* mutable_result(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageClass >*
+      mutable_result();
+  private:
+  const ::ImageClass& _internal_result(int index) const;
+  ::ImageClass* _internal_add_result();
+  public:
+  const ::ImageClass& result(int index) const;
+  ::ImageClass* add_result();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageClass >&
+      result() const;
+
+  // @@protoc_insertion_point(class_scope:ClassifyResponse)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageClass > result_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
 };
@@ -2467,9 +3077,350 @@ inline void ExifInfo::set_gps_altitude(double value) {
   // @@protoc_insertion_point(field_set:ExifInfo.gps_altitude)
 }
 
+// -------------------------------------------------------------------
+
+// ImageInfo
+
+// string source_path = 1;
+inline void ImageInfo::clear_source_path() {
+  source_path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ImageInfo::source_path() const {
+  // @@protoc_insertion_point(field_get:ImageInfo.source_path)
+  return _internal_source_path();
+}
+inline void ImageInfo::set_source_path(const std::string& value) {
+  _internal_set_source_path(value);
+  // @@protoc_insertion_point(field_set:ImageInfo.source_path)
+}
+inline std::string* ImageInfo::mutable_source_path() {
+  // @@protoc_insertion_point(field_mutable:ImageInfo.source_path)
+  return _internal_mutable_source_path();
+}
+inline const std::string& ImageInfo::_internal_source_path() const {
+  return source_path_.GetNoArena();
+}
+inline void ImageInfo::_internal_set_source_path(const std::string& value) {
+  
+  source_path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ImageInfo::set_source_path(std::string&& value) {
+  
+  source_path_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ImageInfo.source_path)
+}
+inline void ImageInfo::set_source_path(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  source_path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ImageInfo.source_path)
+}
+inline void ImageInfo::set_source_path(const char* value, size_t size) {
+  
+  source_path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ImageInfo.source_path)
+}
+inline std::string* ImageInfo::_internal_mutable_source_path() {
+  
+  return source_path_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ImageInfo::release_source_path() {
+  // @@protoc_insertion_point(field_release:ImageInfo.source_path)
+  
+  return source_path_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ImageInfo::set_allocated_source_path(std::string* source_path) {
+  if (source_path != nullptr) {
+    
+  } else {
+    
+  }
+  source_path_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), source_path);
+  // @@protoc_insertion_point(field_set_allocated:ImageInfo.source_path)
+}
+
+// repeated .Thumbnail thumbnail = 2;
+inline int ImageInfo::_internal_thumbnail_size() const {
+  return thumbnail_.size();
+}
+inline int ImageInfo::thumbnail_size() const {
+  return _internal_thumbnail_size();
+}
+inline void ImageInfo::clear_thumbnail() {
+  thumbnail_.Clear();
+}
+inline ::Thumbnail* ImageInfo::mutable_thumbnail(int index) {
+  // @@protoc_insertion_point(field_mutable:ImageInfo.thumbnail)
+  return thumbnail_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >*
+ImageInfo::mutable_thumbnail() {
+  // @@protoc_insertion_point(field_mutable_list:ImageInfo.thumbnail)
+  return &thumbnail_;
+}
+inline const ::Thumbnail& ImageInfo::_internal_thumbnail(int index) const {
+  return thumbnail_.Get(index);
+}
+inline const ::Thumbnail& ImageInfo::thumbnail(int index) const {
+  // @@protoc_insertion_point(field_get:ImageInfo.thumbnail)
+  return _internal_thumbnail(index);
+}
+inline ::Thumbnail* ImageInfo::_internal_add_thumbnail() {
+  return thumbnail_.Add();
+}
+inline ::Thumbnail* ImageInfo::add_thumbnail() {
+  // @@protoc_insertion_point(field_add:ImageInfo.thumbnail)
+  return _internal_add_thumbnail();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >&
+ImageInfo::thumbnail() const {
+  // @@protoc_insertion_point(field_list:ImageInfo.thumbnail)
+  return thumbnail_;
+}
+
+// -------------------------------------------------------------------
+
+// ClassifyRequest
+
+// repeated .ImageInfo infos = 1;
+inline int ClassifyRequest::_internal_infos_size() const {
+  return infos_.size();
+}
+inline int ClassifyRequest::infos_size() const {
+  return _internal_infos_size();
+}
+inline void ClassifyRequest::clear_infos() {
+  infos_.Clear();
+}
+inline ::ImageInfo* ClassifyRequest::mutable_infos(int index) {
+  // @@protoc_insertion_point(field_mutable:ClassifyRequest.infos)
+  return infos_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageInfo >*
+ClassifyRequest::mutable_infos() {
+  // @@protoc_insertion_point(field_mutable_list:ClassifyRequest.infos)
+  return &infos_;
+}
+inline const ::ImageInfo& ClassifyRequest::_internal_infos(int index) const {
+  return infos_.Get(index);
+}
+inline const ::ImageInfo& ClassifyRequest::infos(int index) const {
+  // @@protoc_insertion_point(field_get:ClassifyRequest.infos)
+  return _internal_infos(index);
+}
+inline ::ImageInfo* ClassifyRequest::_internal_add_infos() {
+  return infos_.Add();
+}
+inline ::ImageInfo* ClassifyRequest::add_infos() {
+  // @@protoc_insertion_point(field_add:ClassifyRequest.infos)
+  return _internal_add_infos();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageInfo >&
+ClassifyRequest::infos() const {
+  // @@protoc_insertion_point(field_list:ClassifyRequest.infos)
+  return infos_;
+}
+
+// -------------------------------------------------------------------
+
+// ImageClass
+
+// string path = 1;
+inline void ImageClass::clear_path() {
+  path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ImageClass::path() const {
+  // @@protoc_insertion_point(field_get:ImageClass.path)
+  return _internal_path();
+}
+inline void ImageClass::set_path(const std::string& value) {
+  _internal_set_path(value);
+  // @@protoc_insertion_point(field_set:ImageClass.path)
+}
+inline std::string* ImageClass::mutable_path() {
+  // @@protoc_insertion_point(field_mutable:ImageClass.path)
+  return _internal_mutable_path();
+}
+inline const std::string& ImageClass::_internal_path() const {
+  return path_.GetNoArena();
+}
+inline void ImageClass::_internal_set_path(const std::string& value) {
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ImageClass::set_path(std::string&& value) {
+  
+  path_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ImageClass.path)
+}
+inline void ImageClass::set_path(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ImageClass.path)
+}
+inline void ImageClass::set_path(const char* value, size_t size) {
+  
+  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ImageClass.path)
+}
+inline std::string* ImageClass::_internal_mutable_path() {
+  
+  return path_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ImageClass::release_path() {
+  // @@protoc_insertion_point(field_release:ImageClass.path)
+  
+  return path_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ImageClass::set_allocated_path(std::string* path) {
+  if (path != nullptr) {
+    
+  } else {
+    
+  }
+  path_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), path);
+  // @@protoc_insertion_point(field_set_allocated:ImageClass.path)
+}
+
+// string class_name = 2;
+inline void ImageClass::clear_class_name() {
+  class_name_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline const std::string& ImageClass::class_name() const {
+  // @@protoc_insertion_point(field_get:ImageClass.class_name)
+  return _internal_class_name();
+}
+inline void ImageClass::set_class_name(const std::string& value) {
+  _internal_set_class_name(value);
+  // @@protoc_insertion_point(field_set:ImageClass.class_name)
+}
+inline std::string* ImageClass::mutable_class_name() {
+  // @@protoc_insertion_point(field_mutable:ImageClass.class_name)
+  return _internal_mutable_class_name();
+}
+inline const std::string& ImageClass::_internal_class_name() const {
+  return class_name_.GetNoArena();
+}
+inline void ImageClass::_internal_set_class_name(const std::string& value) {
+  
+  class_name_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+}
+inline void ImageClass::set_class_name(std::string&& value) {
+  
+  class_name_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:ImageClass.class_name)
+}
+inline void ImageClass::set_class_name(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  class_name_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ImageClass.class_name)
+}
+inline void ImageClass::set_class_name(const char* value, size_t size) {
+  
+  class_name_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ImageClass.class_name)
+}
+inline std::string* ImageClass::_internal_mutable_class_name() {
+  
+  return class_name_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ImageClass::release_class_name() {
+  // @@protoc_insertion_point(field_release:ImageClass.class_name)
+  
+  return class_name_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ImageClass::set_allocated_class_name(std::string* class_name) {
+  if (class_name != nullptr) {
+    
+  } else {
+    
+  }
+  class_name_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), class_name);
+  // @@protoc_insertion_point(field_set_allocated:ImageClass.class_name)
+}
+
+// float class_confidence = 3;
+inline void ImageClass::clear_class_confidence() {
+  class_confidence_ = 0;
+}
+inline float ImageClass::_internal_class_confidence() const {
+  return class_confidence_;
+}
+inline float ImageClass::class_confidence() const {
+  // @@protoc_insertion_point(field_get:ImageClass.class_confidence)
+  return _internal_class_confidence();
+}
+inline void ImageClass::_internal_set_class_confidence(float value) {
+  
+  class_confidence_ = value;
+}
+inline void ImageClass::set_class_confidence(float value) {
+  _internal_set_class_confidence(value);
+  // @@protoc_insertion_point(field_set:ImageClass.class_confidence)
+}
+
+// -------------------------------------------------------------------
+
+// ClassifyResponse
+
+// repeated .ImageClass result = 1;
+inline int ClassifyResponse::_internal_result_size() const {
+  return result_.size();
+}
+inline int ClassifyResponse::result_size() const {
+  return _internal_result_size();
+}
+inline void ClassifyResponse::clear_result() {
+  result_.Clear();
+}
+inline ::ImageClass* ClassifyResponse::mutable_result(int index) {
+  // @@protoc_insertion_point(field_mutable:ClassifyResponse.result)
+  return result_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageClass >*
+ClassifyResponse::mutable_result() {
+  // @@protoc_insertion_point(field_mutable_list:ClassifyResponse.result)
+  return &result_;
+}
+inline const ::ImageClass& ClassifyResponse::_internal_result(int index) const {
+  return result_.Get(index);
+}
+inline const ::ImageClass& ClassifyResponse::result(int index) const {
+  // @@protoc_insertion_point(field_get:ClassifyResponse.result)
+  return _internal_result(index);
+}
+inline ::ImageClass* ClassifyResponse::_internal_add_result() {
+  return result_.Add();
+}
+inline ::ImageClass* ClassifyResponse::add_result() {
+  // @@protoc_insertion_point(field_add:ClassifyResponse.result)
+  return _internal_add_result();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageClass >&
+ClassifyResponse::result() const {
+  // @@protoc_insertion_point(field_list:ClassifyResponse.result)
+  return result_;
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
