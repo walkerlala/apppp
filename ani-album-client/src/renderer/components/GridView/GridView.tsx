@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
 import { ImageWithThumbnails } from 'common/image';
+import { ContextMenuType } from 'common/menu';
 import { eventBus, RendererEvents } from 'renderer/events';
 import ImageItem from './ImageItem';
+import GridViewLayout from './GridViewLayout';
 import { produce } from 'immer';
-import './GridView.scss';
 
 interface GridViewProps {
   selectedIds: Set<number>;
@@ -81,7 +82,7 @@ class GridView extends Component<GridViewProps, GridViewState> {
 
       if (current.classList.contains('ani-grid-item') && current.hasAttribute('data-id')) {
         const dataId = Number(current.getAttribute('data-id'));
-        ipcRenderer.invoke(ClientMessageType.ShowContextMenu, {
+        ipcRenderer.invoke(ClientMessageType.ShowContextMenu, ContextMenuType.ImageItem, {
           imageId: dataId,
         });
         if (!this.props.onSelectedIdsChanged) {
@@ -131,11 +132,9 @@ class GridView extends Component<GridViewProps, GridViewState> {
 
   render() {
     return (
-      <div className="ani-grid-view">
-        <div className="ani-grid-content-container">
-          {this.renderImages()}
-        </div>
-      </div>
+      <GridViewLayout>
+        {this.renderImages()}
+      </GridViewLayout>
     );
   }
   

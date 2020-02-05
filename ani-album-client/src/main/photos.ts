@@ -36,6 +36,7 @@ async function importPhotosByPath(path: string) {
 
       logger.info('new entity: ', imageId);
       const resp = await microService.generateThumbnails(path, getThumbnailsFolder());
+      logger.debug('thumbnail resp length: ', resp.getDataList().length);
 
       for (const thumbnail of resp.getDataList()) {
         logger.debug('get a thumbnail', thumbnail.getPath());

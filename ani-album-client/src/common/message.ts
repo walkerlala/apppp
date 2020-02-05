@@ -15,6 +15,7 @@ export enum ClientMessageType {
   AddImageToAlbum = 'AddImageToAlbum',
   AddImageToWorkspace = 'AddImageToWorkspace',
   GetImagesByAlbumId = 'GetImagesByAlbumId',
+  AddImagesToCurrentAlbum = 'AddImagesToCurrentAlbum',
 }
 
 export interface MessageRequest {
