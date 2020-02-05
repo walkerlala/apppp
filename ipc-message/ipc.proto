@@ -7,6 +7,8 @@ enum MessageType {
 
   ReadExif = 2;
 
+  ClassifyImage = 3;
+
 }
 
 enum ThumbnailType {
@@ -62,4 +64,23 @@ message ExifInfo {
     double gps_latitude = 23;
     double gps_longitude = 24;
     double gps_altitude = 25;
+}
+
+message ImageInfo {
+  string source_path = 1;
+	repeated Thumbnail thumbnail = 2;
+}
+
+message ClassifyRequest {
+	repeated ImageInfo infos = 1;
+}
+
+message ImageClass {
+	string path = 1;
+	string class_name = 2;
+  float class_confidence = 3;
+}
+
+message ClassifyResponse {
+	repeated ImageClass result = 1;
 }

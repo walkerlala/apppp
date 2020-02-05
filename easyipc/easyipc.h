@@ -1,11 +1,11 @@
 #pragma once
 
-#include <memory>
 #include <atomic>
-#include <string>
 #include <functional>
+#include <memory>
+#include <string>
 
-#include "ThreadPool.h"
+#include "ThreadPool/ThreadPool.h"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -16,105 +16,94 @@ typedef int MessageTunnel;
 
 namespace EasyIpc {
 
+class Message {
+   public:
+    std::int64_t request_id = -1;
+    std::int32_t message_type = -1;
+    std::string content;
+};
 
-    class Message {
-    public:
-        std::int64_t request_id = -1;
-        std::int32_t message_type = -1;
-        std::string content;
-    };
+class IpcServer;
 
-    class IpcServer;
+class Context {
+   public:
+    Context(std::weak_ptr<IpcServer> server) : server_(server) {}
 
-    class Context {
-    public:
-        Context(std::weak_ptr<IpcServer> server): server_(server) {
-        }
+    void Shutdown();
 
-        void Shutdown();
+   private:
+    std::weak_ptr<IpcServer> server_;
+};
 
-    private:
-        std::weak_ptr<IpcServer> server_;
+class Session {
+   public:
+    Session(std::weak_ptr<IpcServer> server, MessageTunnel tunnel);
 
-    };
+    void HandleMessage();
 
-    class Session {
-    public:
-        Session(std::weak_ptr<IpcServer> server, MessageTunnel tunnel);
+    void Close();
 
-        void HandleMessage();
+   private:
+    std::weak_ptr<IpcServer> server_;
+    MessageTunnel tunnel_;
+};
 
-		void Close();
+using MessageHandler = std::function<std::string(Context& context, const Message& req)>;
+using ClientDisconnectHandler = std::function<void(Context& context, const Session& session)>;
 
-    private:
-        std::weak_ptr<IpcServer> server_;
-        MessageTunnel tunnel_;
+class IpcServer : public std::enable_shared_from_this<IpcServer> {
+   public:
+    explicit IpcServer(const std::string& token, int threads_num = 2);
+    IpcServer(const IpcServer&) = delete;
+    explicit IpcServer(IpcServer&&) = delete;
 
-    };
+    IpcServer& operator=(const IpcServer&) = delete;
+    IpcServer& operator=(IpcServer&&) = delete;
 
-    using MessageHandler = std::function<std::string(Context& context, const Message& req)>;
-	using ClientDisconnectHandler = std::function<void (Context& context, const Session& session)>;
+    bool Run();
+    void Shutdown();
 
-    class IpcServer: public std::enable_shared_from_this<IpcServer> {
-    public:
-        explicit IpcServer(const std::string& token, int threads_num = 2);
-        IpcServer(const IpcServer&) = delete;
-        explicit IpcServer(IpcServer&&) = delete;
+    ~IpcServer() { Shutdown(); }
 
-        IpcServer& operator=(const IpcServer&) = delete;
-        IpcServer& operator=(IpcServer&&) = delete;
+    MessageHandler message_handler;
+    ClientDisconnectHandler client_disconnect_handler;
 
+   private:
+    bool AcceptRequest();
 
-        bool Run();
-        void Shutdown();
+    ThreadPool workers_;
 
-		~IpcServer() {
-			Shutdown();
-		}
-
-        MessageHandler message_handler;
-		ClientDisconnectHandler client_disconnect_handler;
-
-    private:
-        bool AcceptRequest();
-
-        ThreadPool workers_;
-
-        std::atomic<bool> is_running_;
-        std::string ipc_token;
+    std::atomic<bool> is_running_;
+    std::string ipc_token;
 #ifdef WIN32
-		HANDLE handle_;
+    HANDLE handle_;
 
 #else
-        void HandleRequestStandalone(int socket);
-        int fd = -1;
+    void HandleRequestStandalone(int socket);
+    int fd = -1;
 #endif
+};
 
-    };
+class IpcClient {
+   public:
+    IpcClient() = default;
+    IpcClient(const IpcClient&) = delete;
+    explicit IpcClient(IpcClient&&) = delete;
 
-    class IpcClient {
-    public:
-        IpcClient() = default;
-        IpcClient(const IpcClient&) = delete;
-        explicit IpcClient(IpcClient&&) = delete;
+    IpcClient& operator=(const IpcClient&) = delete;
+    IpcClient& operator=(IpcClient&&) = delete;
 
-        IpcClient& operator=(const IpcClient&) = delete;
-        IpcClient& operator=(IpcClient&&) = delete;
+    ~IpcClient() = default;
 
-        ~IpcClient() = default;
+    bool Connect(const std::string& token);
 
-        bool Connect(const std::string& token);
+    bool Send(std::int32_t message_type, const std::string& content, std::string& resp);
 
-        bool Send(std::int32_t message_type, const std::string& content, std::string& resp);
+   private:
+    std::string ipc_token;
+    std::int64_t req_id_counter = 0;
 
-    private:
+    MessageTunnel tunnel_;
+};
 
-        std::string ipc_token;
-        std::int64_t req_id_counter = 0;
-
-        MessageTunnel tunnel_;
-
-    };
-
-}
-
+}  // namespace EasyIpc

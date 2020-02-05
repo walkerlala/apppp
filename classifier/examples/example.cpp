@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     try {
         res = classify(image_path, model_path, labels_path, usegpu);
     } catch (const std::exception &e) {
-        std::cout << "Exception when classifying image£º " << e.what() << std::endl;
+        std::cout << "Exception when classifying image " << e.what() << std::endl;
     }
 
     std::cout << "PREDICTION  : " << std::get<0>(res) << std::endl;
