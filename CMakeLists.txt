@@ -13,9 +13,6 @@ set(ANI_THUMBNAIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thumbnail)
 if (NOT DEFINED ANI_THIRDPARTY_INSTALL_DIR)
     MESSAGE(FATAL_ERROR "ANI_THIRDPARTY_INSTALL_DIR not defined. Forget to add -DANI_THIRDPARTY_INSTALL_DIR to cmake command ?")
 endif()
-if (NOT DEFINED ANI_BOOST_INSTALL_DIR)
-    MESSAGE(FATAL_ERROR "ANI_BOOST_INSTALL_DIR not defined. Forget to add -DANI_BOOST_INSTALL_DIR to cmake command ?")
-endif()
 
 include_directories("${ANI_THIRDPARTY_INSTALL_DIR}/include")
 link_directories("${ANI_THIRDPARTY_INSTALL_DIR}/lib")
@@ -75,8 +72,8 @@ find_library(PNG_LIB
              NAMES "libpng.a" "libpng16_static.lib"
              PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/lib)
 find_library(JPEG_LIB
-             NAMES "libjpeg.a" "jpeg-static.lib"
-             PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/lib)
+             NAMES "libjpeg.a" "jpeg-static.lib" "jpeg.lib"
+             PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/jpeg-test2/lib)
 
 find_package(Torch REQUIRED PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/libtorch)
 find_package(OpenCV REQUIRED PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/opencv)
@@ -84,7 +81,7 @@ find_package(OpenCV REQUIRED PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/opencv)
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.70 REQUIRED
              COMPONENTS filesystem random # Boost_LIBRARIES will define these components
-             PATHS ${ANI_BOOST_INSTALL_DIR})
+             PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/boost)
 MESSAGE(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
 
 
