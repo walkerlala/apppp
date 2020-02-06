@@ -112,7 +112,7 @@ class AlbumContentPage extends React.Component<AlbumContentPageProps, State> {
         <MainContentContainer>
           <ImportButton
             onClick={this.handleImportButtonClicked}
-            textContent="Add images from My Photos to Album..."
+            textContent="Add images from My Photos to thie album..."
           />
         </MainContentContainer>
       );
@@ -120,7 +120,7 @@ class AlbumContentPage extends React.Component<AlbumContentPageProps, State> {
 
     return (
       <GridViewContainer ref={this.__containerRef}  onContextMenu={this.handleGridContextMenu}>
-        <GridViewLayout containerRef={this.__containerRef}>
+        <GridViewLayout>
           {this.renderImageItems()}
         </GridViewLayout>
       </GridViewContainer>

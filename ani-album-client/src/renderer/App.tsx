@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import Sidebar from 'renderer/Sidebar';
 import MyPhotosPage from 'renderer/MyPhotosPage';
 import ImageViewer from 'renderer/ImageViewer';
-import { PageKey, isAAlbum } from 'renderer/pageKey';
+import { PageKey, isAAlbum, isAWorkspace } from 'renderer/pageKey';
 import AlbumContentPage from 'renderer/AlbumContentPage';
+import WorkspaceContentPage from 'renderer/WorkspaceContentPage';
 import Modals from 'renderer/Modals';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { Header, SearchHeader} from 'renderer/Header';
@@ -62,6 +63,8 @@ class App extends Component<{}, AppState> {
 
     if (isAAlbum(pageKey)) {
       return <AlbumContentPage pageKey={pageKey} />;
+    } else if (isAWorkspace(pageKey)) {
+      return <WorkspaceContentPage pageKey={pageKey} />;
     }
 
     return null;
