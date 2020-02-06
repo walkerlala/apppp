@@ -5,8 +5,9 @@ import Slider from 'renderer/Slider';
 import { SearchBox } from 'renderer/Search';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { debounce } from 'lodash';
-import { PageKey, isAAlbum, getAlbumToken } from 'renderer/pageKey';
+import { PageKey, isAAlbum, getAlbumToken, isAWorkspace, getWorkspaceToken } from 'renderer/pageKey';
 import { Album } from 'common/album';
+import { Workspace } from 'common/workspace';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
 import EditableTitle from './EditableTitle';
@@ -22,6 +23,7 @@ interface HeaderState {
   isScaledToFit: boolean;
   isMouseEntered: boolean;
   albumData: Album | null;
+  workspaceData: Workspace | null;
 }
 
 class Header extends React.Component<HeaderProps, HeaderState> {
@@ -32,6 +34,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       isScaledToFit: true,
       isMouseEntered: false,
       albumData: null,
+      workspaceData: null,
     };
   }
 
@@ -41,6 +44,8 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     const { pageKey } = this.props;
     if (isAAlbum(pageKey)) {
       this.fetchAlbumData(Number(getAlbumToken(pageKey)));
+    } else if (isAWorkspace(pageKey)) {
+      this.fetchWorkspaceData(Number(getWorkspaceToken(pageKey)));
     }
   }
 
@@ -67,6 +72,8 @@ class Header extends React.Component<HeaderProps, HeaderState> {
   private handlePageNavigation = (pageKey: string) => {
     if (isAAlbum(pageKey)) {
       this.fetchAlbumData(Number(getAlbumToken(pageKey)));
+    } else if (isAWorkspace(pageKey)) {
+      this.fetchWorkspaceData(Number(getWorkspaceToken(pageKey)));
     }
   }
 
@@ -88,28 +95,56 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     }
   }
 
-  private handleTitleContentChanged = async (content: string) => {
-    if (!this.state.albumData) {
-      return;
-    }
-    const albumData = {
-      ...this.state.albumData,
-      name: content,
-    };
-    this.setState({
-      albumData,
-    });
+  private async fetchWorkspaceData(wpId: number) {
     try {
-      await ipcRenderer.invoke(ClientMessageType.UpdateAlbumById, albumData);
-      eventBus.emit(RendererEvents.AlbumInfoUpdated, albumData.id);
+      const wpData = await ipcRenderer.invoke(ClientMessageType.GetWorkspaceById, wpId);
+      if (isUndefined(wpData)) {
+        return;
+      }
+      this.setState({
+        workspaceData: wpData,
+      });
     } catch (err) {
       console.error(err);
     }
   }
 
+  private handleTitleContentChanged = async (content: string) => {
+    if (isAAlbum(this.props.pageKey)) {
+      if (!this.state.albumData) {
+        return;
+      }
+      try {
+        const albumData: Album = {
+          ...this.state.albumData,
+          name: content,
+        };
+        await ipcRenderer.invoke(ClientMessageType.UpdateAlbumById, albumData);
+        this.setState({
+          albumData,
+        });
+        eventBus.emit(RendererEvents.AlbumInfoUpdated, albumData.id);
+      } catch (err) {
+        console.error(err);
+      }
+    } else if (isAWorkspace(this.props.pageKey)) {
+      if (!this.state.workspaceData) {
+        return;
+      }
+      const wpData: Workspace = {
+        ...this.state.workspaceData,
+        name: content,
+      };
+      await ipcRenderer.invoke(ClientMessageType.UpdateWorkspaceById, wpData);
+      this.setState({
+        workspaceData: wpData,
+      });
+    }
+  }
+
   private renderBidHeaderContent() {
     const { pageKey } = this.props;
-    const { albumData, isMouseEntered } = this.state;
+    const { albumData, isMouseEntered, workspaceData } = this.state;
     let content = '2019 年 1 月 30 日';
     let canEdit: boolean = false;
 
@@ -119,6 +154,13 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       if (albumData) {
         canEdit = true;
         content = albumData.name;
+      } else {
+        content = '';
+      }
+    } else if (isAWorkspace(pageKey)) {
+      if (workspaceData) {
+        canEdit = true;
+        content = workspaceData.name;
       } else {
         content = '';
       }

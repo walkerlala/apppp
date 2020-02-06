@@ -190,6 +190,31 @@ export async function updateAlbumById(db: SQLiteHelper, album: Album): Promise<v
   );
 }
 
+export async function queryWorkspaceById(db: SQLiteHelper, id: number): Promise<Workspace | undefined> {
+  const result = await db.get(`
+    SELECT id, parentId, name, createdAt FROM ${WorkspacesTableName}
+    WHERE id=?
+  `, id);
+  if (isUndefined(result)) {
+    return undefined;
+  }
+  const { createdAt, ...rest } = result;
+  return {
+    ...rest,
+    createdAt: new Date(createdAt),
+  };
+}
+
+export async function updateWorkspaceById(db: SQLiteHelper, wp: Workspace): Promise<void> {
+  const { id, name, parentId } = wp;
+  if (isUndefined(id)) {
+    return;
+  }
+  await db.run(`UPDATE ${WorkspacesTableName} SET name=?, parentId=? WHERE id=?`,
+    name, parentId, id,
+  );
+}
+
 function imagesResultToInterface(result: any[]) {
   return result.map(({ id, path, createdAt }) => {
     return {

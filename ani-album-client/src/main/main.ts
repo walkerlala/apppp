@@ -137,6 +137,14 @@ const listenEvents = once(() => {
     return wp;
   });
 
+  ipcMain.handle(ClientMessageType.GetWorkspaceById, async (event: IpcMainInvokeEvent, id: number) => {
+    return await dal.queryWorkspaceById(getDb(), id);
+  });
+
+  ipcMain.handle(ClientMessageType.UpdateWorkspaceById, async (event: IpcMainInvokeEvent, wp: Workspace) => {
+    await dal.updateWorkspaceById(getDb(), wp);
+  });
+
   ipcMain.handle(ClientMessageType.GetWorkspacesByParentId, async (event: IpcMainInvokeEvent, parentId: number) => {
     return await dal.queryWorkspacesByParentId(getDb(), parentId);
   });
