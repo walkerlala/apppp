@@ -205,6 +205,13 @@ export async function queryWorkspaceById(db: SQLiteHelper, id: number): Promise<
   };
 }
 
+export async function addImageToWorkspace(db: SQLiteHelper, imageId: number, workspaceId: number) {
+  await db.run(`
+    INSERT OR REPLACE INTO ${ImageToWorkspaceTableName} (imageId, workspaceId, createdAt)
+    VALUES (?, ?, ?)
+  `, imageId, workspaceId, new Date());
+}
+
 export async function updateWorkspaceById(db: SQLiteHelper, wp: Workspace): Promise<void> {
   const { id, name, parentId } = wp;
   if (isUndefined(id)) {
@@ -257,6 +264,17 @@ export async function queryImagesByAlbumId(db: SQLiteHelper, albumId: number) {
     FROM imagesEntity, imageToAlbum 
     WHERE imagesEntity.id = imageToAlbum.imageId AND albumId = ?`,
     albumId,
+  );
+  return imagesResultToInterface(result);
+}
+
+export async function queryImagesByWorkspaceId(db: SQLiteHelper, workspaceId: number) {
+  const result = await db.all(
+    `SELECT
+      imagesEntity.id, imagesEntity.path, imagesEntity.createdAt
+    FROM imagesEntity, imageToWorkspace 
+    WHERE imagesEntity.id = imageToWorkspace.imageId AND workspaceId = ?`,
+    workspaceId,
   );
   return imagesResultToInterface(result);
 }

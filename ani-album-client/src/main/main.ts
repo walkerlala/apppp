@@ -166,6 +166,23 @@ const listenEvents = once(() => {
     return await Promise.all(allPromises);
   });
 
+  ipcMain.handle(ClientMessageType.GetImagesByWorkspaceId, async (event: IpcMainInvokeEvent, workspaceId: number) => {
+    logger.debug('GetImagesByWorkspaceId: ', workspaceId);
+    const images =  await dal.queryImagesByWorkspaceId(getDb(), workspaceId);
+    const allPromises: Promise<ImageWithThumbnails>[] = images.map(async img => {
+      const thumbnails = await dal.queryThumbnailsByImageId(getDb(), img.id!);
+      return {
+        ...img,
+        thumbnails,
+      } as ImageWithThumbnails;
+    });
+    return await Promise.all(allPromises);
+  });
+
+  ipcMain.handle(ClientMessageType.AddImageToWorkspace, async (event: IpcMainInvokeEvent, imageId: number, workspaceId: number) => {
+    return await dal.addImageToWorkspace(getDb(), imageId, workspaceId);
+  });
+
 });
 
 async function createWindow() {

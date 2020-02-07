@@ -69,7 +69,6 @@ class AlbumContentPage extends React.Component<AlbumContentPageProps, State> {
   private async fetchImagesByAlbumId(albumId: number) {
     try {
       const data = await ipcRenderer.invoke(ClientMessageType.GetImagesByAlbumId, albumId);
-      console.log(data);
       this.setState({
         images: data,
       });

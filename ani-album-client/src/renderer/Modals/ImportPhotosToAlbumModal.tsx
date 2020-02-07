@@ -3,7 +3,7 @@ import Modal from 'renderer/components/Modal';
 import GridView from 'renderer/components/GridView';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
-import { getAlbumToken } from 'renderer/pageKey';
+import { getAlbumToken, isAAlbum, isAWorkspace, getWorkspaceToken } from 'renderer/pageKey';
 import { GridContainer } from './styles';
 import { eventBus, RendererEvents } from 'renderer/events';
 
@@ -38,20 +38,35 @@ class ImportPhotosToAlbumModal extends React.Component<ImportPhotosToAlbumModalP
     }
 
     const pageKey = this.props.params[0];
-    const albumId = Number(getAlbumToken(pageKey));
-
     let hasSuccess = false;
     const ids = [...this.state.selectedIds];
-    for (const id of ids) {
-      try {
-        await ipcRenderer.invoke(ClientMessageType.AddImageToAlbum, id, albumId);
-        hasSuccess = true;
-      } catch (err) {
-        console.error(err);
+    if (isAAlbum(pageKey)) {
+      const albumId = Number(getAlbumToken(pageKey));
+
+      for (const id of ids) {
+        try {
+          await ipcRenderer.invoke(ClientMessageType.AddImageToAlbum, id, albumId);
+          hasSuccess = true;
+        } catch (err) {
+          console.error(err);
+        }
       }
-    }
-    if (hasSuccess) {
-      eventBus.emit(RendererEvents.AlbumContentUpdated, albumId);
+      if (hasSuccess) {
+        eventBus.emit(RendererEvents.AlbumContentUpdated, albumId);
+      }
+    } else if (isAWorkspace(pageKey)) {
+      const workspaceId = Number(getWorkspaceToken(pageKey));
+      for (const id of ids) {
+        try {
+          await ipcRenderer.invoke(ClientMessageType.AddImageToWorkspace, id, workspaceId);
+          hasSuccess = true;
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      if (hasSuccess) {
+        eventBus.emit(RendererEvents.WorkspaceContentUpated, workspaceId);
+      }
     }
   }
 
