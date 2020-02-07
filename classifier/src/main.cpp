@@ -1,3 +1,8 @@
+#include <fmt/format.h>
+#include <gflags/gflags.h>
+#define GLOG_NO_ABBREVIATED_SEVERITIES
+#include <glog/logging.h>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <cstdio>
@@ -33,25 +38,27 @@ static ClassifierConf ParseClassifierConf(const string &conf);
 static vector<string> labels;
 static torch::jit::script::Module model;
 
-int main(int argc, char **argv) {
-    std::string conf_path = "classifier_asset/classifier.conf";
-    if (argc == 2) {
-        conf_path = argv[1];
-    }
+DEFINE_string(conf, "classifier_asset/classifier.conf", "path to classifier configuration file");
+// DEFINE_string(log_dir ...), defined in glog lib, just provide it with --log_dir
 
-    if (!boost::filesystem::exists(conf_path)) {
-        printf("Configuration file %s not exists", conf_path.c_str());
+int main(int argc, char **argv) {
+    // init gflags and glog
+    gflags::ParseCommandLineFlags(&argc, &argv, /*remove_flags*/ true);
+    google::InitGoogleLogging(argv[0]);
+
+    if (!boost::filesystem::exists(FLAGS_conf)) {
+        LOG(ERROR) << fmt::format("Configuration file {} not exists", FLAGS_conf);
         return -1;
     }
 
     // parse configuration from classifier.conf
-    ifstream fstrm(conf_path);
+    ifstream fstrm(FLAGS_conf);
     stringstream buffer;
     buffer << fstrm.rdbuf();
     string json = buffer.str();
     ClassifierConf conf = ParseClassifierConf(json);
     if (!conf.valid) {
-        printf("Configuration not valid in file %s", conf_path.c_str());
+        LOG(ERROR) << fmt::format("Configuration not valid in file {}", FLAGS_conf);
         return -1;
     }
 
@@ -67,7 +74,7 @@ int main(int argc, char **argv) {
         labelsfile.close();
     }
     if (labels.size() == 0) {
-        printf("Cannot find any labels in file: %s", conf.labels_path.c_str());
+        LOG(ERROR) << fmt::format("Cannot find any labels in file: {}", conf.labels_path);
         return -1;
     }
 
@@ -75,7 +82,7 @@ int main(int argc, char **argv) {
     try {
         model = read_model(conf.model_path, /*use_gpu*/ false);
     } catch (const std::exception &e) {
-        printf("Error reading torch model: %s", e.what());
+        LOG(ERROR) << fmt::format("Error reading torch model: {}", e.what());
         return -1;
     }
 
@@ -86,15 +93,15 @@ int main(int argc, char **argv) {
 }
 
 string server_handler(EasyIpc::Context &ctx, const EasyIpc::Message &msg) {
-    std::cout << "receive message: " << MessageType_Name(msg.message_type) << std::endl;
+    LOG(INFO) << "receive message: " << MessageType_Name(msg.message_type) << std::endl;
     if (msg.message_type != MessageType::ClassifyImage) {
-        std::cerr << "Invalid message";
+        LOG(ERROR) << "Invalid message";
         return "";
     }
 
     ClassifyRequest request;
     if (!request.ParseFromString(msg.content)) {
-        std::cerr << "Invalid  message to parse from";
+        LOG(ERROR) << "Invalid message to parse from";
         return "";
     }
 
@@ -104,8 +111,8 @@ string server_handler(EasyIpc::Context &ctx, const EasyIpc::Message &msg) {
         const fs::path &fspath = info.source_path();
         tuple<string, float> classify_result = classify_image(fspath);
 
-        printf("%s classify resule: %s, confidence: %f", fspath.c_str(),
-               std::get<0>(classify_result).c_str(), std::get<1>(classify_result));
+        LOG(INFO) << fmt::format("{} classify resule: {}, confidence: {}", fspath.c_str(),
+                                 std::get<0>(classify_result), std::get<1>(classify_result));
         ImageClass *img_class = response.add_result();
         img_class->set_path(fspath.string());
         img_class->set_class_name(std::get<0>(classify_result).c_str());
