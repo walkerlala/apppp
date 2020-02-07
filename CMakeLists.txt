@@ -73,7 +73,7 @@ find_library(PNG_LIB
              PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/lib)
 find_library(JPEG_LIB
              NAMES "libjpeg.a" "jpeg-static.lib" "jpeg.lib"
-             PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/jpeg-test2/lib)
+             PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/lib)
 
 find_package(Torch REQUIRED PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/libtorch)
 find_package(OpenCV REQUIRED PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/opencv)
@@ -84,6 +84,20 @@ find_package(Boost 1.70 REQUIRED
              PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/boost)
 MESSAGE(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
 
+find_package(gflags REQUIRED COMPONENTS nothreads_static PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/gflags)
+find_package(glog REQUIRED PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/glog)
+set(GFLAGS_INCLUDE_DIR ${ANI_THIRDPARTY_INSTALL_DIR}/gflags/include)
+find_library(GFLAGS_LIB
+             NAMES "libgflags.a" "gflags.lib"
+             PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/gflags/lib)
+set(GLOG_INCLUDE_DIR ${ANI_THIRDPARTY_INSTALL_DIR}/glog/include)
+set(GLOG_LIB glog::glog)
+
+find_package(fmt REQUIRED PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/fmt)
+set(FMT_INCLUDE_DIR ${ANI_THIRDPARTY_INSTALL_DIR}/fmt/include)
+find_library(FMT_LIB
+             NAMES "libfmt.a" "fmt.lib" "libfmt.lib"
+             PATHS ${ANI_THIRDPARTY_INSTALL_DIR}/fmt/lib)
 
 if (UNIX AND NOT APPLE)
     set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")

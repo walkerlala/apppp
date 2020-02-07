@@ -14,12 +14,16 @@ target_include_directories(example PRIVATE includes)
 add_executable(classifier src/main.cpp)
 
 target_include_directories(classifier PRIVATE includes ${Boost_INCLUDE_DIRS})
+target_include_directories(classifier PRIVATE ${GFLAGS_INCLUDE_DIR} ${GLOG_INCLUDE_DIR})
+target_include_directories(classifier PRIVATE ${FMT_INCLUDE_DIR})
 target_include_directories(classifier PRIVATE ${ANI_THIRDPARTY_DIR})
 target_include_directories(classifier PRIVATE ${ANI_DIR}/easyipc)
 target_include_directories(classifier PRIVATE ${ANI_DIR}/ipc-message)
 
 target_link_libraries(classifier classify easyipc ipc_message)
 target_link_libraries(classifier ${Boost_LIBRARIES})
+target_link_libraries(classifier ${GFLAGS_LIB} ${GLOG_LIB})
+target_link_libraries(classifier ${FMT_LIB})
 
 # install necessary asset files to bin
 install(FILES asset/classifier.conf
