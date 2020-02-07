@@ -7,6 +7,9 @@ import { ImageWithThumbnails } from 'common/image';
 import { getWorkspaceToken, isAWorkspace } from 'renderer/pageKey';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
+import GridViewLayout from 'renderer/components/GridView/GridViewLayout';
+import GridViewImageItem from 'renderer/components/GridView/ImageItem';
+import { GridViewContainer } from './styles';
 
 export interface WorkspaceContentPageProps {
   pageKey: string;
@@ -69,9 +72,27 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
     }
   }
 
-  private renderImages() {
+  private renderImageItems() {
+    return this.state.images.map((item: ImageWithThumbnails) => {
+      return (
+        <GridViewImageItem
+          key={`data-${item.id}`}
+          data={item}
+          isSelected={false}
+          scaleToFit
+        />
+      );
+    });
+  }
 
-    return <div></div>
+  private renderImages() {
+    return (
+      <GridViewContainer>
+        <GridViewLayout>
+          {this.renderImageItems()}
+        </GridViewLayout>
+      </GridViewContainer>
+    );
   }
 
   render() {

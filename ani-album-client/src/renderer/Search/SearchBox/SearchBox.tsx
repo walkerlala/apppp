@@ -18,10 +18,10 @@ class SearchBox extends React.PureComponent<ISearchBoxProps> {
         style={this.props.style}
         size="large"
       >
-        <LogoContainer>
+        {/* <LogoContainer> */}
           <SearchLogo />
-        </LogoContainer>
-        <Text className="noselect">Search images...</Text>
+        {/* </LogoContainer> */}
+        {/* <Text className="noselect">Search images...</Text> */}
       </Button>
     );
   }

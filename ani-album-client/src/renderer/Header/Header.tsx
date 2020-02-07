@@ -1,6 +1,4 @@
 import * as React from 'react';
-import ZoomButton from './zoomButton.svg';
-import ZoomButton2 from './zoomButton2.svg';
 import Slider from 'renderer/Slider';
 import { SearchBox } from 'renderer/Search';
 import { eventBus, RendererEvents } from 'renderer/events';
@@ -14,6 +12,10 @@ import EditableTitle from './EditableTitle';
 import Button from 'renderer/components/Button';
 import { HeaderContainer, HeaderButtonGroup, EditableTitleContainer } from './styles';
 import { isUndefined } from 'lodash';
+
+import ZoomButton from './zoomButton.svg';
+import ZoomButton2 from './zoomButton2.svg';
+import SmartClassifyButton from './SmartClassifyButton.svg';
 
 interface HeaderProps {
   pageKey: string;
@@ -191,6 +193,19 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     });
   }
 
+  private renderSmartClassifyButton() {
+    if (!isAWorkspace(this.props.pageKey)) {
+      return null;
+    }
+    return (
+      <Button size="large" style={{
+        marginLeft: '8px',
+      }}>
+        <SmartClassifyButton />
+      </Button>
+    );
+  }
+
   render() {
     return (
       <HeaderContainer
@@ -199,19 +214,17 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       >
         {this.renderBidHeaderContent()}
         <HeaderButtonGroup>
-          <SearchBox
-            style={{
-              marginRight: '36px',
-            }}
-            onClick={this.searchBoxClicked}
+          <Slider
+            style={{ marginRight: '32px' }}
           />
-          <Slider />
+          <SearchBox onClick={this.searchBoxClicked} />
+          {this.renderSmartClassifyButton()}
           <Button
             className="ani-button"
             size="large"
             onClick={this.onScaleToButtonClick}
             style={{
-              marginLeft: '12px',
+              marginLeft: '8px',
             }}
           >
             {this.renderZoomButton()}
