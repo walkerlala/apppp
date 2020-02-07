@@ -13,6 +13,8 @@ import Button from 'renderer/components/Button';
 import { HeaderContainer, HeaderButtonGroup, EditableTitleContainer } from './styles';
 import { isUndefined } from 'lodash';
 
+import Tooltip from 'renderer/components/Tooltip';
+
 import ZoomButton from './zoomButton.svg';
 import ZoomButton2 from './zoomButton2.svg';
 import SmartClassifyButton from './SmartClassifyButton.svg';
@@ -198,11 +200,17 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       return null;
     }
     return (
-      <Button size="large" style={{
-        marginLeft: '8px',
-      }}>
-        <SmartClassifyButton />
-      </Button>
+      <Tooltip
+        content="Smart Classify"
+        position="bottom"
+      >
+        <Button size="large" style={{
+          marginLeft: '8px',
+        }}>
+          <SmartClassifyButton />
+        </Button>
+
+      </Tooltip>
     );
   }
 
@@ -219,16 +227,21 @@ class Header extends React.Component<HeaderProps, HeaderState> {
           />
           <SearchBox onClick={this.searchBoxClicked} />
           {this.renderSmartClassifyButton()}
-          <Button
-            className="ani-button"
-            size="large"
-            onClick={this.onScaleToButtonClick}
-            style={{
-              marginLeft: '8px',
-            }}
+          <Tooltip
+            position="bottom"
+            content="Show thumbnai as square or in full aspect ratio"
           >
-            {this.renderZoomButton()}
-          </Button>
+            <Button
+              className="ani-button"
+              size="large"
+              onClick={this.onScaleToButtonClick}
+              style={{
+                marginLeft: '8px',
+              }}
+            >
+              {this.renderZoomButton()}
+            </Button>
+          </Tooltip>
         </HeaderButtonGroup>
       </HeaderContainer>
     );
