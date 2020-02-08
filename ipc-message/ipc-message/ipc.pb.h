@@ -55,6 +55,7 @@ struct TableStruct_ipc_2eproto {
   static const ::PROTOBUF_NAMESPACE_ID::uint32 offsets[];
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_ipc_2eproto;
+namespace proto {
 class ClassifyRequest;
 class ClassifyRequestDefaultTypeInternal;
 extern ClassifyRequestDefaultTypeInternal _ClassifyRequest_default_instance_;
@@ -82,17 +83,19 @@ extern ReadExifRequestDefaultTypeInternal _ReadExifRequest_default_instance_;
 class Thumbnail;
 class ThumbnailDefaultTypeInternal;
 extern ThumbnailDefaultTypeInternal _Thumbnail_default_instance_;
+}  // namespace proto
 PROTOBUF_NAMESPACE_OPEN
-template<> ::ClassifyRequest* Arena::CreateMaybeMessage<::ClassifyRequest>(Arena*);
-template<> ::ClassifyResponse* Arena::CreateMaybeMessage<::ClassifyResponse>(Arena*);
-template<> ::ExifInfo* Arena::CreateMaybeMessage<::ExifInfo>(Arena*);
-template<> ::GenerateThumbnailsRequest* Arena::CreateMaybeMessage<::GenerateThumbnailsRequest>(Arena*);
-template<> ::GenerateThumbnailsResponse* Arena::CreateMaybeMessage<::GenerateThumbnailsResponse>(Arena*);
-template<> ::ImageClass* Arena::CreateMaybeMessage<::ImageClass>(Arena*);
-template<> ::ImageInfo* Arena::CreateMaybeMessage<::ImageInfo>(Arena*);
-template<> ::ReadExifRequest* Arena::CreateMaybeMessage<::ReadExifRequest>(Arena*);
-template<> ::Thumbnail* Arena::CreateMaybeMessage<::Thumbnail>(Arena*);
+template<> ::proto::ClassifyRequest* Arena::CreateMaybeMessage<::proto::ClassifyRequest>(Arena*);
+template<> ::proto::ClassifyResponse* Arena::CreateMaybeMessage<::proto::ClassifyResponse>(Arena*);
+template<> ::proto::ExifInfo* Arena::CreateMaybeMessage<::proto::ExifInfo>(Arena*);
+template<> ::proto::GenerateThumbnailsRequest* Arena::CreateMaybeMessage<::proto::GenerateThumbnailsRequest>(Arena*);
+template<> ::proto::GenerateThumbnailsResponse* Arena::CreateMaybeMessage<::proto::GenerateThumbnailsResponse>(Arena*);
+template<> ::proto::ImageClass* Arena::CreateMaybeMessage<::proto::ImageClass>(Arena*);
+template<> ::proto::ImageInfo* Arena::CreateMaybeMessage<::proto::ImageInfo>(Arena*);
+template<> ::proto::ReadExifRequest* Arena::CreateMaybeMessage<::proto::ReadExifRequest>(Arena*);
+template<> ::proto::Thumbnail* Arena::CreateMaybeMessage<::proto::Thumbnail>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
+namespace proto {
 
 enum MessageType : int {
   Ping = 0,
@@ -150,7 +153,7 @@ inline bool ThumbnailType_Parse(
 // ===================================================================
 
 class GenerateThumbnailsRequest :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:GenerateThumbnailsRequest) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:proto.GenerateThumbnailsRequest) */ {
  public:
   GenerateThumbnailsRequest();
   virtual ~GenerateThumbnailsRequest();
@@ -230,7 +233,7 @@ class GenerateThumbnailsRequest :
   void InternalSwap(GenerateThumbnailsRequest* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "GenerateThumbnailsRequest";
+    return "proto.GenerateThumbnailsRequest";
   }
   private:
   inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
@@ -259,20 +262,20 @@ class GenerateThumbnailsRequest :
     kPathFieldNumber = 1,
     kOutDirFieldNumber = 2,
   };
-  // repeated .ThumbnailType types = 3;
+  // repeated .proto.ThumbnailType types = 3;
   int types_size() const;
   private:
   int _internal_types_size() const;
   public:
   void clear_types();
   private:
-  ::ThumbnailType _internal_types(int index) const;
-  void _internal_add_types(::ThumbnailType value);
+  ::proto::ThumbnailType _internal_types(int index) const;
+  void _internal_add_types(::proto::ThumbnailType value);
   ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>* _internal_mutable_types();
   public:
-  ::ThumbnailType types(int index) const;
-  void set_types(int index, ::ThumbnailType value);
-  void add_types(::ThumbnailType value);
+  ::proto::ThumbnailType types(int index) const;
+  void set_types(int index, ::proto::ThumbnailType value);
+  void add_types(::proto::ThumbnailType value);
   const ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>& types() const;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>* mutable_types();
 
@@ -308,7 +311,7 @@ class GenerateThumbnailsRequest :
   std::string* _internal_mutable_out_dir();
   public:
 
-  // @@protoc_insertion_point(class_scope:GenerateThumbnailsRequest)
+  // @@protoc_insertion_point(class_scope:proto.GenerateThumbnailsRequest)
  private:
   class _Internal;
 
@@ -323,7 +326,7 @@ class GenerateThumbnailsRequest :
 // -------------------------------------------------------------------
 
 class Thumbnail :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Thumbnail) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:proto.Thumbnail) */ {
  public:
   Thumbnail();
   virtual ~Thumbnail();
@@ -403,7 +406,7 @@ class Thumbnail :
   void InternalSwap(Thumbnail* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "Thumbnail";
+    return "proto.Thumbnail";
   }
   private:
   inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
@@ -449,13 +452,13 @@ class Thumbnail :
   std::string* _internal_mutable_path();
   public:
 
-  // .ThumbnailType type = 1;
+  // .proto.ThumbnailType type = 1;
   void clear_type();
-  ::ThumbnailType type() const;
-  void set_type(::ThumbnailType value);
+  ::proto::ThumbnailType type() const;
+  void set_type(::proto::ThumbnailType value);
   private:
-  ::ThumbnailType _internal_type() const;
-  void _internal_set_type(::ThumbnailType value);
+  ::proto::ThumbnailType _internal_type() const;
+  void _internal_set_type(::proto::ThumbnailType value);
   public:
 
   // int32 width = 3;
@@ -476,7 +479,7 @@ class Thumbnail :
   void _internal_set_height(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
-  // @@protoc_insertion_point(class_scope:Thumbnail)
+  // @@protoc_insertion_point(class_scope:proto.Thumbnail)
  private:
   class _Internal;
 
@@ -491,7 +494,7 @@ class Thumbnail :
 // -------------------------------------------------------------------
 
 class GenerateThumbnailsResponse :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:GenerateThumbnailsResponse) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:proto.GenerateThumbnailsResponse) */ {
  public:
   GenerateThumbnailsResponse();
   virtual ~GenerateThumbnailsResponse();
@@ -571,7 +574,7 @@ class GenerateThumbnailsResponse :
   void InternalSwap(GenerateThumbnailsResponse* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "GenerateThumbnailsResponse";
+    return "proto.GenerateThumbnailsResponse";
   }
   private:
   inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
@@ -598,37 +601,37 @@ class GenerateThumbnailsResponse :
   enum : int {
     kDataFieldNumber = 1,
   };
-  // repeated .Thumbnail data = 1;
+  // repeated .proto.Thumbnail data = 1;
   int data_size() const;
   private:
   int _internal_data_size() const;
   public:
   void clear_data();
-  ::Thumbnail* mutable_data(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >*
+  ::proto::Thumbnail* mutable_data(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::Thumbnail >*
       mutable_data();
   private:
-  const ::Thumbnail& _internal_data(int index) const;
-  ::Thumbnail* _internal_add_data();
+  const ::proto::Thumbnail& _internal_data(int index) const;
+  ::proto::Thumbnail* _internal_add_data();
   public:
-  const ::Thumbnail& data(int index) const;
-  ::Thumbnail* add_data();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >&
+  const ::proto::Thumbnail& data(int index) const;
+  ::proto::Thumbnail* add_data();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::Thumbnail >&
       data() const;
 
-  // @@protoc_insertion_point(class_scope:GenerateThumbnailsResponse)
+  // @@protoc_insertion_point(class_scope:proto.GenerateThumbnailsResponse)
  private:
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail > data_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::Thumbnail > data_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
 };
 // -------------------------------------------------------------------
 
 class ReadExifRequest :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ReadExifRequest) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:proto.ReadExifRequest) */ {
  public:
   ReadExifRequest();
   virtual ~ReadExifRequest();
@@ -708,7 +711,7 @@ class ReadExifRequest :
   void InternalSwap(ReadExifRequest* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "ReadExifRequest";
+    return "proto.ReadExifRequest";
   }
   private:
   inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
@@ -751,7 +754,7 @@ class ReadExifRequest :
   std::string* _internal_mutable_path();
   public:
 
-  // @@protoc_insertion_point(class_scope:ReadExifRequest)
+  // @@protoc_insertion_point(class_scope:proto.ReadExifRequest)
  private:
   class _Internal;
 
@@ -763,7 +766,7 @@ class ReadExifRequest :
 // -------------------------------------------------------------------
 
 class ExifInfo :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ExifInfo) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:proto.ExifInfo) */ {
  public:
   ExifInfo();
   virtual ~ExifInfo();
@@ -843,7 +846,7 @@ class ExifInfo :
   void InternalSwap(ExifInfo* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "ExifInfo";
+    return "proto.ExifInfo";
   }
   private:
   inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
@@ -1182,7 +1185,7 @@ class ExifInfo :
   void _internal_set_focal_length_35mm(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // @@protoc_insertion_point(class_scope:ExifInfo)
+  // @@protoc_insertion_point(class_scope:proto.ExifInfo)
  private:
   class _Internal;
 
@@ -1218,7 +1221,7 @@ class ExifInfo :
 // -------------------------------------------------------------------
 
 class ImageInfo :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ImageInfo) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:proto.ImageInfo) */ {
  public:
   ImageInfo();
   virtual ~ImageInfo();
@@ -1298,7 +1301,7 @@ class ImageInfo :
   void InternalSwap(ImageInfo* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "ImageInfo";
+    return "proto.ImageInfo";
   }
   private:
   inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
@@ -1326,22 +1329,22 @@ class ImageInfo :
     kThumbnailFieldNumber = 2,
     kSourcePathFieldNumber = 1,
   };
-  // repeated .Thumbnail thumbnail = 2;
+  // repeated .proto.Thumbnail thumbnail = 2;
   int thumbnail_size() const;
   private:
   int _internal_thumbnail_size() const;
   public:
   void clear_thumbnail();
-  ::Thumbnail* mutable_thumbnail(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >*
+  ::proto::Thumbnail* mutable_thumbnail(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::Thumbnail >*
       mutable_thumbnail();
   private:
-  const ::Thumbnail& _internal_thumbnail(int index) const;
-  ::Thumbnail* _internal_add_thumbnail();
+  const ::proto::Thumbnail& _internal_thumbnail(int index) const;
+  ::proto::Thumbnail* _internal_add_thumbnail();
   public:
-  const ::Thumbnail& thumbnail(int index) const;
-  ::Thumbnail* add_thumbnail();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >&
+  const ::proto::Thumbnail& thumbnail(int index) const;
+  ::proto::Thumbnail* add_thumbnail();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::Thumbnail >&
       thumbnail() const;
 
   // string source_path = 1;
@@ -1360,12 +1363,12 @@ class ImageInfo :
   std::string* _internal_mutable_source_path();
   public:
 
-  // @@protoc_insertion_point(class_scope:ImageInfo)
+  // @@protoc_insertion_point(class_scope:proto.ImageInfo)
  private:
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail > thumbnail_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::Thumbnail > thumbnail_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr source_path_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
@@ -1373,7 +1376,7 @@ class ImageInfo :
 // -------------------------------------------------------------------
 
 class ClassifyRequest :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ClassifyRequest) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:proto.ClassifyRequest) */ {
  public:
   ClassifyRequest();
   virtual ~ClassifyRequest();
@@ -1453,7 +1456,7 @@ class ClassifyRequest :
   void InternalSwap(ClassifyRequest* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "ClassifyRequest";
+    return "proto.ClassifyRequest";
   }
   private:
   inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
@@ -1480,37 +1483,37 @@ class ClassifyRequest :
   enum : int {
     kInfosFieldNumber = 1,
   };
-  // repeated .ImageInfo infos = 1;
+  // repeated .proto.ImageInfo infos = 1;
   int infos_size() const;
   private:
   int _internal_infos_size() const;
   public:
   void clear_infos();
-  ::ImageInfo* mutable_infos(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageInfo >*
+  ::proto::ImageInfo* mutable_infos(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::ImageInfo >*
       mutable_infos();
   private:
-  const ::ImageInfo& _internal_infos(int index) const;
-  ::ImageInfo* _internal_add_infos();
+  const ::proto::ImageInfo& _internal_infos(int index) const;
+  ::proto::ImageInfo* _internal_add_infos();
   public:
-  const ::ImageInfo& infos(int index) const;
-  ::ImageInfo* add_infos();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageInfo >&
+  const ::proto::ImageInfo& infos(int index) const;
+  ::proto::ImageInfo* add_infos();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::ImageInfo >&
       infos() const;
 
-  // @@protoc_insertion_point(class_scope:ClassifyRequest)
+  // @@protoc_insertion_point(class_scope:proto.ClassifyRequest)
  private:
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageInfo > infos_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::ImageInfo > infos_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
 };
 // -------------------------------------------------------------------
 
 class ImageClass :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ImageClass) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:proto.ImageClass) */ {
  public:
   ImageClass();
   virtual ~ImageClass();
@@ -1590,7 +1593,7 @@ class ImageClass :
   void InternalSwap(ImageClass* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "ImageClass";
+    return "proto.ImageClass";
   }
   private:
   inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
@@ -1615,24 +1618,24 @@ class ImageClass :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kPathFieldNumber = 1,
+    kSourcePathFieldNumber = 1,
     kClassNameFieldNumber = 2,
     kClassConfidenceFieldNumber = 3,
   };
-  // string path = 1;
-  void clear_path();
-  const std::string& path() const;
-  void set_path(const std::string& value);
-  void set_path(std::string&& value);
-  void set_path(const char* value);
-  void set_path(const char* value, size_t size);
-  std::string* mutable_path();
-  std::string* release_path();
-  void set_allocated_path(std::string* path);
+  // string source_path = 1;
+  void clear_source_path();
+  const std::string& source_path() const;
+  void set_source_path(const std::string& value);
+  void set_source_path(std::string&& value);
+  void set_source_path(const char* value);
+  void set_source_path(const char* value, size_t size);
+  std::string* mutable_source_path();
+  std::string* release_source_path();
+  void set_allocated_source_path(std::string* source_path);
   private:
-  const std::string& _internal_path() const;
-  void _internal_set_path(const std::string& value);
-  std::string* _internal_mutable_path();
+  const std::string& _internal_source_path() const;
+  void _internal_set_source_path(const std::string& value);
+  std::string* _internal_mutable_source_path();
   public:
 
   // string class_name = 2;
@@ -1660,12 +1663,12 @@ class ImageClass :
   void _internal_set_class_confidence(float value);
   public:
 
-  // @@protoc_insertion_point(class_scope:ImageClass)
+  // @@protoc_insertion_point(class_scope:proto.ImageClass)
  private:
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr source_path_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr class_name_;
   float class_confidence_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -1674,7 +1677,7 @@ class ImageClass :
 // -------------------------------------------------------------------
 
 class ClassifyResponse :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ClassifyResponse) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:proto.ClassifyResponse) */ {
  public:
   ClassifyResponse();
   virtual ~ClassifyResponse();
@@ -1754,7 +1757,7 @@ class ClassifyResponse :
   void InternalSwap(ClassifyResponse* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "ClassifyResponse";
+    return "proto.ClassifyResponse";
   }
   private:
   inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
@@ -1779,32 +1782,50 @@ class ClassifyResponse :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kResultFieldNumber = 1,
+    kResultsFieldNumber = 2,
+    kStatusFieldNumber = 1,
   };
-  // repeated .ImageClass result = 1;
-  int result_size() const;
+  // repeated .proto.ImageClass results = 2;
+  int results_size() const;
   private:
-  int _internal_result_size() const;
+  int _internal_results_size() const;
   public:
-  void clear_result();
-  ::ImageClass* mutable_result(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageClass >*
-      mutable_result();
+  void clear_results();
+  ::proto::ImageClass* mutable_results(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::ImageClass >*
+      mutable_results();
   private:
-  const ::ImageClass& _internal_result(int index) const;
-  ::ImageClass* _internal_add_result();
+  const ::proto::ImageClass& _internal_results(int index) const;
+  ::proto::ImageClass* _internal_add_results();
   public:
-  const ::ImageClass& result(int index) const;
-  ::ImageClass* add_result();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageClass >&
-      result() const;
+  const ::proto::ImageClass& results(int index) const;
+  ::proto::ImageClass* add_results();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::ImageClass >&
+      results() const;
 
-  // @@protoc_insertion_point(class_scope:ClassifyResponse)
+  // string status = 1;
+  void clear_status();
+  const std::string& status() const;
+  void set_status(const std::string& value);
+  void set_status(std::string&& value);
+  void set_status(const char* value);
+  void set_status(const char* value, size_t size);
+  std::string* mutable_status();
+  std::string* release_status();
+  void set_allocated_status(std::string* status);
+  private:
+  const std::string& _internal_status() const;
+  void _internal_set_status(const std::string& value);
+  std::string* _internal_mutable_status();
+  public:
+
+  // @@protoc_insertion_point(class_scope:proto.ClassifyResponse)
  private:
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageClass > result_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::ImageClass > results_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr status_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
 };
@@ -1824,15 +1845,15 @@ inline void GenerateThumbnailsRequest::clear_path() {
   path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& GenerateThumbnailsRequest::path() const {
-  // @@protoc_insertion_point(field_get:GenerateThumbnailsRequest.path)
+  // @@protoc_insertion_point(field_get:proto.GenerateThumbnailsRequest.path)
   return _internal_path();
 }
 inline void GenerateThumbnailsRequest::set_path(const std::string& value) {
   _internal_set_path(value);
-  // @@protoc_insertion_point(field_set:GenerateThumbnailsRequest.path)
+  // @@protoc_insertion_point(field_set:proto.GenerateThumbnailsRequest.path)
 }
 inline std::string* GenerateThumbnailsRequest::mutable_path() {
-  // @@protoc_insertion_point(field_mutable:GenerateThumbnailsRequest.path)
+  // @@protoc_insertion_point(field_mutable:proto.GenerateThumbnailsRequest.path)
   return _internal_mutable_path();
 }
 inline const std::string& GenerateThumbnailsRequest::_internal_path() const {
@@ -1846,26 +1867,26 @@ inline void GenerateThumbnailsRequest::set_path(std::string&& value) {
   
   path_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:GenerateThumbnailsRequest.path)
+  // @@protoc_insertion_point(field_set_rvalue:proto.GenerateThumbnailsRequest.path)
 }
 inline void GenerateThumbnailsRequest::set_path(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:GenerateThumbnailsRequest.path)
+  // @@protoc_insertion_point(field_set_char:proto.GenerateThumbnailsRequest.path)
 }
 inline void GenerateThumbnailsRequest::set_path(const char* value, size_t size) {
   
   path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:GenerateThumbnailsRequest.path)
+  // @@protoc_insertion_point(field_set_pointer:proto.GenerateThumbnailsRequest.path)
 }
 inline std::string* GenerateThumbnailsRequest::_internal_mutable_path() {
   
   return path_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* GenerateThumbnailsRequest::release_path() {
-  // @@protoc_insertion_point(field_release:GenerateThumbnailsRequest.path)
+  // @@protoc_insertion_point(field_release:proto.GenerateThumbnailsRequest.path)
   
   return path_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -1876,7 +1897,7 @@ inline void GenerateThumbnailsRequest::set_allocated_path(std::string* path) {
     
   }
   path_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), path);
-  // @@protoc_insertion_point(field_set_allocated:GenerateThumbnailsRequest.path)
+  // @@protoc_insertion_point(field_set_allocated:proto.GenerateThumbnailsRequest.path)
 }
 
 // string out_dir = 2;
@@ -1884,15 +1905,15 @@ inline void GenerateThumbnailsRequest::clear_out_dir() {
   out_dir_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& GenerateThumbnailsRequest::out_dir() const {
-  // @@protoc_insertion_point(field_get:GenerateThumbnailsRequest.out_dir)
+  // @@protoc_insertion_point(field_get:proto.GenerateThumbnailsRequest.out_dir)
   return _internal_out_dir();
 }
 inline void GenerateThumbnailsRequest::set_out_dir(const std::string& value) {
   _internal_set_out_dir(value);
-  // @@protoc_insertion_point(field_set:GenerateThumbnailsRequest.out_dir)
+  // @@protoc_insertion_point(field_set:proto.GenerateThumbnailsRequest.out_dir)
 }
 inline std::string* GenerateThumbnailsRequest::mutable_out_dir() {
-  // @@protoc_insertion_point(field_mutable:GenerateThumbnailsRequest.out_dir)
+  // @@protoc_insertion_point(field_mutable:proto.GenerateThumbnailsRequest.out_dir)
   return _internal_mutable_out_dir();
 }
 inline const std::string& GenerateThumbnailsRequest::_internal_out_dir() const {
@@ -1906,26 +1927,26 @@ inline void GenerateThumbnailsRequest::set_out_dir(std::string&& value) {
   
   out_dir_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:GenerateThumbnailsRequest.out_dir)
+  // @@protoc_insertion_point(field_set_rvalue:proto.GenerateThumbnailsRequest.out_dir)
 }
 inline void GenerateThumbnailsRequest::set_out_dir(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   out_dir_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:GenerateThumbnailsRequest.out_dir)
+  // @@protoc_insertion_point(field_set_char:proto.GenerateThumbnailsRequest.out_dir)
 }
 inline void GenerateThumbnailsRequest::set_out_dir(const char* value, size_t size) {
   
   out_dir_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:GenerateThumbnailsRequest.out_dir)
+  // @@protoc_insertion_point(field_set_pointer:proto.GenerateThumbnailsRequest.out_dir)
 }
 inline std::string* GenerateThumbnailsRequest::_internal_mutable_out_dir() {
   
   return out_dir_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* GenerateThumbnailsRequest::release_out_dir() {
-  // @@protoc_insertion_point(field_release:GenerateThumbnailsRequest.out_dir)
+  // @@protoc_insertion_point(field_release:proto.GenerateThumbnailsRequest.out_dir)
   
   return out_dir_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -1936,10 +1957,10 @@ inline void GenerateThumbnailsRequest::set_allocated_out_dir(std::string* out_di
     
   }
   out_dir_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), out_dir);
-  // @@protoc_insertion_point(field_set_allocated:GenerateThumbnailsRequest.out_dir)
+  // @@protoc_insertion_point(field_set_allocated:proto.GenerateThumbnailsRequest.out_dir)
 }
 
-// repeated .ThumbnailType types = 3;
+// repeated .proto.ThumbnailType types = 3;
 inline int GenerateThumbnailsRequest::_internal_types_size() const {
   return types_.size();
 }
@@ -1949,27 +1970,27 @@ inline int GenerateThumbnailsRequest::types_size() const {
 inline void GenerateThumbnailsRequest::clear_types() {
   types_.Clear();
 }
-inline ::ThumbnailType GenerateThumbnailsRequest::_internal_types(int index) const {
-  return static_cast< ::ThumbnailType >(types_.Get(index));
+inline ::proto::ThumbnailType GenerateThumbnailsRequest::_internal_types(int index) const {
+  return static_cast< ::proto::ThumbnailType >(types_.Get(index));
 }
-inline ::ThumbnailType GenerateThumbnailsRequest::types(int index) const {
-  // @@protoc_insertion_point(field_get:GenerateThumbnailsRequest.types)
+inline ::proto::ThumbnailType GenerateThumbnailsRequest::types(int index) const {
+  // @@protoc_insertion_point(field_get:proto.GenerateThumbnailsRequest.types)
   return _internal_types(index);
 }
-inline void GenerateThumbnailsRequest::set_types(int index, ::ThumbnailType value) {
+inline void GenerateThumbnailsRequest::set_types(int index, ::proto::ThumbnailType value) {
   types_.Set(index, value);
-  // @@protoc_insertion_point(field_set:GenerateThumbnailsRequest.types)
+  // @@protoc_insertion_point(field_set:proto.GenerateThumbnailsRequest.types)
 }
-inline void GenerateThumbnailsRequest::_internal_add_types(::ThumbnailType value) {
+inline void GenerateThumbnailsRequest::_internal_add_types(::proto::ThumbnailType value) {
   types_.Add(value);
 }
-inline void GenerateThumbnailsRequest::add_types(::ThumbnailType value) {
-  // @@protoc_insertion_point(field_add:GenerateThumbnailsRequest.types)
+inline void GenerateThumbnailsRequest::add_types(::proto::ThumbnailType value) {
+  // @@protoc_insertion_point(field_add:proto.GenerateThumbnailsRequest.types)
   _internal_add_types(value);
 }
 inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>&
 GenerateThumbnailsRequest::types() const {
-  // @@protoc_insertion_point(field_list:GenerateThumbnailsRequest.types)
+  // @@protoc_insertion_point(field_list:proto.GenerateThumbnailsRequest.types)
   return types_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>*
@@ -1978,7 +1999,7 @@ GenerateThumbnailsRequest::_internal_mutable_types() {
 }
 inline ::PROTOBUF_NAMESPACE_ID::RepeatedField<int>*
 GenerateThumbnailsRequest::mutable_types() {
-  // @@protoc_insertion_point(field_mutable_list:GenerateThumbnailsRequest.types)
+  // @@protoc_insertion_point(field_mutable_list:proto.GenerateThumbnailsRequest.types)
   return _internal_mutable_types();
 }
 
@@ -1986,24 +2007,24 @@ GenerateThumbnailsRequest::mutable_types() {
 
 // Thumbnail
 
-// .ThumbnailType type = 1;
+// .proto.ThumbnailType type = 1;
 inline void Thumbnail::clear_type() {
   type_ = 0;
 }
-inline ::ThumbnailType Thumbnail::_internal_type() const {
-  return static_cast< ::ThumbnailType >(type_);
+inline ::proto::ThumbnailType Thumbnail::_internal_type() const {
+  return static_cast< ::proto::ThumbnailType >(type_);
 }
-inline ::ThumbnailType Thumbnail::type() const {
-  // @@protoc_insertion_point(field_get:Thumbnail.type)
+inline ::proto::ThumbnailType Thumbnail::type() const {
+  // @@protoc_insertion_point(field_get:proto.Thumbnail.type)
   return _internal_type();
 }
-inline void Thumbnail::_internal_set_type(::ThumbnailType value) {
+inline void Thumbnail::_internal_set_type(::proto::ThumbnailType value) {
   
   type_ = value;
 }
-inline void Thumbnail::set_type(::ThumbnailType value) {
+inline void Thumbnail::set_type(::proto::ThumbnailType value) {
   _internal_set_type(value);
-  // @@protoc_insertion_point(field_set:Thumbnail.type)
+  // @@protoc_insertion_point(field_set:proto.Thumbnail.type)
 }
 
 // string path = 2;
@@ -2011,15 +2032,15 @@ inline void Thumbnail::clear_path() {
   path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& Thumbnail::path() const {
-  // @@protoc_insertion_point(field_get:Thumbnail.path)
+  // @@protoc_insertion_point(field_get:proto.Thumbnail.path)
   return _internal_path();
 }
 inline void Thumbnail::set_path(const std::string& value) {
   _internal_set_path(value);
-  // @@protoc_insertion_point(field_set:Thumbnail.path)
+  // @@protoc_insertion_point(field_set:proto.Thumbnail.path)
 }
 inline std::string* Thumbnail::mutable_path() {
-  // @@protoc_insertion_point(field_mutable:Thumbnail.path)
+  // @@protoc_insertion_point(field_mutable:proto.Thumbnail.path)
   return _internal_mutable_path();
 }
 inline const std::string& Thumbnail::_internal_path() const {
@@ -2033,26 +2054,26 @@ inline void Thumbnail::set_path(std::string&& value) {
   
   path_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:Thumbnail.path)
+  // @@protoc_insertion_point(field_set_rvalue:proto.Thumbnail.path)
 }
 inline void Thumbnail::set_path(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:Thumbnail.path)
+  // @@protoc_insertion_point(field_set_char:proto.Thumbnail.path)
 }
 inline void Thumbnail::set_path(const char* value, size_t size) {
   
   path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:Thumbnail.path)
+  // @@protoc_insertion_point(field_set_pointer:proto.Thumbnail.path)
 }
 inline std::string* Thumbnail::_internal_mutable_path() {
   
   return path_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* Thumbnail::release_path() {
-  // @@protoc_insertion_point(field_release:Thumbnail.path)
+  // @@protoc_insertion_point(field_release:proto.Thumbnail.path)
   
   return path_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -2063,7 +2084,7 @@ inline void Thumbnail::set_allocated_path(std::string* path) {
     
   }
   path_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), path);
-  // @@protoc_insertion_point(field_set_allocated:Thumbnail.path)
+  // @@protoc_insertion_point(field_set_allocated:proto.Thumbnail.path)
 }
 
 // int32 width = 3;
@@ -2074,7 +2095,7 @@ inline ::PROTOBUF_NAMESPACE_ID::int32 Thumbnail::_internal_width() const {
   return width_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 Thumbnail::width() const {
-  // @@protoc_insertion_point(field_get:Thumbnail.width)
+  // @@protoc_insertion_point(field_get:proto.Thumbnail.width)
   return _internal_width();
 }
 inline void Thumbnail::_internal_set_width(::PROTOBUF_NAMESPACE_ID::int32 value) {
@@ -2083,7 +2104,7 @@ inline void Thumbnail::_internal_set_width(::PROTOBUF_NAMESPACE_ID::int32 value)
 }
 inline void Thumbnail::set_width(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_width(value);
-  // @@protoc_insertion_point(field_set:Thumbnail.width)
+  // @@protoc_insertion_point(field_set:proto.Thumbnail.width)
 }
 
 // int32 height = 4;
@@ -2094,7 +2115,7 @@ inline ::PROTOBUF_NAMESPACE_ID::int32 Thumbnail::_internal_height() const {
   return height_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 Thumbnail::height() const {
-  // @@protoc_insertion_point(field_get:Thumbnail.height)
+  // @@protoc_insertion_point(field_get:proto.Thumbnail.height)
   return _internal_height();
 }
 inline void Thumbnail::_internal_set_height(::PROTOBUF_NAMESPACE_ID::int32 value) {
@@ -2103,14 +2124,14 @@ inline void Thumbnail::_internal_set_height(::PROTOBUF_NAMESPACE_ID::int32 value
 }
 inline void Thumbnail::set_height(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_height(value);
-  // @@protoc_insertion_point(field_set:Thumbnail.height)
+  // @@protoc_insertion_point(field_set:proto.Thumbnail.height)
 }
 
 // -------------------------------------------------------------------
 
 // GenerateThumbnailsResponse
 
-// repeated .Thumbnail data = 1;
+// repeated .proto.Thumbnail data = 1;
 inline int GenerateThumbnailsResponse::_internal_data_size() const {
   return data_.size();
 }
@@ -2120,32 +2141,32 @@ inline int GenerateThumbnailsResponse::data_size() const {
 inline void GenerateThumbnailsResponse::clear_data() {
   data_.Clear();
 }
-inline ::Thumbnail* GenerateThumbnailsResponse::mutable_data(int index) {
-  // @@protoc_insertion_point(field_mutable:GenerateThumbnailsResponse.data)
+inline ::proto::Thumbnail* GenerateThumbnailsResponse::mutable_data(int index) {
+  // @@protoc_insertion_point(field_mutable:proto.GenerateThumbnailsResponse.data)
   return data_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::Thumbnail >*
 GenerateThumbnailsResponse::mutable_data() {
-  // @@protoc_insertion_point(field_mutable_list:GenerateThumbnailsResponse.data)
+  // @@protoc_insertion_point(field_mutable_list:proto.GenerateThumbnailsResponse.data)
   return &data_;
 }
-inline const ::Thumbnail& GenerateThumbnailsResponse::_internal_data(int index) const {
+inline const ::proto::Thumbnail& GenerateThumbnailsResponse::_internal_data(int index) const {
   return data_.Get(index);
 }
-inline const ::Thumbnail& GenerateThumbnailsResponse::data(int index) const {
-  // @@protoc_insertion_point(field_get:GenerateThumbnailsResponse.data)
+inline const ::proto::Thumbnail& GenerateThumbnailsResponse::data(int index) const {
+  // @@protoc_insertion_point(field_get:proto.GenerateThumbnailsResponse.data)
   return _internal_data(index);
 }
-inline ::Thumbnail* GenerateThumbnailsResponse::_internal_add_data() {
+inline ::proto::Thumbnail* GenerateThumbnailsResponse::_internal_add_data() {
   return data_.Add();
 }
-inline ::Thumbnail* GenerateThumbnailsResponse::add_data() {
-  // @@protoc_insertion_point(field_add:GenerateThumbnailsResponse.data)
+inline ::proto::Thumbnail* GenerateThumbnailsResponse::add_data() {
+  // @@protoc_insertion_point(field_add:proto.GenerateThumbnailsResponse.data)
   return _internal_add_data();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::Thumbnail >&
 GenerateThumbnailsResponse::data() const {
-  // @@protoc_insertion_point(field_list:GenerateThumbnailsResponse.data)
+  // @@protoc_insertion_point(field_list:proto.GenerateThumbnailsResponse.data)
   return data_;
 }
 
@@ -2158,15 +2179,15 @@ inline void ReadExifRequest::clear_path() {
   path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ReadExifRequest::path() const {
-  // @@protoc_insertion_point(field_get:ReadExifRequest.path)
+  // @@protoc_insertion_point(field_get:proto.ReadExifRequest.path)
   return _internal_path();
 }
 inline void ReadExifRequest::set_path(const std::string& value) {
   _internal_set_path(value);
-  // @@protoc_insertion_point(field_set:ReadExifRequest.path)
+  // @@protoc_insertion_point(field_set:proto.ReadExifRequest.path)
 }
 inline std::string* ReadExifRequest::mutable_path() {
-  // @@protoc_insertion_point(field_mutable:ReadExifRequest.path)
+  // @@protoc_insertion_point(field_mutable:proto.ReadExifRequest.path)
   return _internal_mutable_path();
 }
 inline const std::string& ReadExifRequest::_internal_path() const {
@@ -2180,26 +2201,26 @@ inline void ReadExifRequest::set_path(std::string&& value) {
   
   path_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ReadExifRequest.path)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ReadExifRequest.path)
 }
 inline void ReadExifRequest::set_path(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ReadExifRequest.path)
+  // @@protoc_insertion_point(field_set_char:proto.ReadExifRequest.path)
 }
 inline void ReadExifRequest::set_path(const char* value, size_t size) {
   
   path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ReadExifRequest.path)
+  // @@protoc_insertion_point(field_set_pointer:proto.ReadExifRequest.path)
 }
 inline std::string* ReadExifRequest::_internal_mutable_path() {
   
   return path_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ReadExifRequest::release_path() {
-  // @@protoc_insertion_point(field_release:ReadExifRequest.path)
+  // @@protoc_insertion_point(field_release:proto.ReadExifRequest.path)
   
   return path_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -2210,7 +2231,7 @@ inline void ReadExifRequest::set_allocated_path(std::string* path) {
     
   }
   path_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), path);
-  // @@protoc_insertion_point(field_set_allocated:ReadExifRequest.path)
+  // @@protoc_insertion_point(field_set_allocated:proto.ReadExifRequest.path)
 }
 
 // -------------------------------------------------------------------
@@ -2222,15 +2243,15 @@ inline void ExifInfo::clear_camera_make() {
   camera_make_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ExifInfo::camera_make() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.camera_make)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.camera_make)
   return _internal_camera_make();
 }
 inline void ExifInfo::set_camera_make(const std::string& value) {
   _internal_set_camera_make(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.camera_make)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.camera_make)
 }
 inline std::string* ExifInfo::mutable_camera_make() {
-  // @@protoc_insertion_point(field_mutable:ExifInfo.camera_make)
+  // @@protoc_insertion_point(field_mutable:proto.ExifInfo.camera_make)
   return _internal_mutable_camera_make();
 }
 inline const std::string& ExifInfo::_internal_camera_make() const {
@@ -2244,26 +2265,26 @@ inline void ExifInfo::set_camera_make(std::string&& value) {
   
   camera_make_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.camera_make)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ExifInfo.camera_make)
 }
 inline void ExifInfo::set_camera_make(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   camera_make_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ExifInfo.camera_make)
+  // @@protoc_insertion_point(field_set_char:proto.ExifInfo.camera_make)
 }
 inline void ExifInfo::set_camera_make(const char* value, size_t size) {
   
   camera_make_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ExifInfo.camera_make)
+  // @@protoc_insertion_point(field_set_pointer:proto.ExifInfo.camera_make)
 }
 inline std::string* ExifInfo::_internal_mutable_camera_make() {
   
   return camera_make_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ExifInfo::release_camera_make() {
-  // @@protoc_insertion_point(field_release:ExifInfo.camera_make)
+  // @@protoc_insertion_point(field_release:proto.ExifInfo.camera_make)
   
   return camera_make_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -2274,7 +2295,7 @@ inline void ExifInfo::set_allocated_camera_make(std::string* camera_make) {
     
   }
   camera_make_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), camera_make);
-  // @@protoc_insertion_point(field_set_allocated:ExifInfo.camera_make)
+  // @@protoc_insertion_point(field_set_allocated:proto.ExifInfo.camera_make)
 }
 
 // string camera_model = 2;
@@ -2282,15 +2303,15 @@ inline void ExifInfo::clear_camera_model() {
   camera_model_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ExifInfo::camera_model() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.camera_model)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.camera_model)
   return _internal_camera_model();
 }
 inline void ExifInfo::set_camera_model(const std::string& value) {
   _internal_set_camera_model(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.camera_model)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.camera_model)
 }
 inline std::string* ExifInfo::mutable_camera_model() {
-  // @@protoc_insertion_point(field_mutable:ExifInfo.camera_model)
+  // @@protoc_insertion_point(field_mutable:proto.ExifInfo.camera_model)
   return _internal_mutable_camera_model();
 }
 inline const std::string& ExifInfo::_internal_camera_model() const {
@@ -2304,26 +2325,26 @@ inline void ExifInfo::set_camera_model(std::string&& value) {
   
   camera_model_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.camera_model)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ExifInfo.camera_model)
 }
 inline void ExifInfo::set_camera_model(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   camera_model_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ExifInfo.camera_model)
+  // @@protoc_insertion_point(field_set_char:proto.ExifInfo.camera_model)
 }
 inline void ExifInfo::set_camera_model(const char* value, size_t size) {
   
   camera_model_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ExifInfo.camera_model)
+  // @@protoc_insertion_point(field_set_pointer:proto.ExifInfo.camera_model)
 }
 inline std::string* ExifInfo::_internal_mutable_camera_model() {
   
   return camera_model_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ExifInfo::release_camera_model() {
-  // @@protoc_insertion_point(field_release:ExifInfo.camera_model)
+  // @@protoc_insertion_point(field_release:proto.ExifInfo.camera_model)
   
   return camera_model_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -2334,7 +2355,7 @@ inline void ExifInfo::set_allocated_camera_model(std::string* camera_model) {
     
   }
   camera_model_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), camera_model);
-  // @@protoc_insertion_point(field_set_allocated:ExifInfo.camera_model)
+  // @@protoc_insertion_point(field_set_allocated:proto.ExifInfo.camera_model)
 }
 
 // string software = 3;
@@ -2342,15 +2363,15 @@ inline void ExifInfo::clear_software() {
   software_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ExifInfo::software() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.software)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.software)
   return _internal_software();
 }
 inline void ExifInfo::set_software(const std::string& value) {
   _internal_set_software(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.software)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.software)
 }
 inline std::string* ExifInfo::mutable_software() {
-  // @@protoc_insertion_point(field_mutable:ExifInfo.software)
+  // @@protoc_insertion_point(field_mutable:proto.ExifInfo.software)
   return _internal_mutable_software();
 }
 inline const std::string& ExifInfo::_internal_software() const {
@@ -2364,26 +2385,26 @@ inline void ExifInfo::set_software(std::string&& value) {
   
   software_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.software)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ExifInfo.software)
 }
 inline void ExifInfo::set_software(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   software_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ExifInfo.software)
+  // @@protoc_insertion_point(field_set_char:proto.ExifInfo.software)
 }
 inline void ExifInfo::set_software(const char* value, size_t size) {
   
   software_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ExifInfo.software)
+  // @@protoc_insertion_point(field_set_pointer:proto.ExifInfo.software)
 }
 inline std::string* ExifInfo::_internal_mutable_software() {
   
   return software_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ExifInfo::release_software() {
-  // @@protoc_insertion_point(field_release:ExifInfo.software)
+  // @@protoc_insertion_point(field_release:proto.ExifInfo.software)
   
   return software_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -2394,7 +2415,7 @@ inline void ExifInfo::set_allocated_software(std::string* software) {
     
   }
   software_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), software);
-  // @@protoc_insertion_point(field_set_allocated:ExifInfo.software)
+  // @@protoc_insertion_point(field_set_allocated:proto.ExifInfo.software)
 }
 
 // uint32 bits_per_sample = 4;
@@ -2405,7 +2426,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_bits_per_sample() con
   return bits_per_sample_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::bits_per_sample() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.bits_per_sample)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.bits_per_sample)
   return _internal_bits_per_sample();
 }
 inline void ExifInfo::_internal_set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -2414,7 +2435,7 @@ inline void ExifInfo::_internal_set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::uin
 }
 inline void ExifInfo::set_bits_per_sample(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_bits_per_sample(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.bits_per_sample)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.bits_per_sample)
 }
 
 // uint32 image_width = 5;
@@ -2425,7 +2446,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_image_width() const {
   return image_width_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::image_width() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.image_width)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.image_width)
   return _internal_image_width();
 }
 inline void ExifInfo::_internal_set_image_width(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -2434,7 +2455,7 @@ inline void ExifInfo::_internal_set_image_width(::PROTOBUF_NAMESPACE_ID::uint32 
 }
 inline void ExifInfo::set_image_width(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_image_width(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.image_width)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.image_width)
 }
 
 // uint32 image_height = 6;
@@ -2445,7 +2466,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_image_height() const 
   return image_height_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::image_height() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.image_height)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.image_height)
   return _internal_image_height();
 }
 inline void ExifInfo::_internal_set_image_height(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -2454,7 +2475,7 @@ inline void ExifInfo::_internal_set_image_height(::PROTOBUF_NAMESPACE_ID::uint32
 }
 inline void ExifInfo::set_image_height(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_image_height(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.image_height)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.image_height)
 }
 
 // string image_description = 7;
@@ -2462,15 +2483,15 @@ inline void ExifInfo::clear_image_description() {
   image_description_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ExifInfo::image_description() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.image_description)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.image_description)
   return _internal_image_description();
 }
 inline void ExifInfo::set_image_description(const std::string& value) {
   _internal_set_image_description(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.image_description)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.image_description)
 }
 inline std::string* ExifInfo::mutable_image_description() {
-  // @@protoc_insertion_point(field_mutable:ExifInfo.image_description)
+  // @@protoc_insertion_point(field_mutable:proto.ExifInfo.image_description)
   return _internal_mutable_image_description();
 }
 inline const std::string& ExifInfo::_internal_image_description() const {
@@ -2484,26 +2505,26 @@ inline void ExifInfo::set_image_description(std::string&& value) {
   
   image_description_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.image_description)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ExifInfo.image_description)
 }
 inline void ExifInfo::set_image_description(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   image_description_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ExifInfo.image_description)
+  // @@protoc_insertion_point(field_set_char:proto.ExifInfo.image_description)
 }
 inline void ExifInfo::set_image_description(const char* value, size_t size) {
   
   image_description_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ExifInfo.image_description)
+  // @@protoc_insertion_point(field_set_pointer:proto.ExifInfo.image_description)
 }
 inline std::string* ExifInfo::_internal_mutable_image_description() {
   
   return image_description_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ExifInfo::release_image_description() {
-  // @@protoc_insertion_point(field_release:ExifInfo.image_description)
+  // @@protoc_insertion_point(field_release:proto.ExifInfo.image_description)
   
   return image_description_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -2514,7 +2535,7 @@ inline void ExifInfo::set_allocated_image_description(std::string* image_descrip
     
   }
   image_description_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), image_description);
-  // @@protoc_insertion_point(field_set_allocated:ExifInfo.image_description)
+  // @@protoc_insertion_point(field_set_allocated:proto.ExifInfo.image_description)
 }
 
 // uint32 image_orientation = 8;
@@ -2525,7 +2546,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_image_orientation() c
   return image_orientation_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::image_orientation() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.image_orientation)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.image_orientation)
   return _internal_image_orientation();
 }
 inline void ExifInfo::_internal_set_image_orientation(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -2534,7 +2555,7 @@ inline void ExifInfo::_internal_set_image_orientation(::PROTOBUF_NAMESPACE_ID::u
 }
 inline void ExifInfo::set_image_orientation(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_image_orientation(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.image_orientation)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.image_orientation)
 }
 
 // string image_copyright = 9;
@@ -2542,15 +2563,15 @@ inline void ExifInfo::clear_image_copyright() {
   image_copyright_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ExifInfo::image_copyright() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.image_copyright)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.image_copyright)
   return _internal_image_copyright();
 }
 inline void ExifInfo::set_image_copyright(const std::string& value) {
   _internal_set_image_copyright(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.image_copyright)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.image_copyright)
 }
 inline std::string* ExifInfo::mutable_image_copyright() {
-  // @@protoc_insertion_point(field_mutable:ExifInfo.image_copyright)
+  // @@protoc_insertion_point(field_mutable:proto.ExifInfo.image_copyright)
   return _internal_mutable_image_copyright();
 }
 inline const std::string& ExifInfo::_internal_image_copyright() const {
@@ -2564,26 +2585,26 @@ inline void ExifInfo::set_image_copyright(std::string&& value) {
   
   image_copyright_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.image_copyright)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ExifInfo.image_copyright)
 }
 inline void ExifInfo::set_image_copyright(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   image_copyright_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ExifInfo.image_copyright)
+  // @@protoc_insertion_point(field_set_char:proto.ExifInfo.image_copyright)
 }
 inline void ExifInfo::set_image_copyright(const char* value, size_t size) {
   
   image_copyright_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ExifInfo.image_copyright)
+  // @@protoc_insertion_point(field_set_pointer:proto.ExifInfo.image_copyright)
 }
 inline std::string* ExifInfo::_internal_mutable_image_copyright() {
   
   return image_copyright_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ExifInfo::release_image_copyright() {
-  // @@protoc_insertion_point(field_release:ExifInfo.image_copyright)
+  // @@protoc_insertion_point(field_release:proto.ExifInfo.image_copyright)
   
   return image_copyright_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -2594,7 +2615,7 @@ inline void ExifInfo::set_allocated_image_copyright(std::string* image_copyright
     
   }
   image_copyright_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), image_copyright);
-  // @@protoc_insertion_point(field_set_allocated:ExifInfo.image_copyright)
+  // @@protoc_insertion_point(field_set_allocated:proto.ExifInfo.image_copyright)
 }
 
 // string image_datetime = 10;
@@ -2602,15 +2623,15 @@ inline void ExifInfo::clear_image_datetime() {
   image_datetime_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ExifInfo::image_datetime() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.image_datetime)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.image_datetime)
   return _internal_image_datetime();
 }
 inline void ExifInfo::set_image_datetime(const std::string& value) {
   _internal_set_image_datetime(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.image_datetime)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.image_datetime)
 }
 inline std::string* ExifInfo::mutable_image_datetime() {
-  // @@protoc_insertion_point(field_mutable:ExifInfo.image_datetime)
+  // @@protoc_insertion_point(field_mutable:proto.ExifInfo.image_datetime)
   return _internal_mutable_image_datetime();
 }
 inline const std::string& ExifInfo::_internal_image_datetime() const {
@@ -2624,26 +2645,26 @@ inline void ExifInfo::set_image_datetime(std::string&& value) {
   
   image_datetime_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.image_datetime)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ExifInfo.image_datetime)
 }
 inline void ExifInfo::set_image_datetime(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   image_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ExifInfo.image_datetime)
+  // @@protoc_insertion_point(field_set_char:proto.ExifInfo.image_datetime)
 }
 inline void ExifInfo::set_image_datetime(const char* value, size_t size) {
   
   image_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ExifInfo.image_datetime)
+  // @@protoc_insertion_point(field_set_pointer:proto.ExifInfo.image_datetime)
 }
 inline std::string* ExifInfo::_internal_mutable_image_datetime() {
   
   return image_datetime_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ExifInfo::release_image_datetime() {
-  // @@protoc_insertion_point(field_release:ExifInfo.image_datetime)
+  // @@protoc_insertion_point(field_release:proto.ExifInfo.image_datetime)
   
   return image_datetime_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -2654,7 +2675,7 @@ inline void ExifInfo::set_allocated_image_datetime(std::string* image_datetime) 
     
   }
   image_datetime_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), image_datetime);
-  // @@protoc_insertion_point(field_set_allocated:ExifInfo.image_datetime)
+  // @@protoc_insertion_point(field_set_allocated:proto.ExifInfo.image_datetime)
 }
 
 // string original_datetime = 11;
@@ -2662,15 +2683,15 @@ inline void ExifInfo::clear_original_datetime() {
   original_datetime_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ExifInfo::original_datetime() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.original_datetime)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.original_datetime)
   return _internal_original_datetime();
 }
 inline void ExifInfo::set_original_datetime(const std::string& value) {
   _internal_set_original_datetime(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.original_datetime)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.original_datetime)
 }
 inline std::string* ExifInfo::mutable_original_datetime() {
-  // @@protoc_insertion_point(field_mutable:ExifInfo.original_datetime)
+  // @@protoc_insertion_point(field_mutable:proto.ExifInfo.original_datetime)
   return _internal_mutable_original_datetime();
 }
 inline const std::string& ExifInfo::_internal_original_datetime() const {
@@ -2684,26 +2705,26 @@ inline void ExifInfo::set_original_datetime(std::string&& value) {
   
   original_datetime_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.original_datetime)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ExifInfo.original_datetime)
 }
 inline void ExifInfo::set_original_datetime(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   original_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ExifInfo.original_datetime)
+  // @@protoc_insertion_point(field_set_char:proto.ExifInfo.original_datetime)
 }
 inline void ExifInfo::set_original_datetime(const char* value, size_t size) {
   
   original_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ExifInfo.original_datetime)
+  // @@protoc_insertion_point(field_set_pointer:proto.ExifInfo.original_datetime)
 }
 inline std::string* ExifInfo::_internal_mutable_original_datetime() {
   
   return original_datetime_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ExifInfo::release_original_datetime() {
-  // @@protoc_insertion_point(field_release:ExifInfo.original_datetime)
+  // @@protoc_insertion_point(field_release:proto.ExifInfo.original_datetime)
   
   return original_datetime_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -2714,7 +2735,7 @@ inline void ExifInfo::set_allocated_original_datetime(std::string* original_date
     
   }
   original_datetime_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), original_datetime);
-  // @@protoc_insertion_point(field_set_allocated:ExifInfo.original_datetime)
+  // @@protoc_insertion_point(field_set_allocated:proto.ExifInfo.original_datetime)
 }
 
 // string digitize_datetime = 12;
@@ -2722,15 +2743,15 @@ inline void ExifInfo::clear_digitize_datetime() {
   digitize_datetime_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ExifInfo::digitize_datetime() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.digitize_datetime)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.digitize_datetime)
   return _internal_digitize_datetime();
 }
 inline void ExifInfo::set_digitize_datetime(const std::string& value) {
   _internal_set_digitize_datetime(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.digitize_datetime)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.digitize_datetime)
 }
 inline std::string* ExifInfo::mutable_digitize_datetime() {
-  // @@protoc_insertion_point(field_mutable:ExifInfo.digitize_datetime)
+  // @@protoc_insertion_point(field_mutable:proto.ExifInfo.digitize_datetime)
   return _internal_mutable_digitize_datetime();
 }
 inline const std::string& ExifInfo::_internal_digitize_datetime() const {
@@ -2744,26 +2765,26 @@ inline void ExifInfo::set_digitize_datetime(std::string&& value) {
   
   digitize_datetime_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.digitize_datetime)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ExifInfo.digitize_datetime)
 }
 inline void ExifInfo::set_digitize_datetime(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   digitize_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ExifInfo.digitize_datetime)
+  // @@protoc_insertion_point(field_set_char:proto.ExifInfo.digitize_datetime)
 }
 inline void ExifInfo::set_digitize_datetime(const char* value, size_t size) {
   
   digitize_datetime_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ExifInfo.digitize_datetime)
+  // @@protoc_insertion_point(field_set_pointer:proto.ExifInfo.digitize_datetime)
 }
 inline std::string* ExifInfo::_internal_mutable_digitize_datetime() {
   
   return digitize_datetime_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ExifInfo::release_digitize_datetime() {
-  // @@protoc_insertion_point(field_release:ExifInfo.digitize_datetime)
+  // @@protoc_insertion_point(field_release:proto.ExifInfo.digitize_datetime)
   
   return digitize_datetime_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -2774,7 +2795,7 @@ inline void ExifInfo::set_allocated_digitize_datetime(std::string* digitize_date
     
   }
   digitize_datetime_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), digitize_datetime);
-  // @@protoc_insertion_point(field_set_allocated:ExifInfo.digitize_datetime)
+  // @@protoc_insertion_point(field_set_allocated:proto.ExifInfo.digitize_datetime)
 }
 
 // string subsecond_time = 13;
@@ -2782,15 +2803,15 @@ inline void ExifInfo::clear_subsecond_time() {
   subsecond_time_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ExifInfo::subsecond_time() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.subsecond_time)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.subsecond_time)
   return _internal_subsecond_time();
 }
 inline void ExifInfo::set_subsecond_time(const std::string& value) {
   _internal_set_subsecond_time(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.subsecond_time)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.subsecond_time)
 }
 inline std::string* ExifInfo::mutable_subsecond_time() {
-  // @@protoc_insertion_point(field_mutable:ExifInfo.subsecond_time)
+  // @@protoc_insertion_point(field_mutable:proto.ExifInfo.subsecond_time)
   return _internal_mutable_subsecond_time();
 }
 inline const std::string& ExifInfo::_internal_subsecond_time() const {
@@ -2804,26 +2825,26 @@ inline void ExifInfo::set_subsecond_time(std::string&& value) {
   
   subsecond_time_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ExifInfo.subsecond_time)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ExifInfo.subsecond_time)
 }
 inline void ExifInfo::set_subsecond_time(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   subsecond_time_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ExifInfo.subsecond_time)
+  // @@protoc_insertion_point(field_set_char:proto.ExifInfo.subsecond_time)
 }
 inline void ExifInfo::set_subsecond_time(const char* value, size_t size) {
   
   subsecond_time_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ExifInfo.subsecond_time)
+  // @@protoc_insertion_point(field_set_pointer:proto.ExifInfo.subsecond_time)
 }
 inline std::string* ExifInfo::_internal_mutable_subsecond_time() {
   
   return subsecond_time_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ExifInfo::release_subsecond_time() {
-  // @@protoc_insertion_point(field_release:ExifInfo.subsecond_time)
+  // @@protoc_insertion_point(field_release:proto.ExifInfo.subsecond_time)
   
   return subsecond_time_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -2834,7 +2855,7 @@ inline void ExifInfo::set_allocated_subsecond_time(std::string* subsecond_time) 
     
   }
   subsecond_time_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), subsecond_time);
-  // @@protoc_insertion_point(field_set_allocated:ExifInfo.subsecond_time)
+  // @@protoc_insertion_point(field_set_allocated:proto.ExifInfo.subsecond_time)
 }
 
 // int32 exposure_time = 14;
@@ -2845,7 +2866,7 @@ inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_exposure_time() const 
   return exposure_time_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::exposure_time() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.exposure_time)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.exposure_time)
   return _internal_exposure_time();
 }
 inline void ExifInfo::_internal_set_exposure_time(::PROTOBUF_NAMESPACE_ID::int32 value) {
@@ -2854,7 +2875,7 @@ inline void ExifInfo::_internal_set_exposure_time(::PROTOBUF_NAMESPACE_ID::int32
 }
 inline void ExifInfo::set_exposure_time(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_exposure_time(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.exposure_time)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.exposure_time)
 }
 
 // double f_stop = 15;
@@ -2865,7 +2886,7 @@ inline double ExifInfo::_internal_f_stop() const {
   return f_stop_;
 }
 inline double ExifInfo::f_stop() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.f_stop)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.f_stop)
   return _internal_f_stop();
 }
 inline void ExifInfo::_internal_set_f_stop(double value) {
@@ -2874,7 +2895,7 @@ inline void ExifInfo::_internal_set_f_stop(double value) {
 }
 inline void ExifInfo::set_f_stop(double value) {
   _internal_set_f_stop(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.f_stop)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.f_stop)
 }
 
 // uint32 iso_speed = 16;
@@ -2885,7 +2906,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_iso_speed() const {
   return iso_speed_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::iso_speed() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.iso_speed)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.iso_speed)
   return _internal_iso_speed();
 }
 inline void ExifInfo::_internal_set_iso_speed(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -2894,7 +2915,7 @@ inline void ExifInfo::_internal_set_iso_speed(::PROTOBUF_NAMESPACE_ID::uint32 va
 }
 inline void ExifInfo::set_iso_speed(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_iso_speed(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.iso_speed)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.iso_speed)
 }
 
 // double subject_distance = 17;
@@ -2905,7 +2926,7 @@ inline double ExifInfo::_internal_subject_distance() const {
   return subject_distance_;
 }
 inline double ExifInfo::subject_distance() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.subject_distance)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.subject_distance)
   return _internal_subject_distance();
 }
 inline void ExifInfo::_internal_set_subject_distance(double value) {
@@ -2914,7 +2935,7 @@ inline void ExifInfo::_internal_set_subject_distance(double value) {
 }
 inline void ExifInfo::set_subject_distance(double value) {
   _internal_set_subject_distance(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.subject_distance)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.subject_distance)
 }
 
 // double exposure_bias = 18;
@@ -2925,7 +2946,7 @@ inline double ExifInfo::_internal_exposure_bias() const {
   return exposure_bias_;
 }
 inline double ExifInfo::exposure_bias() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.exposure_bias)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.exposure_bias)
   return _internal_exposure_bias();
 }
 inline void ExifInfo::_internal_set_exposure_bias(double value) {
@@ -2934,7 +2955,7 @@ inline void ExifInfo::_internal_set_exposure_bias(double value) {
 }
 inline void ExifInfo::set_exposure_bias(double value) {
   _internal_set_exposure_bias(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.exposure_bias)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.exposure_bias)
 }
 
 // int32 flash_used = 19;
@@ -2945,7 +2966,7 @@ inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::_internal_flash_used() const {
   return flash_used_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::int32 ExifInfo::flash_used() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.flash_used)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.flash_used)
   return _internal_flash_used();
 }
 inline void ExifInfo::_internal_set_flash_used(::PROTOBUF_NAMESPACE_ID::int32 value) {
@@ -2954,7 +2975,7 @@ inline void ExifInfo::_internal_set_flash_used(::PROTOBUF_NAMESPACE_ID::int32 va
 }
 inline void ExifInfo::set_flash_used(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_flash_used(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.flash_used)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.flash_used)
 }
 
 // uint32 metering_mode = 20;
@@ -2965,7 +2986,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_metering_mode() const
   return metering_mode_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::metering_mode() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.metering_mode)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.metering_mode)
   return _internal_metering_mode();
 }
 inline void ExifInfo::_internal_set_metering_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -2974,7 +2995,7 @@ inline void ExifInfo::_internal_set_metering_mode(::PROTOBUF_NAMESPACE_ID::uint3
 }
 inline void ExifInfo::set_metering_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_metering_mode(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.metering_mode)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.metering_mode)
 }
 
 // double lens_focal_length = 21;
@@ -2985,7 +3006,7 @@ inline double ExifInfo::_internal_lens_focal_length() const {
   return lens_focal_length_;
 }
 inline double ExifInfo::lens_focal_length() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.lens_focal_length)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.lens_focal_length)
   return _internal_lens_focal_length();
 }
 inline void ExifInfo::_internal_set_lens_focal_length(double value) {
@@ -2994,7 +3015,7 @@ inline void ExifInfo::_internal_set_lens_focal_length(double value) {
 }
 inline void ExifInfo::set_lens_focal_length(double value) {
   _internal_set_lens_focal_length(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.lens_focal_length)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.lens_focal_length)
 }
 
 // uint32 focal_length_35mm = 22;
@@ -3005,7 +3026,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::_internal_focal_length_35mm() c
   return focal_length_35mm_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 ExifInfo::focal_length_35mm() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.focal_length_35mm)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.focal_length_35mm)
   return _internal_focal_length_35mm();
 }
 inline void ExifInfo::_internal_set_focal_length_35mm(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -3014,7 +3035,7 @@ inline void ExifInfo::_internal_set_focal_length_35mm(::PROTOBUF_NAMESPACE_ID::u
 }
 inline void ExifInfo::set_focal_length_35mm(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_focal_length_35mm(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.focal_length_35mm)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.focal_length_35mm)
 }
 
 // double gps_latitude = 23;
@@ -3025,7 +3046,7 @@ inline double ExifInfo::_internal_gps_latitude() const {
   return gps_latitude_;
 }
 inline double ExifInfo::gps_latitude() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.gps_latitude)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.gps_latitude)
   return _internal_gps_latitude();
 }
 inline void ExifInfo::_internal_set_gps_latitude(double value) {
@@ -3034,7 +3055,7 @@ inline void ExifInfo::_internal_set_gps_latitude(double value) {
 }
 inline void ExifInfo::set_gps_latitude(double value) {
   _internal_set_gps_latitude(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.gps_latitude)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.gps_latitude)
 }
 
 // double gps_longitude = 24;
@@ -3045,7 +3066,7 @@ inline double ExifInfo::_internal_gps_longitude() const {
   return gps_longitude_;
 }
 inline double ExifInfo::gps_longitude() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.gps_longitude)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.gps_longitude)
   return _internal_gps_longitude();
 }
 inline void ExifInfo::_internal_set_gps_longitude(double value) {
@@ -3054,7 +3075,7 @@ inline void ExifInfo::_internal_set_gps_longitude(double value) {
 }
 inline void ExifInfo::set_gps_longitude(double value) {
   _internal_set_gps_longitude(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.gps_longitude)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.gps_longitude)
 }
 
 // double gps_altitude = 25;
@@ -3065,7 +3086,7 @@ inline double ExifInfo::_internal_gps_altitude() const {
   return gps_altitude_;
 }
 inline double ExifInfo::gps_altitude() const {
-  // @@protoc_insertion_point(field_get:ExifInfo.gps_altitude)
+  // @@protoc_insertion_point(field_get:proto.ExifInfo.gps_altitude)
   return _internal_gps_altitude();
 }
 inline void ExifInfo::_internal_set_gps_altitude(double value) {
@@ -3074,7 +3095,7 @@ inline void ExifInfo::_internal_set_gps_altitude(double value) {
 }
 inline void ExifInfo::set_gps_altitude(double value) {
   _internal_set_gps_altitude(value);
-  // @@protoc_insertion_point(field_set:ExifInfo.gps_altitude)
+  // @@protoc_insertion_point(field_set:proto.ExifInfo.gps_altitude)
 }
 
 // -------------------------------------------------------------------
@@ -3086,15 +3107,15 @@ inline void ImageInfo::clear_source_path() {
   source_path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ImageInfo::source_path() const {
-  // @@protoc_insertion_point(field_get:ImageInfo.source_path)
+  // @@protoc_insertion_point(field_get:proto.ImageInfo.source_path)
   return _internal_source_path();
 }
 inline void ImageInfo::set_source_path(const std::string& value) {
   _internal_set_source_path(value);
-  // @@protoc_insertion_point(field_set:ImageInfo.source_path)
+  // @@protoc_insertion_point(field_set:proto.ImageInfo.source_path)
 }
 inline std::string* ImageInfo::mutable_source_path() {
-  // @@protoc_insertion_point(field_mutable:ImageInfo.source_path)
+  // @@protoc_insertion_point(field_mutable:proto.ImageInfo.source_path)
   return _internal_mutable_source_path();
 }
 inline const std::string& ImageInfo::_internal_source_path() const {
@@ -3108,26 +3129,26 @@ inline void ImageInfo::set_source_path(std::string&& value) {
   
   source_path_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ImageInfo.source_path)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ImageInfo.source_path)
 }
 inline void ImageInfo::set_source_path(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   source_path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ImageInfo.source_path)
+  // @@protoc_insertion_point(field_set_char:proto.ImageInfo.source_path)
 }
 inline void ImageInfo::set_source_path(const char* value, size_t size) {
   
   source_path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ImageInfo.source_path)
+  // @@protoc_insertion_point(field_set_pointer:proto.ImageInfo.source_path)
 }
 inline std::string* ImageInfo::_internal_mutable_source_path() {
   
   return source_path_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ImageInfo::release_source_path() {
-  // @@protoc_insertion_point(field_release:ImageInfo.source_path)
+  // @@protoc_insertion_point(field_release:proto.ImageInfo.source_path)
   
   return source_path_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -3138,10 +3159,10 @@ inline void ImageInfo::set_allocated_source_path(std::string* source_path) {
     
   }
   source_path_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), source_path);
-  // @@protoc_insertion_point(field_set_allocated:ImageInfo.source_path)
+  // @@protoc_insertion_point(field_set_allocated:proto.ImageInfo.source_path)
 }
 
-// repeated .Thumbnail thumbnail = 2;
+// repeated .proto.Thumbnail thumbnail = 2;
 inline int ImageInfo::_internal_thumbnail_size() const {
   return thumbnail_.size();
 }
@@ -3151,32 +3172,32 @@ inline int ImageInfo::thumbnail_size() const {
 inline void ImageInfo::clear_thumbnail() {
   thumbnail_.Clear();
 }
-inline ::Thumbnail* ImageInfo::mutable_thumbnail(int index) {
-  // @@protoc_insertion_point(field_mutable:ImageInfo.thumbnail)
+inline ::proto::Thumbnail* ImageInfo::mutable_thumbnail(int index) {
+  // @@protoc_insertion_point(field_mutable:proto.ImageInfo.thumbnail)
   return thumbnail_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::Thumbnail >*
 ImageInfo::mutable_thumbnail() {
-  // @@protoc_insertion_point(field_mutable_list:ImageInfo.thumbnail)
+  // @@protoc_insertion_point(field_mutable_list:proto.ImageInfo.thumbnail)
   return &thumbnail_;
 }
-inline const ::Thumbnail& ImageInfo::_internal_thumbnail(int index) const {
+inline const ::proto::Thumbnail& ImageInfo::_internal_thumbnail(int index) const {
   return thumbnail_.Get(index);
 }
-inline const ::Thumbnail& ImageInfo::thumbnail(int index) const {
-  // @@protoc_insertion_point(field_get:ImageInfo.thumbnail)
+inline const ::proto::Thumbnail& ImageInfo::thumbnail(int index) const {
+  // @@protoc_insertion_point(field_get:proto.ImageInfo.thumbnail)
   return _internal_thumbnail(index);
 }
-inline ::Thumbnail* ImageInfo::_internal_add_thumbnail() {
+inline ::proto::Thumbnail* ImageInfo::_internal_add_thumbnail() {
   return thumbnail_.Add();
 }
-inline ::Thumbnail* ImageInfo::add_thumbnail() {
-  // @@protoc_insertion_point(field_add:ImageInfo.thumbnail)
+inline ::proto::Thumbnail* ImageInfo::add_thumbnail() {
+  // @@protoc_insertion_point(field_add:proto.ImageInfo.thumbnail)
   return _internal_add_thumbnail();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Thumbnail >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::Thumbnail >&
 ImageInfo::thumbnail() const {
-  // @@protoc_insertion_point(field_list:ImageInfo.thumbnail)
+  // @@protoc_insertion_point(field_list:proto.ImageInfo.thumbnail)
   return thumbnail_;
 }
 
@@ -3184,7 +3205,7 @@ ImageInfo::thumbnail() const {
 
 // ClassifyRequest
 
-// repeated .ImageInfo infos = 1;
+// repeated .proto.ImageInfo infos = 1;
 inline int ClassifyRequest::_internal_infos_size() const {
   return infos_.size();
 }
@@ -3194,32 +3215,32 @@ inline int ClassifyRequest::infos_size() const {
 inline void ClassifyRequest::clear_infos() {
   infos_.Clear();
 }
-inline ::ImageInfo* ClassifyRequest::mutable_infos(int index) {
-  // @@protoc_insertion_point(field_mutable:ClassifyRequest.infos)
+inline ::proto::ImageInfo* ClassifyRequest::mutable_infos(int index) {
+  // @@protoc_insertion_point(field_mutable:proto.ClassifyRequest.infos)
   return infos_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageInfo >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::ImageInfo >*
 ClassifyRequest::mutable_infos() {
-  // @@protoc_insertion_point(field_mutable_list:ClassifyRequest.infos)
+  // @@protoc_insertion_point(field_mutable_list:proto.ClassifyRequest.infos)
   return &infos_;
 }
-inline const ::ImageInfo& ClassifyRequest::_internal_infos(int index) const {
+inline const ::proto::ImageInfo& ClassifyRequest::_internal_infos(int index) const {
   return infos_.Get(index);
 }
-inline const ::ImageInfo& ClassifyRequest::infos(int index) const {
-  // @@protoc_insertion_point(field_get:ClassifyRequest.infos)
+inline const ::proto::ImageInfo& ClassifyRequest::infos(int index) const {
+  // @@protoc_insertion_point(field_get:proto.ClassifyRequest.infos)
   return _internal_infos(index);
 }
-inline ::ImageInfo* ClassifyRequest::_internal_add_infos() {
+inline ::proto::ImageInfo* ClassifyRequest::_internal_add_infos() {
   return infos_.Add();
 }
-inline ::ImageInfo* ClassifyRequest::add_infos() {
-  // @@protoc_insertion_point(field_add:ClassifyRequest.infos)
+inline ::proto::ImageInfo* ClassifyRequest::add_infos() {
+  // @@protoc_insertion_point(field_add:proto.ClassifyRequest.infos)
   return _internal_add_infos();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageInfo >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::ImageInfo >&
 ClassifyRequest::infos() const {
-  // @@protoc_insertion_point(field_list:ClassifyRequest.infos)
+  // @@protoc_insertion_point(field_list:proto.ClassifyRequest.infos)
   return infos_;
 }
 
@@ -3227,64 +3248,64 @@ ClassifyRequest::infos() const {
 
 // ImageClass
 
-// string path = 1;
-inline void ImageClass::clear_path() {
-  path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+// string source_path = 1;
+inline void ImageClass::clear_source_path() {
+  source_path_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
-inline const std::string& ImageClass::path() const {
-  // @@protoc_insertion_point(field_get:ImageClass.path)
-  return _internal_path();
+inline const std::string& ImageClass::source_path() const {
+  // @@protoc_insertion_point(field_get:proto.ImageClass.source_path)
+  return _internal_source_path();
 }
-inline void ImageClass::set_path(const std::string& value) {
-  _internal_set_path(value);
-  // @@protoc_insertion_point(field_set:ImageClass.path)
+inline void ImageClass::set_source_path(const std::string& value) {
+  _internal_set_source_path(value);
+  // @@protoc_insertion_point(field_set:proto.ImageClass.source_path)
 }
-inline std::string* ImageClass::mutable_path() {
-  // @@protoc_insertion_point(field_mutable:ImageClass.path)
-  return _internal_mutable_path();
+inline std::string* ImageClass::mutable_source_path() {
+  // @@protoc_insertion_point(field_mutable:proto.ImageClass.source_path)
+  return _internal_mutable_source_path();
 }
-inline const std::string& ImageClass::_internal_path() const {
-  return path_.GetNoArena();
+inline const std::string& ImageClass::_internal_source_path() const {
+  return source_path_.GetNoArena();
 }
-inline void ImageClass::_internal_set_path(const std::string& value) {
+inline void ImageClass::_internal_set_source_path(const std::string& value) {
   
-  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
+  source_path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
 }
-inline void ImageClass::set_path(std::string&& value) {
+inline void ImageClass::set_source_path(std::string&& value) {
   
-  path_.SetNoArena(
+  source_path_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ImageClass.path)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ImageClass.source_path)
 }
-inline void ImageClass::set_path(const char* value) {
+inline void ImageClass::set_source_path(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
-  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ImageClass.path)
+  source_path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:proto.ImageClass.source_path)
 }
-inline void ImageClass::set_path(const char* value, size_t size) {
+inline void ImageClass::set_source_path(const char* value, size_t size) {
   
-  path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+  source_path_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ImageClass.path)
+  // @@protoc_insertion_point(field_set_pointer:proto.ImageClass.source_path)
 }
-inline std::string* ImageClass::_internal_mutable_path() {
+inline std::string* ImageClass::_internal_mutable_source_path() {
   
-  return path_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  return source_path_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
-inline std::string* ImageClass::release_path() {
-  // @@protoc_insertion_point(field_release:ImageClass.path)
+inline std::string* ImageClass::release_source_path() {
+  // @@protoc_insertion_point(field_release:proto.ImageClass.source_path)
   
-  return path_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  return source_path_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
-inline void ImageClass::set_allocated_path(std::string* path) {
-  if (path != nullptr) {
+inline void ImageClass::set_allocated_source_path(std::string* source_path) {
+  if (source_path != nullptr) {
     
   } else {
     
   }
-  path_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), path);
-  // @@protoc_insertion_point(field_set_allocated:ImageClass.path)
+  source_path_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), source_path);
+  // @@protoc_insertion_point(field_set_allocated:proto.ImageClass.source_path)
 }
 
 // string class_name = 2;
@@ -3292,15 +3313,15 @@ inline void ImageClass::clear_class_name() {
   class_name_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline const std::string& ImageClass::class_name() const {
-  // @@protoc_insertion_point(field_get:ImageClass.class_name)
+  // @@protoc_insertion_point(field_get:proto.ImageClass.class_name)
   return _internal_class_name();
 }
 inline void ImageClass::set_class_name(const std::string& value) {
   _internal_set_class_name(value);
-  // @@protoc_insertion_point(field_set:ImageClass.class_name)
+  // @@protoc_insertion_point(field_set:proto.ImageClass.class_name)
 }
 inline std::string* ImageClass::mutable_class_name() {
-  // @@protoc_insertion_point(field_mutable:ImageClass.class_name)
+  // @@protoc_insertion_point(field_mutable:proto.ImageClass.class_name)
   return _internal_mutable_class_name();
 }
 inline const std::string& ImageClass::_internal_class_name() const {
@@ -3314,26 +3335,26 @@ inline void ImageClass::set_class_name(std::string&& value) {
   
   class_name_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ImageClass.class_name)
+  // @@protoc_insertion_point(field_set_rvalue:proto.ImageClass.class_name)
 }
 inline void ImageClass::set_class_name(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   class_name_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ImageClass.class_name)
+  // @@protoc_insertion_point(field_set_char:proto.ImageClass.class_name)
 }
 inline void ImageClass::set_class_name(const char* value, size_t size) {
   
   class_name_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ImageClass.class_name)
+  // @@protoc_insertion_point(field_set_pointer:proto.ImageClass.class_name)
 }
 inline std::string* ImageClass::_internal_mutable_class_name() {
   
   return class_name_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 inline std::string* ImageClass::release_class_name() {
-  // @@protoc_insertion_point(field_release:ImageClass.class_name)
+  // @@protoc_insertion_point(field_release:proto.ImageClass.class_name)
   
   return class_name_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -3344,7 +3365,7 @@ inline void ImageClass::set_allocated_class_name(std::string* class_name) {
     
   }
   class_name_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), class_name);
-  // @@protoc_insertion_point(field_set_allocated:ImageClass.class_name)
+  // @@protoc_insertion_point(field_set_allocated:proto.ImageClass.class_name)
 }
 
 // float class_confidence = 3;
@@ -3355,7 +3376,7 @@ inline float ImageClass::_internal_class_confidence() const {
   return class_confidence_;
 }
 inline float ImageClass::class_confidence() const {
-  // @@protoc_insertion_point(field_get:ImageClass.class_confidence)
+  // @@protoc_insertion_point(field_get:proto.ImageClass.class_confidence)
   return _internal_class_confidence();
 }
 inline void ImageClass::_internal_set_class_confidence(float value) {
@@ -3364,50 +3385,110 @@ inline void ImageClass::_internal_set_class_confidence(float value) {
 }
 inline void ImageClass::set_class_confidence(float value) {
   _internal_set_class_confidence(value);
-  // @@protoc_insertion_point(field_set:ImageClass.class_confidence)
+  // @@protoc_insertion_point(field_set:proto.ImageClass.class_confidence)
 }
 
 // -------------------------------------------------------------------
 
 // ClassifyResponse
 
-// repeated .ImageClass result = 1;
-inline int ClassifyResponse::_internal_result_size() const {
-  return result_.size();
+// string status = 1;
+inline void ClassifyResponse::clear_status() {
+  status_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
-inline int ClassifyResponse::result_size() const {
-  return _internal_result_size();
+inline const std::string& ClassifyResponse::status() const {
+  // @@protoc_insertion_point(field_get:proto.ClassifyResponse.status)
+  return _internal_status();
 }
-inline void ClassifyResponse::clear_result() {
-  result_.Clear();
+inline void ClassifyResponse::set_status(const std::string& value) {
+  _internal_set_status(value);
+  // @@protoc_insertion_point(field_set:proto.ClassifyResponse.status)
 }
-inline ::ImageClass* ClassifyResponse::mutable_result(int index) {
-  // @@protoc_insertion_point(field_mutable:ClassifyResponse.result)
-  return result_.Mutable(index);
+inline std::string* ClassifyResponse::mutable_status() {
+  // @@protoc_insertion_point(field_mutable:proto.ClassifyResponse.status)
+  return _internal_mutable_status();
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageClass >*
-ClassifyResponse::mutable_result() {
-  // @@protoc_insertion_point(field_mutable_list:ClassifyResponse.result)
-  return &result_;
+inline const std::string& ClassifyResponse::_internal_status() const {
+  return status_.GetNoArena();
 }
-inline const ::ImageClass& ClassifyResponse::_internal_result(int index) const {
-  return result_.Get(index);
+inline void ClassifyResponse::_internal_set_status(const std::string& value) {
+  
+  status_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
 }
-inline const ::ImageClass& ClassifyResponse::result(int index) const {
-  // @@protoc_insertion_point(field_get:ClassifyResponse.result)
-  return _internal_result(index);
+inline void ClassifyResponse::set_status(std::string&& value) {
+  
+  status_.SetNoArena(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:proto.ClassifyResponse.status)
 }
-inline ::ImageClass* ClassifyResponse::_internal_add_result() {
-  return result_.Add();
+inline void ClassifyResponse::set_status(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  status_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:proto.ClassifyResponse.status)
 }
-inline ::ImageClass* ClassifyResponse::add_result() {
-  // @@protoc_insertion_point(field_add:ClassifyResponse.result)
-  return _internal_add_result();
+inline void ClassifyResponse::set_status(const char* value, size_t size) {
+  
+  status_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:proto.ClassifyResponse.status)
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::ImageClass >&
-ClassifyResponse::result() const {
-  // @@protoc_insertion_point(field_list:ClassifyResponse.result)
-  return result_;
+inline std::string* ClassifyResponse::_internal_mutable_status() {
+  
+  return status_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline std::string* ClassifyResponse::release_status() {
+  // @@protoc_insertion_point(field_release:proto.ClassifyResponse.status)
+  
+  return status_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+inline void ClassifyResponse::set_allocated_status(std::string* status) {
+  if (status != nullptr) {
+    
+  } else {
+    
+  }
+  status_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), status);
+  // @@protoc_insertion_point(field_set_allocated:proto.ClassifyResponse.status)
+}
+
+// repeated .proto.ImageClass results = 2;
+inline int ClassifyResponse::_internal_results_size() const {
+  return results_.size();
+}
+inline int ClassifyResponse::results_size() const {
+  return _internal_results_size();
+}
+inline void ClassifyResponse::clear_results() {
+  results_.Clear();
+}
+inline ::proto::ImageClass* ClassifyResponse::mutable_results(int index) {
+  // @@protoc_insertion_point(field_mutable:proto.ClassifyResponse.results)
+  return results_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::ImageClass >*
+ClassifyResponse::mutable_results() {
+  // @@protoc_insertion_point(field_mutable_list:proto.ClassifyResponse.results)
+  return &results_;
+}
+inline const ::proto::ImageClass& ClassifyResponse::_internal_results(int index) const {
+  return results_.Get(index);
+}
+inline const ::proto::ImageClass& ClassifyResponse::results(int index) const {
+  // @@protoc_insertion_point(field_get:proto.ClassifyResponse.results)
+  return _internal_results(index);
+}
+inline ::proto::ImageClass* ClassifyResponse::_internal_add_results() {
+  return results_.Add();
+}
+inline ::proto::ImageClass* ClassifyResponse::add_results() {
+  // @@protoc_insertion_point(field_add:proto.ClassifyResponse.results)
+  return _internal_add_results();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::proto::ImageClass >&
+ClassifyResponse::results() const {
+  // @@protoc_insertion_point(field_list:proto.ClassifyResponse.results)
+  return results_;
 }
 
 #ifdef __GNUC__
@@ -3432,18 +3513,19 @@ ClassifyResponse::result() const {
 
 // @@protoc_insertion_point(namespace_scope)
 
+}  // namespace proto
 
 PROTOBUF_NAMESPACE_OPEN
 
-template <> struct is_proto_enum< ::MessageType> : ::std::true_type {};
+template <> struct is_proto_enum< ::proto::MessageType> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::MessageType>() {
-  return ::MessageType_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::proto::MessageType>() {
+  return ::proto::MessageType_descriptor();
 }
-template <> struct is_proto_enum< ::ThumbnailType> : ::std::true_type {};
+template <> struct is_proto_enum< ::proto::ThumbnailType> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::ThumbnailType>() {
-  return ::ThumbnailType_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::proto::ThumbnailType>() {
+  return ::proto::ThumbnailType_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE

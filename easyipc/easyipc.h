@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include "ThreadPool/ThreadPool.h"
 
@@ -53,7 +54,7 @@ using ClientDisconnectHandler = std::function<void(Context& context, const Sessi
 
 class IpcServer : public std::enable_shared_from_this<IpcServer> {
    public:
-    explicit IpcServer(const std::string& token, int threads_num = 2);
+    explicit IpcServer(const std::string& token);
     IpcServer(const IpcServer&) = delete;
     explicit IpcServer(IpcServer&&) = delete;
 
@@ -71,7 +72,7 @@ class IpcServer : public std::enable_shared_from_this<IpcServer> {
    private:
     bool AcceptRequest();
 
-    ThreadPool workers_;
+    ThreadPool* global_thread_pool_;
 
     std::atomic<bool> is_running_;
     std::string ipc_token;

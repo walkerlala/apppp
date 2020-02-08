@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package proto;
+
 enum MessageType {
   Ping = 0;
   
@@ -76,11 +78,12 @@ message ClassifyRequest {
 }
 
 message ImageClass {
-	string path = 1;
+	string source_path = 1;
 	string class_name = 2;
   float class_confidence = 3;
 }
 
 message ClassifyResponse {
-	repeated ImageClass result = 1;
+  string status = 1; // error message or so
+	repeated ImageClass results = 2;
 }

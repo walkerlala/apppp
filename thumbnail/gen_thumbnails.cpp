@@ -1,23 +1,25 @@
 //
 // Created by Duzhong Chen on 2020/1/26.
 //
-#include <sstream>
 #include "gen_thumbnails.h"
 
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/gil.hpp>
 #include <boost/gil/extension/io/jpeg.hpp>
 #include <boost/gil/extension/io/png.hpp>
-#include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/numeric/resample.hpp>
-
-#include <boost/filesystem.hpp>
-
-#include <boost/algorithm/string.hpp>
+#include <boost/gil/extension/numeric/sampler.hpp>
+#include <sstream>
 
 #include "./utils.h"
 
 using namespace boost::gil;
 using boost::filesystem::path;
+
+using proto::Thumbnail;
+using proto::ThumbnailType;
+using proto::ThumbnailType_Name;
 
 static constexpr int SmallThumbnailWidth = 128;
 static constexpr int MediumThumbnailWidth = 512;
@@ -27,7 +29,7 @@ template <int Standard>
 inline std::pair<int, int> get_proper_ize_by_standard(int width, int height) {
     int greater = std::max(width, height);
     if (greater <= Standard) {
-        return { -1, -1 };
+        return {-1, -1};
     }
 
     if (width > height) {
@@ -35,13 +37,13 @@ inline std::pair<int, int> get_proper_ize_by_standard(int width, int height) {
         float ratio = static_cast<float>(height) / width;
         int ret_height = ret_width * ratio;
 
-        return { ret_width, ret_height };
+        return {ret_width, ret_height};
     }
 
     int ret_height = Standard;
     float ratio = static_cast<float>(width) / height;
     int ret_width = ret_height * ratio;
-    return { ret_width, ret_height };
+    return {ret_width, ret_height};
 }
 
 inline std::pair<int, int> get_proper_thumbnail_size(ThumbnailType type, int width, int height) {
@@ -57,11 +59,11 @@ inline std::pair<int, int> get_proper_thumbnail_size(ThumbnailType type, int wid
 
         default:
             return {-1, -1};
-
     }
 }
 
-std::optional<Thumbnail> gen_thumbnails(int type, const std::string& in_path_str, const std::string& out_dir) {
+std::optional<Thumbnail> gen_thumbnails(int type, const std::string& in_path_str,
+                                        const std::string& out_dir) {
     try {
         rgba8_image_t img;
         std::string ext = boost::algorithm::to_lower_copy(path(in_path_str).extension().string());
@@ -74,7 +76,8 @@ std::optional<Thumbnail> gen_thumbnails(int type, const std::string& in_path_str
             return std::nullopt;
         }
 
-        auto proper_size = get_proper_thumbnail_size(static_cast<ThumbnailType>(type), img.width(), img.height());
+        auto proper_size =
+            get_proper_thumbnail_size(static_cast<ThumbnailType>(type), img.width(), img.height());
         if (proper_size.first < 0) {
             return std::nullopt;
         }
@@ -90,10 +93,8 @@ std::optional<Thumbnail> gen_thumbnails(int type, const std::string& in_path_str
 
         std::stringstream gen_filename_ss;
 
-        gen_filename_ss << src_path.stem().string()
-                        << "-" << GenRandomString(6)
-                        <<"-" << ThumbnailType_Name(type)
-                        << src_path.extension().string();
+        gen_filename_ss << src_path.stem().string() << "-" << GenRandomString(6) << "-"
+                        << ThumbnailType_Name(type) << src_path.extension().string();
 
         path output_path = path(out_dir) / path(gen_filename_ss.str());
         std::string output_path_str = output_path.string();
@@ -110,7 +111,7 @@ std::optional<Thumbnail> gen_thumbnails(int type, const std::string& in_path_str
         tb.set_height(proper_size.second);
         tb.set_path(output_path_str);
         tb.set_type(static_cast<ThumbnailType>(type));
-        return { tb };
+        return {tb};
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
         return std::nullopt;

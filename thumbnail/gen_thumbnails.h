@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <optional>
-#include <string>
 #include <ipc-message/ipc.pb.h>
 
-std::optional<Thumbnail> gen_thumbnails(
-    int type, const std::string& src_path,
-    const std::string& out_path);
+#include <optional>
+#include <string>
+
+std::optional<proto::Thumbnail> gen_thumbnails(int type, const std::string& src_path,
+                                               const std::string& out_path);

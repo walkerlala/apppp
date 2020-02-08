@@ -4,6 +4,7 @@
 
 #pragma once
 #include <ipc-message/ipc.pb.h>
+
 #include <optional>
 
-std::optional<ExifInfo> read_exif(const std::string& path);
+std::optional<proto::ExifInfo> read_exif(const std::string& path);
