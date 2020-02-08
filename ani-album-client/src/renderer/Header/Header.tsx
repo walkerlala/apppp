@@ -143,6 +143,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       this.setState({
         workspaceData: wpData,
       });
+      eventBus.emit(RendererEvents.WorkspaceInfoUpdated, wpData.id);
     }
   }
 

@@ -9,6 +9,7 @@ export enum RendererEvents {
   NavigatePage = 'NavigatePage',
   NavigateToPrevPage = 'NavigateToPrevPage',
   AlbumInfoUpdated = 'AlbumInfoUpdated',
+  WorkspaceInfoUpdated = 'WorkspaceInfoUpdated',
   AlbumContentUpdated = 'AlbumContentUpdated',
   WorkspaceContentUpated = 'WorkspaceContentUpated',
 };

@@ -61,10 +61,12 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
 
   componentDidMount() {
     eventBus.addListener(RendererEvents.AlbumInfoUpdated, this.handleAlbumInfoUpdated);
+    eventBus.addListener(RendererEvents.WorkspaceInfoUpdated, this.handleWorkspaceInfoUpdated);
   }
 
   componentWillUnmount() {
     eventBus.removeListener(RendererEvents.AlbumInfoUpdated, this.handleAlbumInfoUpdated);
+    eventBus.removeListener(RendererEvents.WorkspaceInfoUpdated, this.handleWorkspaceInfoUpdated);
   }
 
   private addExpandedKeys = (key: string) => {
@@ -98,6 +100,15 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
           return this.handleAddWorkspace(key);
         }
 
+    }
+  }
+
+  private handleWorkspaceInfoUpdated = async (workspaceId: number) => {
+    try {
+      const workspaceInfo: Workspace = await ipcRenderer.invoke(ClientMessageType.GetWorkspaceById, workspaceId);
+      await this.fetchWorkspaces(WorkspacePrefix + workspaceInfo.parentId);
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -166,14 +177,17 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
         ClientMessageType.GetWorkspacesByParentId, Number(parentToken),
       );
       const newMap = produce(this.state.childrenMap, (draft: Map<string, TreeItemData[]>) => {
-        const items: TreeItemData[] = result.map(({ id, name }) => ({
-          key: WorkspacePrefix + id.toString(),
-          label: name,
-          addIconOption: AddIconOption.ShowOnHover,
-          icon: <DashboardIcon label="Workspaces" />,
-          hasChildren: true,
-          children: () => this.renderChildrenByParentKey(WorkspacePrefix + id.toString(), 2),
-        }));
+        const items: TreeItemData[] = result.map(({ id, name }) => {
+          const key = WorkspacePrefix + id.toString();
+          return {
+            key,
+            label: name,
+            addIconOption: AddIconOption.ShowOnHover,
+            icon: <DashboardIcon label="Workspaces" />,
+            hasChildren: true,
+            children: (parentDepth: number) => this.renderChildrenByParentKey(key, parentDepth + 1),
+          };
+        });
         draft.set(parentKey, items);
       });
       this.setState({

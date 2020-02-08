@@ -14,7 +14,7 @@ export interface TreeItemData {
   icon?: React.ReactNode;
   addIconOption?: AddIconOption;
   hasChildren?: boolean;
-  children?: () => React.ReactNode,
+  children?: (parentDepth: number) => React.ReactNode,
 }
 
 export interface SidebarTreeItemProps {
@@ -139,7 +139,7 @@ class SidebarTreeItem extends React.Component<SidebarTreeItemProps, State> {
           <div className="ani-content-area">{label}</div>
           {this.renderAddIcon()}
         </div>
-        { this.props.isExpanded && children && children() }
+        { this.props.isExpanded && children && children(depth) }
       </div>
     );
   }
