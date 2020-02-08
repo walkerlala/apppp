@@ -1,13 +1,18 @@
 import * as React from 'react';
-import { PageKey } from 'renderer/pageKey';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import Triangle from './triangle.svg';
+
+export enum AddIconOption {
+  Invisible = 0,
+  ShowOnHover,
+  ShowOnHoverSidebar,
+}
 
 export interface TreeItemData {
   key: string;
   label: string;
   icon?: React.ReactNode;
-  hasAddIcon?: boolean;
+  addIconOption?: AddIconOption;
   hasChildren?: boolean;
   children?: () => React.ReactNode,
 }
@@ -16,16 +21,28 @@ export interface SidebarTreeItemProps {
   data: TreeItemData,
   isSelected: boolean;
   isExpanded: boolean;
-  showAddButton: boolean;
+  depth: number;
+  isSidebarMouseEnter?: boolean;
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   onAddButtonClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   onExpand?: () => void;
   onCollapse?: () => void;
 }
 
-class SidebarTreeItem extends React.Component<SidebarTreeItemProps> {
+interface State {
+  isMouseEntered: boolean;
+}
 
-  private renderAddIcon() {
+class SidebarTreeItem extends React.Component<SidebarTreeItemProps, State> {
+
+  constructor(props: SidebarTreeItemProps) {
+    super(props);
+    this.state = {
+      isMouseEntered: false,
+    };
+  }
+
+  private __renderAddIcon() {
     const { onAddButtonClick } = this.props;
     const primaryColor = 'rgb(146, 144, 140)';
     return (
@@ -59,8 +76,41 @@ class SidebarTreeItem extends React.Component<SidebarTreeItemProps> {
     }
   }
 
+  private renderAddIcon() {
+    switch(this.props.data.addIconOption) {
+      case AddIconOption.ShowOnHover:
+        if (!this.state.isMouseEntered) {
+          return null;
+        }
+        return this.__renderAddIcon();
+
+      case AddIconOption.ShowOnHoverSidebar:
+        if (!this.props.isSidebarMouseEnter) {
+          return null;
+        }
+        return this.__renderAddIcon();
+
+      default:
+        return null;
+
+    }
+  }
+
+  private handleMouseEnter = (e: React.MouseEvent) => {
+    this.setState({
+      isMouseEntered: true,
+    });
+  }
+
+  private handleMouseLeave = (e: React.MouseEvent) => {
+    this.setState({
+      isMouseEntered: false,
+    });
+  }
+
   render() {
-    const { label, icon, hasAddIcon, hasChildren, children } = this.props.data;
+    const { depth } = this.props;
+    const { label, icon, hasChildren, children } = this.props.data;
     let containerClassName = 'ani-sidebar-tree-item noselect';
     if (this.props.isSelected) {
       containerClassName += ' ani-item-selected';
@@ -71,7 +121,15 @@ class SidebarTreeItem extends React.Component<SidebarTreeItemProps> {
     }
     return (
       <div className="ani-sidebar-tree-item-container">
-        <div onClick={this.props.onClick} className={containerClassName}>
+        <div
+          onClick={this.props.onClick}
+          className={containerClassName}
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
+          style={{
+            paddingLeft: `${depth * 13 + 10}px`,
+          }}
+        >
           <div className={triangleAreaClassName} onClick={this.onTriangleAreaClicked}>
             {hasChildren && <Triangle />}
           </div>
@@ -79,7 +137,7 @@ class SidebarTreeItem extends React.Component<SidebarTreeItemProps> {
             {icon}
           </div>
           <div className="ani-content-area">{label}</div>
-          {this.props.showAddButton && hasAddIcon && this.renderAddIcon()}
+          {this.renderAddIcon()}
         </div>
         { this.props.isExpanded && children && children() }
       </div>

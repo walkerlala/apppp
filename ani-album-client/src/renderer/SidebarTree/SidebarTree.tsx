@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { produce } from 'immer';
-import SidebarTreeItem, { TreeItemData  } from './SidebarTreeItem';
+import SidebarTreeItem, { TreeItemData, AddIconOption } from './SidebarTreeItem';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { PageKey, AlbumPrefix, getWorkspaceToken, isAWorkspace, WorkspacePrefix } from 'renderer/pageKey';
 import MediaServicesScaleLargeIcon from '@atlaskit/icon/glyph/media-services/scale-large';
@@ -39,17 +39,17 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
         key: PageKey.Albums,
         label: 'Albums',
         icon: <FolderIcon label="Albums" />,
-        hasAddIcon: true,
+        addIconOption: AddIconOption.ShowOnHoverSidebar,
         hasChildren: true,
-        children: () => this.renderChildrenByParentKey(PageKey.Albums),
+        children: () => this.renderChildrenByParentKey(PageKey.Albums, 1),
       },
       {
         key: PageKey.Workspaces,
         label: 'Workspaces',
         icon: <DashboardIcon label="Workspaces" />,
-        hasAddIcon: true,
+        addIconOption: AddIconOption.ShowOnHoverSidebar,
         hasChildren: true,
-        children: () => this.renderChildrenByParentKey(PageKey.Workspaces),
+        children: () => this.renderChildrenByParentKey(PageKey.Workspaces, 1),
       }
     ]);
 
@@ -93,12 +93,10 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
       case PageKey.Albums:
         return this.handleAddAlbum(key);
 
-
-      case PageKey.Workspaces:
-        return this.handleAddWorkspace(key);
-
       default:
-        // nothing
+        if (isAWorkspace(key)) {
+          return this.handleAddWorkspace(key);
+        }
 
     }
   }
@@ -119,9 +117,9 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
     }
   }
 
-  private async handleAddWorkspace(parentKey: PageKey) {
+  private async handleAddWorkspace(parentKey: string) {
     if (!isAWorkspace(parentKey)) {
-      return;
+      throw new Error("key error");
     }
     this.addExpandedKeys(parentKey);
     try {
@@ -135,13 +133,13 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
     }
   }
 
-  private renderChildrenByParentKey(key: PageKey) {
+  private renderChildrenByParentKey(key: string, depth: number) {
     const items = this.state.childrenMap.get(key);
     if (isUndefined(items)) {
       return;
     }
 
-    return this.renderChildren(items);
+    return this.renderChildren(items, depth);
   }
 
   private async fetchAllAlbums() {
@@ -168,9 +166,13 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
         ClientMessageType.GetWorkspacesByParentId, Number(parentToken),
       );
       const newMap = produce(this.state.childrenMap, (draft: Map<string, TreeItemData[]>) => {
-        const items = result.map(({ id, name }) => ({
+        const items: TreeItemData[] = result.map(({ id, name }) => ({
           key: WorkspacePrefix + id.toString(),
           label: name,
+          addIconOption: AddIconOption.ShowOnHover,
+          icon: <DashboardIcon label="Workspaces" />,
+          hasChildren: true,
+          children: () => this.renderChildrenByParentKey(WorkspacePrefix + id.toString(), 2),
         }));
         draft.set(parentKey, items);
       });
@@ -191,7 +193,7 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
     this.addExpandedKeys(key);
   }
 
-  renderChildren(items: TreeItemData[]) {
+  renderChildren(items: TreeItemData[], depth: number) {
     const { isMouseEntered, pageKey } = this.props;
     return items.map(item => {
       return (
@@ -204,7 +206,8 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
           onAddButtonClick={this.handleAddButtonClick(item.key)}
           onExpand={() => this.handleItemExpanded(item.key)}
           onCollapse={() => this.removeExpandedKeys(item.key)}
-          showAddButton={isMouseEntered}
+          isSidebarMouseEnter={isMouseEntered}
+          depth={depth}
         />
       );
     });
@@ -214,7 +217,7 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
     const rootChildren = this.state.childrenMap.get(PageKey.Root) || [];
     return (
       <div className="ani-sidebar-tree">
-        {this.renderChildren(rootChildren)}
+        {this.renderChildren(rootChildren, 0)}
       </div>
     );
   }
