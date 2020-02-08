@@ -97,9 +97,10 @@ class EditableTitle extends React.Component<EditableTitleProps, EditableTitleSta
 
     if (content.length === 0) {
       content = 'Untitled Album';
-    } else if (content.length >= 16) {
-      content = content.slice(0, 16);
     }
+    // } else if (content.length >= 16) {
+    //   content = content.slice(0, 16);
+    // }
 
     if (this.props.onConfirmChange) {
       this.props.onConfirmChange(content);

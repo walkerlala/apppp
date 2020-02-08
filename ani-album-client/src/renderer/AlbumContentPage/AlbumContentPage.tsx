@@ -3,55 +3,70 @@ import { MainContentContainer } from 'renderer/styles';
 import ImportButton from 'renderer/components/ImportButton';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { ModalTypes } from 'renderer/Modals';
-import GridView from 'renderer/components/GridView';
-import { ImageEntity } from 'common/image';
+import { ImageWithThumbnails } from 'common/image';
 import { ClientMessageType } from 'common/message';
 import { ipcRenderer } from 'electron';
-import { getAlbumToken } from 'renderer/pageKey';
+import { getAlbumToken, isAAlbum } from 'renderer/pageKey';
+import GridViewLayout from 'renderer/components/GridView/GridViewLayout';
+import GridViewImageItem from 'renderer/components/GridView/ImageItem';
+import { GridViewContainer } from './styles';
+import { ContextMenuType } from 'common/menu';
 
 export interface AlbumContentPageProps {
   pageKey: string;
 }
 
 interface State {
-  images: ImageEntity[];
-  shouldFetch: boolean;
-  prevPageKey: string;
+  images: ImageWithThumbnails[];
 }
 
 class AlbumContentPage extends React.Component<AlbumContentPageProps, State> {
 
-  static getDerivedStateFromProps(props: AlbumContentPageProps, state: State) {
-    if (props.pageKey !== state.prevPageKey) {
-      return {
-        ...state,
-        shouldFetch: true,
-      };
-    }
-
-    return state;
-  }
+  private __containerRef: React.RefObject<HTMLDivElement> = React.createRef();
 
   constructor(props: AlbumContentPageProps) {
     super(props);
     this.state = {
       images: [],
-      shouldFetch: true,
-      prevPageKey: props.pageKey,
     };
   }
 
-  componentDidUpdate() {
-    const { shouldFetch } = this.state;
+  componentDidMount() {
+    eventBus.addListener(RendererEvents.NavigatePage, this.handlePageNavigation);
+    eventBus.addListener(RendererEvents.AlbumContentUpdated, this.handleAlbumContentChanged);
+    ipcRenderer.addListener(ClientMessageType.AddImagesToCurrentAlbum, this.handleAddImagesToCurrentAlbum);
 
-    if (shouldFetch) {
-      this.fetchImagesByAlbumId();
-    }
+    const albumId = Number(getAlbumToken(this.props.pageKey));
+    this.fetchImagesByAlbumId(albumId);
   }
 
-  private async fetchImagesByAlbumId() {
-    const albumId = Number(getAlbumToken(this.props.pageKey));
+  componentWillUnmount() {
+    eventBus.removeListener(RendererEvents.NavigatePage, this.handlePageNavigation);
+    eventBus.removeListener(RendererEvents.AlbumContentUpdated, this.handleAlbumContentChanged);
+    ipcRenderer.removeListener(ClientMessageType.AddImagesToCurrentAlbum, this.handleAddImagesToCurrentAlbum);
+  }
 
+  private handleAddImagesToCurrentAlbum = () => {
+    const { pageKey } = this.props;
+    eventBus.emit(RendererEvents.ShowModal, ModalTypes.ImportPhotosToAlbum, pageKey);
+  }
+
+  private handleAlbumContentChanged = (albumId: number) => {
+    if (albumId !== Number(getAlbumToken(this.props.pageKey))) {
+      return;
+    }
+
+    this.fetchImagesByAlbumId(albumId);
+  }
+
+  private handlePageNavigation = (newPageKey: string) => {
+    if (!isAAlbum(newPageKey)) return;
+
+    const albumId = Number(getAlbumToken(newPageKey));
+    this.fetchImagesByAlbumId(albumId);
+  }
+
+  private async fetchImagesByAlbumId(albumId: number) {
     try {
       const data = await ipcRenderer.invoke(ClientMessageType.GetImagesByAlbumId, albumId);
       this.setState({
@@ -59,10 +74,6 @@ class AlbumContentPage extends React.Component<AlbumContentPageProps, State> {
       });
     } catch (err) {
       console.error(err);
-    } finally {
-      this.setState({
-        shouldFetch: false,
-      });
     }
   }
 
@@ -71,27 +82,47 @@ class AlbumContentPage extends React.Component<AlbumContentPageProps, State> {
     eventBus.emit(RendererEvents.ShowModal, ModalTypes.ImportPhotosToAlbum, pageKey);
   }
 
-  private renderContent() {
+  private renderImageItems() {
+    return this.state.images.map((item: ImageWithThumbnails) => {
+      return (
+        <GridViewImageItem
+          key={`data-${item.id}`}
+          data={item}
+          isSelected={false}
+          scaleToFit
+        />
+      );
+    });
+  }
+
+  private handleGridContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    console.log(e);
+    if (e.target !== this.__containerRef.current) {
+      return;
+    }
+
+    ipcRenderer.invoke(ClientMessageType.ShowContextMenu, ContextMenuType.AlbumContent);
+  }
+
+  render() {
     const { images } = this.state;
     if (images.length <= 0) {
       return (
-        <ImportButton
-          onClick={this.handleImportButtonClicked}
-          textContent="Add images from My Photos to Album..."
-        />
+        <MainContentContainer>
+          <ImportButton
+            onClick={this.handleImportButtonClicked}
+            textContent="Add images from My Photos to thie album..."
+          />
+        </MainContentContainer>
       );
     }
 
     return (
-      <GridView />
-    );
-  }
-
-  render() {
-    return (
-      <MainContentContainer>
-        {this.renderContent()}
-      </MainContentContainer>
+      <GridViewContainer ref={this.__containerRef}  onContextMenu={this.handleGridContextMenu}>
+        <GridViewLayout>
+          {this.renderImageItems()}
+        </GridViewLayout>
+      </GridViewContainer>
     );
   }
 

@@ -17,6 +17,7 @@ import * as dal from './dal';
 import * as path from 'path';
 import { Album } from 'common/album';
 import { Workspace } from 'common/workspace';
+import { ContextMenuType } from 'common/menu';
 
 let mainWindow: Electron.BrowserWindow;
 
@@ -60,24 +61,46 @@ const listenEvents = once(() => {
     };
   });
 
-  ipcMain.handle(ClientMessageType.ShowContextMenu, async (event: IpcMainInvokeEvent, data) => {
-    const menu = new Menu();
-    menu.append(new MenuItem({
-      label: 'Delete', 
-      click: async () => {
-        try {
-          const imageId = get(data, 'imageId');
-          if (isUndefined(imageId)) return;
-          logger.info('preparing to delete image id', imageId);
-          await dal.deleteImageById(getDb(), Number(imageId));
-          getWebContent().send(ClientMessageType.PhotoDeleted, imageId);
-          logger.info('delete image successfully: ', imageId);
-        } catch (err) {
-          logger.error(err);
-        }
-      },
-    }));
-    menu.popup();
+  ipcMain.handle(ClientMessageType.ShowContextMenu, async (event: IpcMainInvokeEvent, menuType: ContextMenuType, data: any) => {
+    switch (menuType) {
+      case ContextMenuType.ImageItem: {
+        const menu = new Menu();
+        menu.append(new MenuItem({
+          label: 'Delete',
+          click: async () => {
+            try {
+              const imageId = get(data, 'imageId');
+              if (isUndefined(imageId)) return;
+              logger.info('preparing to delete image id', imageId);
+              await dal.deleteImageById(getDb(), Number(imageId));
+              getWebContent().send(ClientMessageType.PhotoDeleted, imageId);
+              logger.info('delete image successfully: ', imageId);
+            } catch (err) {
+              logger.error(err);
+            }
+          },
+        }));
+        menu.popup();
+        break;
+      }
+
+      case ContextMenuType.AlbumContent: {
+        const menu = new Menu();
+        menu.append(new MenuItem({
+          label: 'Add Image',
+          click: async () => {
+            try {
+              getWebContent().send(ClientMessageType.AddImagesToCurrentAlbum);
+            } catch (err) {
+              logger.error(err);
+            }
+          },
+        }));
+        menu.popup();
+        break;
+      }
+
+    }
   });
 
   ipcMain.handle(ClientMessageType.CreateAlbum, async (event: IpcMainInvokeEvent) => {
@@ -114,6 +137,14 @@ const listenEvents = once(() => {
     return wp;
   });
 
+  ipcMain.handle(ClientMessageType.GetWorkspaceById, async (event: IpcMainInvokeEvent, id: number) => {
+    return await dal.queryWorkspaceById(getDb(), id);
+  });
+
+  ipcMain.handle(ClientMessageType.UpdateWorkspaceById, async (event: IpcMainInvokeEvent, wp: Workspace) => {
+    await dal.updateWorkspaceById(getDb(), wp);
+  });
+
   ipcMain.handle(ClientMessageType.GetWorkspacesByParentId, async (event: IpcMainInvokeEvent, parentId: number) => {
     return await dal.queryWorkspacesByParentId(getDb(), parentId);
   });
@@ -124,7 +155,32 @@ const listenEvents = once(() => {
 
   ipcMain.handle(ClientMessageType.GetImagesByAlbumId, async (event: IpcMainInvokeEvent, albumId: number) => {
     logger.debug('GetImagesByAlbumId: ', albumId);
-    return await dal.queryImagesByAlbumId(getDb(), albumId);
+    const images =  await dal.queryImagesByAlbumId(getDb(), albumId);
+    const allPromises: Promise<ImageWithThumbnails>[] = images.map(async img => {
+      const thumbnails = await dal.queryThumbnailsByImageId(getDb(), img.id!);
+      return {
+        ...img,
+        thumbnails,
+      } as ImageWithThumbnails;
+    });
+    return await Promise.all(allPromises);
+  });
+
+  ipcMain.handle(ClientMessageType.GetImagesByWorkspaceId, async (event: IpcMainInvokeEvent, workspaceId: number) => {
+    logger.debug('GetImagesByWorkspaceId: ', workspaceId);
+    const images =  await dal.queryImagesByWorkspaceId(getDb(), workspaceId);
+    const allPromises: Promise<ImageWithThumbnails>[] = images.map(async img => {
+      const thumbnails = await dal.queryThumbnailsByImageId(getDb(), img.id!);
+      return {
+        ...img,
+        thumbnails,
+      } as ImageWithThumbnails;
+    });
+    return await Promise.all(allPromises);
+  });
+
+  ipcMain.handle(ClientMessageType.AddImageToWorkspace, async (event: IpcMainInvokeEvent, imageId: number, workspaceId: number) => {
+    return await dal.addImageToWorkspace(getDb(), imageId, workspaceId);
   });
 
 });

@@ -9,6 +9,9 @@ export enum RendererEvents {
   NavigatePage = 'NavigatePage',
   NavigateToPrevPage = 'NavigateToPrevPage',
   AlbumInfoUpdated = 'AlbumInfoUpdated',
+  WorkspaceInfoUpdated = 'WorkspaceInfoUpdated',
+  AlbumContentUpdated = 'AlbumContentUpdated',
+  WorkspaceContentUpated = 'WorkspaceContentUpated',
 };
 
 export const eventBus = new EventEmitter.EventEmitter();

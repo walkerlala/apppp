@@ -11,10 +11,14 @@ export enum ClientMessageType {
   GetAlbumById = 'GetAlbumById',
   UpdateAlbumById = 'UpdateAlbumById',
   CreateWorkspace = 'CreateWorkspace',
+  GetWorkspaceById = 'GetWorkspaceById',
+  UpdateWorkspaceById = 'UpdateWorkspaceById',
   GetWorkspacesByParentId = 'GetWorkspacesByParentId',
   AddImageToAlbum = 'AddImageToAlbum',
   AddImageToWorkspace = 'AddImageToWorkspace',
   GetImagesByAlbumId = 'GetImagesByAlbumId',
+  AddImagesToCurrentAlbum = 'AddImagesToCurrentAlbum',
+  GetImagesByWorkspaceId = 'GetImagesByWorkspaceId',
 }
 
 export interface MessageRequest {

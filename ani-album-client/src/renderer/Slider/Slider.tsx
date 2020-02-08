@@ -1,18 +1,22 @@
 import * as React from 'react';
 import './Slider.scss';
 
-export interface ISliderState {
+export interface ISliderProps {
+  style?: React.CSSProperties;
+}
+
+interface ISliderState {
   isMoving: boolean;
   offsetX: number;
 }
 
 const CircleRadius: number = 5;
 
-class Slider extends React.Component<{}, ISliderState> {
+class Slider extends React.Component<ISliderProps, ISliderState> {
 
   private __sliderRef: React.RefObject<HTMLDivElement> = React.createRef();
 
-  constructor(props: {}) {
+  constructor(props: ISliderProps) {
     super(props);
     this.state = {
       isMoving: false,
@@ -69,10 +73,12 @@ class Slider extends React.Component<{}, ISliderState> {
   }
   
   render() {
+    const { style } = this.props;
     const CircleWidth = CircleRadius * 2;
     const { offsetX } = this.state;
     return (
       <div 
+        style={style}
         className="ani-slider"
         onMouseDown={this.handleSlideMouseDown}
       >

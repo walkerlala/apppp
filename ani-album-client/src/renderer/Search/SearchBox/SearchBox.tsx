@@ -1,7 +1,7 @@
 import * as React from 'react';
 import SearchLogo from '../SearchLogo.svg';
 import Button from 'renderer/components/Button';
-import { LogoContainer, Text } from './styles';
+import Tooltip from 'renderer/components/Tooltip';
 
 export interface ISearchBoxProps {
   onClick?: (e: React.MouseEvent) => void,
@@ -12,17 +12,19 @@ class SearchBox extends React.PureComponent<ISearchBoxProps> {
 
   render() {
     return (
-      <Button
-        className="ani-no-drag"
-        onClick={this.props.onClick}
-        style={this.props.style}
-        size="large"
+      <Tooltip
+        content="Search images"
+        position="bottom"
       >
-        <LogoContainer>
+        <Button
+          className="ani-no-drag"
+          onClick={this.props.onClick}
+          style={this.props.style}
+          size="large"
+        >
           <SearchLogo />
-        </LogoContainer>
-        <Text className="noselect">Search images...</Text>
-      </Button>
+        </Button>
+      </Tooltip>
     );
   }
 
