@@ -9,13 +9,18 @@
 #include "read_exif.h"
 
 using EasyIpc::IpcServer;
+using proto::GenerateThumbnailsRequest;
+using proto::GenerateThumbnailsResponse;
+using proto::MessageType;
+using proto::MessageType_Name;
+using proto::ReadExifRequest;
 
 static std::string server_handler(EasyIpc::Context& ctx, const EasyIpc::Message& msg);
 static std::string gen_thumbnails(const GenerateThumbnailsRequest& req);
-static std::unique_ptr<ThreadPool> thread_pools_;
+static ThreadPool* thread_pool;
 
 int main() {
-    thread_pools_ = std::make_unique<ThreadPool>(4);
+    thread_pool = &ThreadPool::GlobalPool();
 
     auto server = std::make_shared<IpcServer>("thumbnail-service");
     server->message_handler = server_handler;
@@ -75,7 +80,7 @@ static std::string gen_thumbnails(const GenerateThumbnailsRequest& req) {
     int finished_count = 0;
 
     for (auto type : req.types()) {
-        thread_pools_->enqueue([type, req, &finished_count, &resp, &resp_mutex, &resp_cv] {
+        thread_pool->add_task([type, req, &finished_count, &resp, &resp_mutex, &resp_cv] {
             plus_when_dtor<int> id(finished_count, resp_cv);
 
             if (auto ret = gen_thumbnails(type, req.path(), req.out_dir()); ret.has_value()) {

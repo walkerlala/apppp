@@ -31,6 +31,13 @@ namespace fs = boost::filesystem;
 
 using EasyIpc::IpcServer;
 
+using proto::ClassifyRequest;
+using proto::ClassifyResponse;
+using proto::ImageClass;
+using proto::ImageInfo;
+using proto::MessageType;
+using proto::MessageType_Name;
+
 static string server_handler(EasyIpc::Context &ctx, const EasyIpc::Message &msg);
 static tuple<string, float> classify_image(const fs::path &p);
 static ClassifierConf ParseClassifierConf(const string &conf);
@@ -39,12 +46,16 @@ static vector<string> labels;
 static torch::jit::script::Module model;
 
 DEFINE_string(conf, "classifier_asset/classifier.conf", "path to classifier configuration file");
-// DEFINE_string(log_dir ...), defined in glog lib, just provide it with --log_dir
+DEFINE_string(logdir, "log", "Dir to put logs");
 
 int main(int argc, char **argv) {
-    // init gflags and glog
-    gflags::ParseCommandLineFlags(&argc, &argv, /*remove_flags*/ true);
     google::InitGoogleLogging(argv[0]);
+    // init gflags and glog
+    gflags::ParseCommandLineFlags(&argc, &argv, /*remove_flags*/ false);
+    FLAGS_log_dir = FLAGS_logdir;  // set logdir for glog
+    fs::create_directory(FLAGS_log_dir);
+    FLAGS_logtostderr = 1;
+    FLAGS_stderrthreshold = 0;
 
     if (!boost::filesystem::exists(FLAGS_conf)) {
         LOG(ERROR) << fmt::format("Configuration file {} not exists", FLAGS_conf);
@@ -62,6 +73,7 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    LOG(INFO) << fmt::format("Reading labels from {}", conf.labels_path);
     // read labels
     string label;
     ifstream labelsfile(conf.labels_path);
@@ -79,6 +91,7 @@ int main(int argc, char **argv) {
     }
 
     // read models
+    LOG(INFO) << fmt::format("Reading pretrained model from {}", conf.model_path);
     try {
         model = read_model(conf.model_path, /*use_gpu*/ false);
     } catch (const std::exception &e) {
@@ -93,7 +106,11 @@ int main(int argc, char **argv) {
 }
 
 string server_handler(EasyIpc::Context &ctx, const EasyIpc::Message &msg) {
-    LOG(INFO) << "receive message: " << MessageType_Name(msg.message_type) << std::endl;
+    LOG(INFO) << "receive message: " << MessageType_Name(msg.message_type);
+    if (msg.message_type == MessageType::Ping) {
+        return "OK";
+    }
+
     if (msg.message_type != MessageType::ClassifyImage) {
         LOG(ERROR) << "Invalid message";
         return "";
@@ -113,8 +130,8 @@ string server_handler(EasyIpc::Context &ctx, const EasyIpc::Message &msg) {
 
         LOG(INFO) << fmt::format("{} classify resule: {}, confidence: {}", fspath.c_str(),
                                  std::get<0>(classify_result), std::get<1>(classify_result));
-        ImageClass *img_class = response.add_result();
-        img_class->set_path(fspath.string());
+        ImageClass *img_class = response.add_results();
+        img_class->set_source_path(fspath.string());
         img_class->set_class_name(std::get<0>(classify_result).c_str());
         img_class->set_class_confidence(std::get<1>(classify_result));
     }

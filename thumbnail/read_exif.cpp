@@ -3,14 +3,16 @@
 //
 
 #include "read_exif.h"
-#include "exif.h"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
-std::optional<ExifInfo> read_exif(const std::string& path) {
+#include "exif.h"
 
+using proto::ExifInfo;
+
+std::optional<ExifInfo> read_exif(const std::string& path) {
     std::ifstream fstrm(path);
     std::stringstream buffer;
     buffer << fstrm.rdbuf();
