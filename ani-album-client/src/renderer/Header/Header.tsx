@@ -215,6 +215,18 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     );
   }
 
+  private renderSlider() {
+    const { pageKey } = this.props;
+    if (isAWorkspace(pageKey)) {
+      return null;
+    }
+    return (
+      <Slider
+        style={{ marginRight: '32px' }}
+      />
+    );
+  }
+
   render() {
     return (
       <HeaderContainer
@@ -223,9 +235,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       >
         {this.renderBidHeaderContent()}
         <HeaderButtonGroup>
-          <Slider
-            style={{ marginRight: '32px' }}
-          />
+          {this.renderSlider()}
           <SearchBox onClick={this.searchBoxClicked} />
           {this.renderSmartClassifyButton()}
           <Tooltip

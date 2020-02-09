@@ -1,21 +1,23 @@
 import * as React from 'react';
-import ImportButton from 'renderer/components/ImportButton';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { ModalTypes } from 'renderer/Modals';
-import { MainContentContainer } from 'renderer/styles';
+import { Workspace } from 'common/workspace';
 import { ImageWithThumbnails } from 'common/image';
 import { getWorkspaceToken, isAWorkspace } from 'renderer/pageKey';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
 import GridViewLayout from 'renderer/components/GridView/GridViewLayout';
 import GridViewImageItem from 'renderer/components/GridView/ImageItem';
-import { GridViewContainer } from './styles';
+import { ContentContainer, GridViewContainer, Heading, WorkspacesContainer,
+  WorkspaceThumbnail, WorkspaceTextContainer } from './styles';
+import WorkspaceItem from './WorkspaceItem';
 
 export interface WorkspaceContentPageProps {
   pageKey: string;
 }
 
 interface State {
+  workspaces: Workspace[];
   images: ImageWithThumbnails[];
 }
 
@@ -24,6 +26,7 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
   constructor(props: WorkspaceContentPageProps) {
     super(props);
     this.state = {
+      workspaces: [],
       images: [],
     };
   }
@@ -33,6 +36,7 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
     eventBus.addListener(RendererEvents.WorkspaceContentUpated, this.handleWorkspaceContentChanged);
 
     const workspaceId = Number(getWorkspaceToken(this.props.pageKey));
+    this.fetchWorkspacesByParentId(workspaceId);
     this.fetchImagesByWorkspaceId(workspaceId);
   }
 
@@ -53,12 +57,22 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
     if (!isAWorkspace(newPageKey)) return;
 
     const wpId = Number(getWorkspaceToken(newPageKey));
+    this.fetchWorkspacesByParentId(wpId);
     this.fetchImagesByWorkspaceId(wpId);
   }
 
-  private handleImportImages = () => {
-    const { pageKey } = this.props;
-    eventBus.emit(RendererEvents.ShowModal, ModalTypes.ImportPhotosToAlbum, pageKey);
+  // private handleImportImages = () => {
+  //   const { pageKey } = this.props;
+  //   eventBus.emit(RendererEvents.ShowModal, ModalTypes.ImportPhotosToAlbum, pageKey);
+  // }
+  
+  private async fetchWorkspacesByParentId(parentId: number) {
+    try {
+      const workspaces: Workspace[] = await ipcRenderer.invoke(ClientMessageType.GetWorkspacesByParentId, parentId);
+      this.setState({ workspaces });
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   private async fetchImagesByWorkspaceId(workspaceId: number) {
@@ -95,19 +109,29 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
     );
   }
 
-  render() {
-    const { images } = this.state;
-    if (images.length > 0) {
-      return this.renderImages();
-    }
-
+  private renderWorkspaces() {
     return (
-      <MainContentContainer>
-        <ImportButton
-          onClick={this.handleImportImages}
-          textContent="Import images from My Photos to the workspace..."
-        />
-      </MainContentContainer>
+      <WorkspacesContainer>
+        {this.renderWorkspaceItems()}
+      </WorkspacesContainer>
+    );
+  }
+
+  private renderWorkspaceItems() {
+    const { workspaces } = this.state;
+    return workspaces.map((wp: Workspace) => (
+      <WorkspaceItem key={wp.id} data={wp} />
+    ));
+  }
+
+  render() {
+    return (
+      <ContentContainer>
+        <Heading className="noselect">Workspaces</Heading>
+        {this.renderWorkspaces()}
+        <Heading className="noselect">Photos</Heading>
+        {this.renderImages()}
+      </ContentContainer>
     );
   }
 
