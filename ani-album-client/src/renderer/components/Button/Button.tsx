@@ -3,21 +3,23 @@ import './Button.scss';
 
 export type ButtonSize = 'large' | 'medium' | 'small';
 
-export type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
   size?: ButtonSize,
+  forwardRef?: React.Ref<HTMLButtonElement>,
 };
 
-class Button extends React.Component<ButtonProps> {
+class ButtonBase extends React.Component<ButtonProps> {
 
   static defaultProps: Partial<ButtonProps> = {
     size: 'medium',
   }
 
   render() {
-    const { className = '', size, ...rest } = this.props;
+    const { className = '', forwardRef, size, ...rest } = this.props;
     const newClassName = `${className} ani-std-button ani-button-${size}`;
     return (
       <button
+        ref={forwardRef}
         className={newClassName}
         {...rest}
       />
@@ -25,5 +27,9 @@ class Button extends React.Component<ButtonProps> {
   }
 
 }
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => 
+  <ButtonBase forwardRef={ref} {...props} />
+);
 
 export default Button;

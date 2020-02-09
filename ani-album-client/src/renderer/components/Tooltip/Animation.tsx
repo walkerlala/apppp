@@ -35,7 +35,7 @@ const getStyle = (timeout: Timeout, state: TransitionStates) => () => ({
   ...transitionStyle(state),
 });
 
-type GetAnimationStyles = () => Object;
+type GetAnimationStyles = () => Record<string, any>;
 
 interface AnimationProps {
   children: (getAnimationFn: GetAnimationStyles) => React.ReactNode;

@@ -1,15 +1,13 @@
 import * as React from 'react';
 import { eventBus, RendererEvents } from 'renderer/events';
-import { ModalTypes } from 'renderer/Modals';
 import { Workspace } from 'common/workspace';
 import { ImageWithThumbnails } from 'common/image';
-import { getWorkspaceToken, isAWorkspace } from 'renderer/pageKey';
+import { getWorkspaceToken, isAWorkspace, WorkspacePrefix } from 'renderer/pageKey';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
 import GridViewLayout from 'renderer/components/GridView/GridViewLayout';
 import GridViewImageItem from 'renderer/components/GridView/ImageItem';
-import { ContentContainer, GridViewContainer, Heading, WorkspacesContainer,
-  WorkspaceThumbnail, WorkspaceTextContainer } from './styles';
+import { ContentContainer, GridViewContainer, Heading, WorkspacesContainer } from './styles';
 import WorkspaceItem from './WorkspaceItem';
 
 export interface WorkspaceContentPageProps {
@@ -117,11 +115,16 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
     );
   }
 
+  private handleSubWorkspaceClicked = (id: number) => {
+    const pageKey = WorkspacePrefix + id.toString();
+    eventBus.emit(RendererEvents.NavigatePage, pageKey);
+  }
+
   private renderWorkspaceItems() {
     const { workspaces } = this.state;
-    return workspaces.map((wp: Workspace) => (
-      <WorkspaceItem key={wp.id} data={wp} />
-    ));
+    return workspaces.map((wp: Workspace) => 
+      <WorkspaceItem key={wp.id} data={wp} onClick={this.handleSubWorkspaceClicked} />
+    );
   }
 
   render() {

@@ -130,7 +130,7 @@ class SidebarTree extends React.Component<SidebarTreeProps, SidebarTreeState> {
 
   private async handleAddWorkspace(parentKey: string) {
     if (!isAWorkspace(parentKey)) {
-      throw new Error("key error");
+      throw new Error('key error');
     }
     this.addExpandedKeys(parentKey);
     try {

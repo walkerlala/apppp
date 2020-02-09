@@ -251,7 +251,7 @@ class Tooltip extends React.Component<TooltipProps, TooltipState> {
     return (
       /* eslint-disable jsx-a11y/mouse-events-have-key-events */
       <React.Fragment>
-        {TargetContainer && (
+        {TargetContainer && 
           <TargetContainer
             onClick={this.handleMouseClick}
             onMouseOver={this.handleMouseOver}
@@ -264,9 +264,9 @@ class Tooltip extends React.Component<TooltipProps, TooltipState> {
           >
             {React.Children.only(children)}
           </TargetContainer>
-        )}
+        }
 
-        {renderTooltip && this.targetRef && this.fakeMouseElement ? (
+        {renderTooltip && this.targetRef && this.fakeMouseElement ? 
           <Portal zIndex={layers.tooltip()}>
             <Popper
               placement={tooltipPosition}
@@ -279,14 +279,14 @@ class Tooltip extends React.Component<TooltipProps, TooltipState> {
               }
             >
               {({ ref, style }) =>
-                TooltipContainer && (
+                TooltipContainer && 
                   <Animation
                     immediatelyShow={immediatelyShow}
                     immediatelyHide={immediatelyHide}
                     onExited={() => this.setState({ renderTooltip: false })}
                     in={isVisible}
                   >
-                    {getAnimationStyles => (
+                    {getAnimationStyles => 
                       <TooltipContainer
                         // innerRef can't be null so shortcircuit to undefined if it is.
                         ref={ref || undefined}
@@ -301,13 +301,13 @@ class Tooltip extends React.Component<TooltipProps, TooltipState> {
                       >
                         {content}
                       </TooltipContainer>
-                    )}
+                    }
                   </Animation>
-                )
+                
               }
             </Popper>
           </Portal>
-        ) : null}
+          : null}
       </React.Fragment>
       /* eslint-enable */
     );

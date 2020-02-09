@@ -4,6 +4,7 @@ import { WorkspaceItemContainer, WorkspaceThumbnail, WorkspaceTextContainer } fr
 
 export interface WorkspaceItemProps {
   data: Workspace;
+  onClick?: (id: number) => void;
 }
 
 interface State {
@@ -31,11 +32,17 @@ class WorkspaceItem extends React.PureComponent<WorkspaceItemProps, State> {
     });
   }
 
+  private handleClicked = (e: React.MouseEvent) => {
+    if (!this.props.onClick) return;
+    this.props.onClick(this.props.data.id);
+  }
+
   render() {
     const { name } = this.props.data;
     const { isMouseEntered } = this.state;
     return (
       <WorkspaceItemContainer
+        onClick={this.handleClicked}
         onMouseEnter={this.handleMouseEntered}
         onMouseLeave={this.handleMouseLeave}
       >

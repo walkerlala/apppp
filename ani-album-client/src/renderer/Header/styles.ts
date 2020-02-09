@@ -27,6 +27,14 @@ export const HeaderButtonGroup = styled.div`
   align-items: center;
 
   -webkit-app-region: no-drag;
+
+  button {
+    margin-left: 8px;
+    padding-left: 0px;
+    padding-right: 0px;
+    width: 32px;
+    justify-content: center;
+  }
 `;
 
 export const EditableTitleContainer = styled.div`

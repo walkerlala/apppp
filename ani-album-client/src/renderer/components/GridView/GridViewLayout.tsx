@@ -15,6 +15,6 @@ const GridViewLayout = (props: GridViewLayoutProps) => {
       {children}
     </div>
   );
-}
+};
 
 export default GridViewLayout;

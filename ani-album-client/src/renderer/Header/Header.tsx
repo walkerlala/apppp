@@ -3,21 +3,25 @@ import Slider from 'renderer/Slider';
 import { SearchBox } from 'renderer/Search';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { debounce } from 'lodash';
-import { PageKey, isAAlbum, getAlbumToken, isAWorkspace, getWorkspaceToken } from 'renderer/pageKey';
+import { PageKey, isAAlbum, getAlbumToken, isAWorkspace, getWorkspaceToken, WorkspacePrefix } from 'renderer/pageKey';
 import { Album } from 'common/album';
 import { Workspace } from 'common/workspace';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
 import EditableTitle from './EditableTitle';
 import Button from 'renderer/components/Button';
+import Popup from 'renderer/components/Popup';
+import Menu, { MenuItem } from 'renderer/components/Menu';
 import { HeaderContainer, HeaderButtonGroup, EditableTitleContainer } from './styles';
 import { isUndefined } from 'lodash';
 
 import Tooltip from 'renderer/components/Tooltip';
 
+import AddButtonIcon from './addButton.svg';
 import ZoomButton from './zoomButton.svg';
 import ZoomButton2 from './zoomButton2.svg';
 import SmartClassifyButton from './SmartClassifyButton.svg';
+import { ModalTypes } from 'renderer/Modals';
 
 interface HeaderProps {
   pageKey: string;
@@ -28,6 +32,7 @@ interface HeaderState {
   isMouseEntered: boolean;
   albumData: Album | null;
   workspaceData: Workspace | null;
+  addButtonOpen: boolean;
 }
 
 class Header extends React.Component<HeaderProps, HeaderState> {
@@ -39,6 +44,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       isMouseEntered: false,
       albumData: null,
       workspaceData: null,
+      addButtonOpen: false,
     };
   }
 
@@ -222,7 +228,59 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     }
     return (
       <Slider
-        style={{ marginRight: '32px' }}
+        style={{ marginRight: '24px' }}
+      />
+    );
+  }
+
+  private handleAddImageMenuClicked = () => {
+    this.setState({ addButtonOpen: false });
+
+    eventBus.emit(RendererEvents.ShowModal, ModalTypes.ImportPhotosToAlbum, this.props.pageKey);
+  }
+
+  private handleAddWorkspaceMenuClicked = async () => {
+    this.setState({ addButtonOpen: false });
+
+    const parentToken = Number(getWorkspaceToken(this.props.pageKey));
+    const data: Workspace = await ipcRenderer.invoke(ClientMessageType.CreateWorkspace, parentToken);
+    eventBus.emit(RendererEvents.NavigatePage, WorkspacePrefix + data.id.toString());
+  }
+
+  private renderAddMenu = () => {
+    return (
+      <React.Fragment>
+        <MenuItem onClick={this.handleAddImageMenuClicked}>Images</MenuItem>
+        <MenuItem onClick={this.handleAddWorkspaceMenuClicked}>Workspaces</MenuItem>
+      </React.Fragment>
+    );
+  }
+
+  private renderAddButton() {
+    const { addButtonOpen } = this.state;
+    const { pageKey } = this.props;
+    if (!isAWorkspace(pageKey)) {
+      return null;
+    }
+    return (
+      <Popup
+        popupComponent={Menu as any}
+        isOpen={addButtonOpen}
+        content={this.renderAddMenu}
+        onClose={() => this.setState({ addButtonOpen: false })}
+        trigger={({ ref, ...rest}) => {
+          return (
+            <Button
+              onClick={() => this.setState({ addButtonOpen: true })}
+              size="large"
+              ref={ref as React.Ref<HTMLButtonElement>}
+              {...rest}
+            >
+              <AddButtonIcon />
+            </Button>
+          );
+        }}
+        placement="bottom"
       />
     );
   }
@@ -236,6 +294,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
         {this.renderBidHeaderContent()}
         <HeaderButtonGroup>
           {this.renderSlider()}
+          {this.renderAddButton()}
           <SearchBox onClick={this.searchBoxClicked} />
           {this.renderSmartClassifyButton()}
           <Tooltip
@@ -246,9 +305,6 @@ class Header extends React.Component<HeaderProps, HeaderState> {
               className="ani-button"
               size="large"
               onClick={this.onScaleToButtonClick}
-              style={{
-                marginLeft: '8px',
-              }}
             >
               {this.renderZoomButton()}
             </Button>
