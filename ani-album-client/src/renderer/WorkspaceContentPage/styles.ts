@@ -26,8 +26,8 @@ export const WorkspacesContainer = styled.div`
 `;
 
 export const WorkspaceItemContainer = styled.div`
-  padding-right: 24px;
-  padding-top: 16px;
+  padding-right: 32px;
+  padding-top: 24px;
 
   &:hover {
     cursor: pointer;
@@ -39,16 +39,37 @@ export interface WorkspaceThumbnailProps {
 }
 
 export const WorkspaceThumbnail = styled.div`
-  width: 180px;
-  min-width: 180px;
-  height: 180px;
-  min-height: 180px;
-  background-color: #d4d4d4;
+  width: 160px;
+  min-width: 160px;
+  height: 160px;
+  min-height: 160px;
+  background-color: white;
   border-radius: 12px;
+  overflow: hidden;
+
+  display: flex;
+  flex-flow: row wrap;
+
+  position: relative;
+
   ${(props: WorkspaceThumbnailProps) => props.isHover ?
     'box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);' : 
     ''
 }
+`;
+
+export const WorkspaceThumbnailPadContainer = styled.div`
+  background-color: #d4d4d4;
+  width: 50%;
+  min-width: 50%;
+  height: 50%;
+  min-height: 50%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 export const WorkspaceTextContainer = styled.div`
@@ -56,4 +77,27 @@ export const WorkspaceTextContainer = styled.div`
   font-size: 12px;
   text-align: center;
   padding-top: 12px;
+`;
+
+export type LineDividerDirection = 'vertical' | 'horizontal';
+
+export interface LineDividerProps {
+  direction: LineDividerDirection;
+}
+
+export const LineDivider = styled.div`
+  position: absolute;
+  background-color: white;
+
+  ${(props: LineDividerProps) => props.direction === 'vertical' ? `
+    width: 100%;
+    height: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+  ` : `
+    height: 100%;
+    width: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+  `}
 `;
