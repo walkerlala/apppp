@@ -233,7 +233,6 @@ async function createWindow() {
   });
 
   ipcMain.on('min', () => {
-    console.log(process.platform);
     mainWindow.minimize();
   });
 
