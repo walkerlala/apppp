@@ -275,12 +275,13 @@ app.on('ready', async () => {
 });
 
 app.on('browser-window-blur', () => {
-  getWebContent().send(ClientMessageType.ToggleActive, false);
+  const wc = getWebContent();
+  wc && wc.send(ClientMessageType.ToggleWindowActive, false);
 });
 
 app.on('browser-window-focus', () => {
   const wc = getWebContent();
-  wc && wc.send(ClientMessageType.ToggleActive, true);
+  wc && wc.send(ClientMessageType.ToggleWindowActive, true);
 });
 
 // Quit when all windows are closed.

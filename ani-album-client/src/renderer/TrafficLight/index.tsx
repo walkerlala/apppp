@@ -38,7 +38,7 @@ class TrafficLight extends React.Component<TrafficLightProps, TrafficLightState>
   }
 
   componentDidMount() {
-    ipcRenderer.addListener(ClientMessageType.ToggleActive, this.handleToggleActive);
+    ipcRenderer.addListener(ClientMessageType.ToggleWindowActive, this.handleToggleActive);
   }
 
   render() {

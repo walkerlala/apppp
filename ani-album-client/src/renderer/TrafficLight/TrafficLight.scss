@@ -1,6 +1,7 @@
 $TrafficLightHeight: 48px;
-
+$SidebarWidth: 200px;
 .ani-sidebar-traffic-light {
+  width: $SidebarWidth;
   height: $TrafficLightHeight;
   -webkit-app-region: drag;
   position: absolute;

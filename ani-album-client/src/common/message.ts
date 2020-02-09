@@ -6,7 +6,7 @@ export enum ClientMessageType {
   PhotoDeleted = 'PhotoDeleted',
   GetImageById = 'GetImageById',
   ToggleFullscreen = 'ToggleFullscreen',
-  ToggleActive = 'ToggleActive',
+  ToggleWindowActive = 'ToggleWindowActive',
   CreateAlbum = 'CreateAlbum',
   GetAllAlbums = 'GetAllAlbums',
   GetAlbumById = 'GetAlbumById',
