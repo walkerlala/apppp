@@ -22,6 +22,7 @@ export const ContentContainer = styled.div`
 
 export const WorkspacesContainer = styled.div`
   display: flex;
+  flex-flow: row wrap;
 `;
 
 export const WorkspaceItemContainer = styled.div`

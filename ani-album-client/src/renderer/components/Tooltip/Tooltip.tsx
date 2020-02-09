@@ -12,6 +12,7 @@ import {
 } from './types';
 import { Tooltip as StyledTooltip } from './styled';
 import Animation from './Animation';
+import { noop } from 'lodash';
 
 const SCROLL_OPTIONS = { capture: true, passive: true };
 
@@ -76,7 +77,7 @@ class Tooltip extends React.Component<TooltipProps, TooltipState> {
 
   fakeMouseElement?: FakeMouseElement;
 
-  cancelPendingSetState = () => {};
+  cancelPendingSetState = noop;
 
   userInteraction: 'mouse' | 'keyboard' = 'mouse';
 
