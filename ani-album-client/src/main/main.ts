@@ -4,7 +4,7 @@ import isDev from 'electron-is-dev';
 import { app, BrowserWindow, Menu, MenuItem, ipcMain, IpcMainInvokeEvent, IpcMain } from 'electron';
 import { eventBus, MainProcessEvents } from './events';
 import initialFolder, { getDatabasePath } from './dataFolder';
-import { setDb, getDb, setWebContent, getWebContent, isWindows } from './utils';
+import { setDb, getDb, setWebContent, getWebContent, isWindows, isMacOS } from './utils';
 import { importPhotos } from './photos';
 import { SQLiteHelper } from './sqliteHelper';
 import { ImageWithThumbnails } from 'common/image';
@@ -233,11 +233,20 @@ async function createWindow() {
   });
 
   ipcMain.on('min', () => {
+    console.log(process.platform);
     mainWindow.minimize();
   });
 
   ipcMain.on('fullscreen', () => {
     mainWindow.setFullScreen(true);
+  });
+
+  ipcMain.on('fullscreenoff', () => {
+    mainWindow.setFullScreen(false);
+  });
+
+  ipcMain.on('get-is-macos', (event: any) => {
+    event.returnValue = isMacOS();
   });
 
   showMenu();
@@ -264,6 +273,15 @@ app.on('ready', async () => {
     logger.fatal(err);
     process.exit(1);
   }
+});
+
+app.on('browser-window-blur', () => {
+  getWebContent().send(ClientMessageType.ToggleActive, false);
+});
+
+app.on('browser-window-focus', () => {
+  const wc = getWebContent();
+  wc && wc.send(ClientMessageType.ToggleActive, true);
 });
 
 // Quit when all windows are closed.

@@ -12,6 +12,7 @@ interface SidebarProps {
 interface SidebarState {
   isMouseEntered: boolean
   isFullscreen: boolean
+  isMacOS: boolean
 }
 
 class Sidebar extends Component<SidebarProps, SidebarState> {
@@ -20,7 +21,8 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     super(props);
     this.state = {
       isMouseEntered: false,
-      isFullscreen: false
+      isFullscreen: false,
+      isMacOS: true
     };
   }
 
@@ -36,7 +38,14 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     });
   }
 
+  private checkIfNotMacOS = () => {
+    const isMacOS = ipcRenderer.sendSync('get-is-macos');
+    !isMacOS && this.setState({ isMacOS: false });
+  }
+
   componentDidMount() {
+    this.checkIfNotMacOS();
+
     ipcRenderer.addListener(ClientMessageType.ToggleFullscreen, this.handleToggleFullscreen);
   }
 
@@ -50,14 +59,15 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
 
   render() {
     const { pageKey } = this.props;
-    const { isMouseEntered, isFullscreen } = this.state;
+    const { isMouseEntered, isFullscreen, isMacOS } = this.state;
+
     return (
       <div
         className="ani-sidebar-container"
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
-        { !isFullscreen && <TrafficLight></TrafficLight> }
+        { isMacOS && <TrafficLight isFullscreen={isFullscreen} /> }
         <SidebarTree pageKey={pageKey} isMouseEntered={isMouseEntered} />
       </div>
     );
