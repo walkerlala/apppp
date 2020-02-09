@@ -41,6 +41,10 @@ class TrafficLight extends React.Component<TrafficLightProps, TrafficLightState>
     ipcRenderer.addListener(ClientMessageType.ToggleWindowActive, this.handleToggleActive);
   }
 
+  componentWillUnmount() {
+    ipcRenderer.removeListener(ClientMessageType.ToggleWindowActive, this.handleToggleActive);
+  }
+
   render() {
     const { isFullscreen } = this.props;
     const { isWindowActive } = this.state;

@@ -3,7 +3,51 @@ import TrafficLight from 'renderer/TrafficLight';
 import SidebarTree from 'renderer/SidebarTree';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
-import './Sidebar.scss';
+import styled from 'styled-components';
+
+import NavigateBackIcon from './NavigateBackIcon.svg';
+import { PageKey } from './pageKey';
+
+const Container = styled.div`
+  color: rgb(119, 119, 119);
+  background-color: rgb(246, 246, 246);
+  width: 200px;
+`;
+
+const TopArea = styled.div`
+  width: 200px;
+  height: 48px;
+  -webkit-app-region: drag;
+
+  display: flex;
+  align-items: center;
+`;
+
+interface GoBackButtonProps {
+  show?: boolean;
+}
+
+const GoBackButton = styled.button`
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  margin-left: auto;
+  border-radius: 4px;
+  background-color: white;
+
+  display: ${(props: GoBackButtonProps) => props.show ? 'flex' : 'none'};
+  justify-content: center;
+  align-items: center;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover {
+    cursor: pointer;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
+  }
+`;
 
 interface SidebarProps {
   pageKey: string;
@@ -62,14 +106,18 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     const { isMouseEntered, isFullscreen, isMacOS } = this.state;
 
     return (
-      <div
-        className="ani-sidebar-container"
+      <Container
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
+        <TopArea>
+          <GoBackButton className="ani-no-drag" show={pageKey !== PageKey.MyPhotos}>
+            <NavigateBackIcon />
+          </GoBackButton>
+        </TopArea>
         { isMacOS && <TrafficLight isFullscreen={isFullscreen} /> }
         <SidebarTree pageKey={pageKey} isMouseEntered={isMouseEntered} />
-      </div>
+      </Container>
     );
   }
 

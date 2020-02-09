@@ -1,22 +1,22 @@
 $TrafficLightHeight: 48px;
 $SidebarWidth: 200px;
 .ani-sidebar-traffic-light {
-  width: $SidebarWidth;
-  height: $TrafficLightHeight;
-  -webkit-app-region: drag;
-  position: absolute;
-  z-index: 999;
+  // width: $SidebarWidth;
+  // height: $TrafficLightHeight;
+  // -webkit-app-region: drag;
+  // position: absolute;
 
-  + .ani-sidebar-tree {
-    margin-top: $TrafficLightHeight;
-  }
+  // + .ani-sidebar-tree {
+  //   margin-top: $TrafficLightHeight;
+  // }
 
   .ani-sidebar-traffic-light-container {
     display: flex;
     justify-content: space-between;
     width: 52px;
     position: fixed;
-    z-index: 2;
+    // z-index: 2;
+    z-index: 999;
     left: 12px;
     top: 19px;
 
