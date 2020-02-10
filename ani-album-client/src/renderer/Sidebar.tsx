@@ -3,10 +3,12 @@ import TrafficLight from 'renderer/TrafficLight';
 import SidebarTree from 'renderer/SidebarTree';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
+import { debounce } from 'lodash';
 import styled from 'styled-components';
 
 import NavigateBackIcon from './NavigateBackIcon.svg';
 import { PageKey } from './pageKey';
+import { eventBus, RendererEvents } from './events';
 
 const Container = styled.div`
   color: rgb(119, 119, 119);
@@ -20,7 +22,6 @@ const TopArea = styled.div`
   -webkit-app-region: drag;
 
   display: flex;
-  align-items: center;
 `;
 
 interface GoBackButtonProps {
@@ -30,6 +31,7 @@ interface GoBackButtonProps {
 const GoBackButton = styled.button`
   width: 24px;
   height: 24px;
+  margin-top: 16px;
   margin-right: 8px;
   margin-left: auto;
   border-radius: 4px;
@@ -101,6 +103,12 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     this.setState({ isFullscreen });
   }
 
+  private handleGoBack = debounce(() => {
+    eventBus.emit(RendererEvents.NavigateToPrevPage);
+  }, 50, {
+    leading: true
+  });
+
   render() {
     const { pageKey } = this.props;
     const { isMouseEntered, isFullscreen, isMacOS } = this.state;
@@ -111,7 +119,11 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         onMouseLeave={this.handleMouseLeave}
       >
         <TopArea>
-          <GoBackButton className="ani-no-drag" show={pageKey !== PageKey.MyPhotos}>
+          <GoBackButton
+            className="ani-no-drag"
+            show={pageKey !== PageKey.MyPhotos}
+            onClick={this.handleGoBack}
+          >
             <NavigateBackIcon />
           </GoBackButton>
         </TopArea>

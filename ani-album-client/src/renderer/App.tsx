@@ -12,17 +12,19 @@ import { Header, SearchHeader} from 'renderer/Header';
 import { GlobalStyles, AppContainer, CentralArea } from './styles';
 
 interface AppState {
-  prevPageKey: string;
   pageKey: string;
+  pageKeyHistory: string[];
 }
+
+const MaxStackOfPageHistory = 12;
 
 class App extends Component<{}, AppState> {
 
   constructor(props: {}) {
     super(props);
     this.state = {
-      prevPageKey: PageKey.MyPhotos,
       pageKey: PageKey.MyPhotos,
+      pageKeyHistory: [],
     };
   }
 
@@ -37,15 +39,31 @@ class App extends Component<{}, AppState> {
   }
 
   private handleNavigateToPrevPage = () => {
-    eventBus.emit(RendererEvents.NavigatePage, this.state.prevPageKey);
+    const { pageKeyHistory } = this.state;
+    if (pageKeyHistory.length <= 0) return;
+    const pageKey = pageKeyHistory[pageKeyHistory.length - 1];
+    this.setState({
+      pageKeyHistory: pageKeyHistory.slice(0, pageKeyHistory.length - 1),
+      pageKey,
+    });
+    eventBus.emit(RendererEvents.NavigatePage, pageKey, true);
   }
 
-  private handleNavigatePage = (pageKey: PageKey) => {
+  private handleNavigatePage = (pageKey: PageKey, noUpdate?: boolean) => {
+    if (noUpdate) {
+      return;
+    }
     if (pageKey === this.state.pageKey) {
       return;
     }
+    let pageKeyHistory = [...this.state.pageKeyHistory, this.state.pageKey];
+
+    if (pageKeyHistory.length > MaxStackOfPageHistory) {
+      pageKeyHistory = pageKeyHistory.slice(pageKeyHistory.length - MaxStackOfPageHistory);
+    }
+
     this.setState({
-      prevPageKey: this.state.pageKey,
+      pageKeyHistory,
       pageKey,
     });
   }
