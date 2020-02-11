@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { observer, inject } from 'mobx-react';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { Workspace } from 'common/workspace';
 import { ImageWithThumbnails } from 'common/image';
@@ -9,22 +10,25 @@ import GridViewLayout from 'renderer/components/GridView/GridViewLayout';
 import GridViewImageItem from 'renderer/components/GridView/ImageItem';
 import { ContentContainer, GridViewContainer, Heading, WorkspacesContainer } from './styles';
 import WorkspaceItem from './WorkspaceItem';
+import { TreeData } from 'renderer/data/tree';
+import { isUndefined } from 'util';
 
 export interface WorkspaceContentPageProps {
   pageKey: string;
+  treeStore?: TreeData;
 }
 
 interface State {
-  workspaces: Workspace[];
   images: ImageWithThumbnails[];
 }
 
+@inject('treeStore')
+@observer
 class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, State> {
 
   constructor(props: WorkspaceContentPageProps) {
     super(props);
     this.state = {
-      workspaces: [],
       images: [],
     };
   }
@@ -33,23 +37,14 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
     eventBus.addListener(RendererEvents.NavigatePage, this.handlePageNavigation);
     eventBus.addListener(RendererEvents.WorkspaceContentUpated, this.handleWorkspaceContentChanged);
 
-    ipcRenderer.addListener(ClientMessageType.WorkspaceDeleted, this.handleWorkspaceDeleted);
-
+    this.props.treeStore.fetchWorkspaces(this.props.pageKey);
     const workspaceId = Number(getWorkspaceToken(this.props.pageKey));
-    this.fetchWorkspacesByParentId(workspaceId);
     this.fetchImagesByWorkspaceId(workspaceId);
   }
 
   componentWillUnmount() {
     eventBus.removeListener(RendererEvents.NavigatePage, this.handlePageNavigation);
     eventBus.removeListener(RendererEvents.WorkspaceContentUpated, this.handleWorkspaceContentChanged);
-
-    ipcRenderer.removeListener(ClientMessageType.WorkspaceDeleted, this.handleWorkspaceDeleted);
-  }
-
-  private handleWorkspaceDeleted = (event: any, wp: Workspace) => {
-    const workspaceId = Number(getWorkspaceToken(this.props.pageKey));
-    this.fetchWorkspacesByParentId(workspaceId);
   }
 
   private handleWorkspaceContentChanged = (workspaceId: number) => {
@@ -63,23 +58,10 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
   private handlePageNavigation = (newPageKey: string) => {
     if (!isAWorkspace(newPageKey)) return;
 
+    this.props.treeStore.fetchWorkspaces(newPageKey);
+    // this.fetchWorkspacesByParentId(wpId);
     const wpId = Number(getWorkspaceToken(newPageKey));
-    this.fetchWorkspacesByParentId(wpId);
     this.fetchImagesByWorkspaceId(wpId);
-  }
-
-  // private handleImportImages = () => {
-  //   const { pageKey } = this.props;
-  //   eventBus.emit(RendererEvents.ShowModal, ModalTypes.ImportPhotosToAlbum, pageKey);
-  // }
-  
-  private async fetchWorkspacesByParentId(parentId: number) {
-    try {
-      const workspaces: Workspace[] = await ipcRenderer.invoke(ClientMessageType.GetWorkspacesByParentId, parentId);
-      this.setState({ workspaces });
-    } catch (err) {
-      console.error(err);
-    }
   }
 
   private async fetchImagesByWorkspaceId(workspaceId: number) {
@@ -130,13 +112,20 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
   }
 
   private renderWorkspaceItems() {
-    const { workspaces } = this.state;
-    return workspaces.map((wp: Workspace) => 
-      <WorkspaceItem
-        key={wp.id} data={wp}
-        onClick={this.handleSubWorkspaceClicked}
-      />
-    );
+    const { treeStore } = this.props;
+    const children = treeStore.getChildrenByParentId(this.props.pageKey);
+    return children.map(treeItem => {
+      const { workspace: wp } = treeItem;
+      if (isUndefined(wp)) {
+        return null;
+      }
+      return (
+        <WorkspaceItem
+          key={wp.id} data={wp}
+          onClick={this.handleSubWorkspaceClicked}
+        />
+      );
+    });
   }
 
   render() {

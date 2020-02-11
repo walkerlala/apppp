@@ -13,6 +13,7 @@ import Button from 'renderer/components/Button';
 import Popup from 'renderer/components/Popup';
 import Menu, { MenuItem } from 'renderer/components/Menu';
 import { HeaderContainer, HeaderButtonGroup, EditableTitleContainer } from './styles';
+import { treeStore } from 'renderer/data';
 import { isUndefined } from 'lodash';
 
 import Tooltip from 'renderer/components/Tooltip';
@@ -241,10 +242,16 @@ class Header extends React.Component<HeaderProps, HeaderState> {
 
   private handleAddWorkspaceMenuClicked = async () => {
     this.setState({ addButtonOpen: false });
-
     const parentToken = Number(getWorkspaceToken(this.props.pageKey));
-    const data: Workspace = await ipcRenderer.invoke(ClientMessageType.CreateWorkspace, parentToken);
-    eventBus.emit(RendererEvents.NavigatePage, WorkspacePrefix + data.id.toString());
+    try {
+      const data: Workspace = await ipcRenderer.invoke(ClientMessageType.CreateWorkspace, parentToken);
+
+      await treeStore.fetchWorkspaces(this.props.pageKey);
+
+      eventBus.emit(RendererEvents.NavigatePage, WorkspacePrefix + data.id.toString());
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   private renderAddMenu = () => {

@@ -8,6 +8,8 @@ import { ipcRenderer } from 'electron';
 import { Album } from 'common/album';
 import { ClientMessageType } from 'common/message';
 import { Workspace } from 'common/workspace';
+import { IDisposable } from 'common/disposable';
+import { isUndefined } from 'util';
 
 export enum AddIconOption {
   Invisible = 0,
@@ -22,9 +24,10 @@ export interface TreeItem {
   icon?: React.ReactNode;
   addIconOption?: AddIconOption;
   hasChildren?: boolean;
+  workspace?: Workspace;
 }
 
-export class TreeData {
+export class TreeData implements IDisposable {
 
   @observable
   dataMap: Map<string, TreeItem> = new Map();
@@ -52,6 +55,28 @@ export class TreeData {
       addIconOption: AddIconOption.ShowOnHoverSidebar,
       hasChildren: true,
     });
+
+    ipcRenderer.addListener(ClientMessageType.WorkspaceDeleted, this.handleWorkspaceDeleted);
+  }
+
+  getChildrenByParentId(parentKey: string): TreeItem[] {
+    const childrenIds = this.childrenMap.get(parentKey);
+
+    if (isUndefined(childrenIds)) {
+      return [];
+    }
+
+    const children: TreeItem[] = []
+
+    childrenIds.forEach(id => {
+      const item = treeStore.dataMap.get(id);
+      if (isUndefined(item)) {
+        return [];
+      }
+      children.push(item);
+    });
+
+    return children;
   }
 
   @action
@@ -93,12 +118,41 @@ export class TreeData {
           addIconOption: AddIconOption.ShowOnHover,
           icon: <DashboardIcon label="Workspaces" />,
           hasChildren: true,
+          workspace,
         };
         this.dataMap.set(key, data);
         childrenKey.push(key);
       });
       this.childrenMap.set(parentKey, childrenKey);
     });
+  }
+
+  @action
+  private handleWorkspaceDeleted = (event: any, wp: Workspace) => {
+    const key = WorkspacePrefix + wp.id;
+    const itemData = this.dataMap.get(key);
+    if (isUndefined(itemData)) {
+      return;
+    }
+
+    this.dataMap.delete(key);
+
+    const parentKey = itemData.parentKey;
+    if (isUndefined(parentKey)) {
+      return;
+    }
+
+    const childArr = this.childrenMap.get(parentKey);
+    if (isUndefined(childArr)) {
+      return;
+    }
+
+    const newArr = childArr.filter(childKey => childKey !== key);
+    this.childrenMap.set(parentKey, newArr);
+  }
+
+  dispose() {
+    ipcRenderer.removeListener(ClientMessageType.WorkspaceDeleted, this.handleWorkspaceDeleted);
   }
 
 }

@@ -118,21 +118,8 @@ class SidebarTree extends React.Component<SidebarTreeProps> {
 
   private renderChildrenByParentKey(key: string, depth: number) {
     const { treeStore } = this.props;
-    const childrenIds = treeStore.childrenMap.get(key);
 
-    if (isUndefined(childrenIds)) {
-      return;
-    }
-
-    const children: TreeItem[] = []
-
-    childrenIds.forEach(id => {
-      const item = treeStore.dataMap.get(id);
-      if (isUndefined(item)) {
-        return;
-      }
-      children.push(item);
-    });
+    const children: TreeItem[] = treeStore.getChildrenByParentId(key);
 
     return this.renderChildren(children, depth);
   }
