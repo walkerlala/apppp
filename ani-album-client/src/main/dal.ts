@@ -312,4 +312,11 @@ export async function queryThumbnailsByImageId(db: SQLiteHelper, imageId: number
 export async function deleteImageById(db: SQLiteHelper, imageId: number) {
   await db.run(`DELETE FROM ${ImageEntityTableName} WHERE id=?`, imageId);
   await db.run(`DELETE FROM ${ThumbnailsTableName} WHERE imageId=?`, imageId);
+  await db.run(`DELETE FROM ${ImageToAlbumTableName} WHERE imageId=?`, imageId);
+  await db.run(`DELETE FROM ${ImageToWorkspaceTableName} WHERE imageId=?`, imageId);
+}
+
+export async function deleteWorkspaceById(db: SQLiteHelper, wpId: number) {
+  await db.run(`DELETE FROM ${WorkspacesTableName} WHERE id=?`, wpId);
+  await db.run(`DELETE FROM ${ImageToWorkspaceTableName} WHERE workspaceId=?`, wpId);
 }

@@ -100,6 +100,28 @@ const listenEvents = once(() => {
         break;
       }
 
+      case ContextMenuType.WorkspaceItem: {
+        const menu = new Menu();
+        menu.append(new MenuItem({
+          label: 'Delete',
+          click: async () => {
+            try {
+              const wpId = get(data, 'workspaceId');
+              if (isUndefined(wpId)) return;
+              logger.info('preparing to delete workspace id', wpId);
+              const wp = await dal.queryWorkspaceById(getDb(), wpId);
+              await dal.deleteWorkspaceById(getDb(), Number(wpId));
+              getWebContent().send(ClientMessageType.WorkspaceDeleted, wp);
+              logger.info('delete image successfully: ', wpId);
+            } catch (err) {
+              logger.error(err);
+            }
+          },
+        }));
+        menu.popup();
+        break;
+      }
+
     }
   });
 

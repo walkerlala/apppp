@@ -3,7 +3,6 @@ import EditButton from './EditButton';
 import CheckIcon from '@atlaskit/icon/glyph/check';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import { BigHeadingTitle } from './styles';
-import { produce } from 'immer';
 
 export interface EditableTitleProps {
   // pageKey: string;
@@ -22,21 +21,21 @@ interface EditableTitleState {
 class EditableTitle extends React.Component<EditableTitleProps, EditableTitleState> {
 
   static getDerivedStateFromProps(props: EditableTitleProps, state: EditableTitleState) {
-    return produce(state, (draft: EditableTitleState) => {
-      if (!props.canEdit) {
-        draft.content = props.defaultContent;
-        
-        if (draft.prevCanEdit) {
-          draft.isEditing = false;
-        }
+    const draft: EditableTitleState = {...state};
+    if (!props.canEdit) {
+      draft.content = props.defaultContent;
+      
+      if (draft.prevCanEdit) {
+        draft.isEditing = false;
       }
+    }
 
-      draft.prevCanEdit = Boolean(props.canEdit);
+    draft.prevCanEdit = Boolean(props.canEdit);
 
-      if (!draft.isEditing) {
-        draft.content = props.defaultContent;
-      }
-    });
+    if (!draft.isEditing) {
+      draft.content = props.defaultContent;
+    }
+    return draft;
   }
 
   private __inputRef = React.createRef<HTMLInputElement>();

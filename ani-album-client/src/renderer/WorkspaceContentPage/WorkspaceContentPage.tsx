@@ -33,6 +33,8 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
     eventBus.addListener(RendererEvents.NavigatePage, this.handlePageNavigation);
     eventBus.addListener(RendererEvents.WorkspaceContentUpated, this.handleWorkspaceContentChanged);
 
+    ipcRenderer.addListener(ClientMessageType.WorkspaceDeleted, this.handleWorkspaceDeleted);
+
     const workspaceId = Number(getWorkspaceToken(this.props.pageKey));
     this.fetchWorkspacesByParentId(workspaceId);
     this.fetchImagesByWorkspaceId(workspaceId);
@@ -41,6 +43,13 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
   componentWillUnmount() {
     eventBus.removeListener(RendererEvents.NavigatePage, this.handlePageNavigation);
     eventBus.removeListener(RendererEvents.WorkspaceContentUpated, this.handleWorkspaceContentChanged);
+
+    ipcRenderer.removeListener(ClientMessageType.WorkspaceDeleted, this.handleWorkspaceDeleted);
+  }
+
+  private handleWorkspaceDeleted = (event: any, wp: Workspace) => {
+    const workspaceId = Number(getWorkspaceToken(this.props.pageKey));
+    this.fetchWorkspacesByParentId(workspaceId);
   }
 
   private handleWorkspaceContentChanged = (workspaceId: number) => {
@@ -123,7 +132,10 @@ class WorkspaceContentPage extends React.Component<WorkspaceContentPageProps, St
   private renderWorkspaceItems() {
     const { workspaces } = this.state;
     return workspaces.map((wp: Workspace) => 
-      <WorkspaceItem key={wp.id} data={wp} onClick={this.handleSubWorkspaceClicked} />
+      <WorkspaceItem
+        key={wp.id} data={wp}
+        onClick={this.handleSubWorkspaceClicked}
+      />
     );
   }
 

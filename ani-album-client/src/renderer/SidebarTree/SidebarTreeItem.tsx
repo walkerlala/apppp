@@ -1,24 +1,11 @@
+import { observer } from 'mobx-react'
 import * as React from 'react';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import Triangle from './triangle.svg';
-
-export enum AddIconOption {
-  Invisible = 0,
-  ShowOnHover,
-  ShowOnHoverSidebar,
-}
-
-export interface TreeItemData {
-  key: string;
-  label: string;
-  icon?: React.ReactNode;
-  addIconOption?: AddIconOption;
-  hasChildren?: boolean;
-  children?: (parentDepth: number) => React.ReactNode,
-}
+import { TreeItem, AddIconOption } from 'renderer/data/tree'
 
 export interface SidebarTreeItemProps {
-  data: TreeItemData,
+  data: TreeItem,
   isSelected: boolean;
   isExpanded: boolean;
   depth: number;
@@ -27,12 +14,14 @@ export interface SidebarTreeItemProps {
   onAddButtonClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   onExpand?: () => void;
   onCollapse?: () => void;
+  children?: (parentDepth: number) => React.ReactNode,
 }
 
 interface State {
   isMouseEntered: boolean;
 }
 
+@observer
 class SidebarTreeItem extends React.Component<SidebarTreeItemProps, State> {
 
   constructor(props: SidebarTreeItemProps) {
@@ -109,8 +98,8 @@ class SidebarTreeItem extends React.Component<SidebarTreeItemProps, State> {
   }
 
   render() {
-    const { depth } = this.props;
-    const { label, icon, hasChildren, children } = this.props.data;
+    const { depth, children } = this.props;
+    const { label, icon, hasChildren } = this.props.data;
     let containerClassName = 'ani-sidebar-tree-item noselect';
     if (this.props.isSelected) {
       containerClassName += ' ani-item-selected';

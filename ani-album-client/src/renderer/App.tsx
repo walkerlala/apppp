@@ -1,3 +1,5 @@
+import { configure } from 'mobx';
+import { Provider } from 'mobx-react';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Sidebar from 'renderer/Sidebar';
@@ -9,7 +11,10 @@ import WorkspaceContentPage from 'renderer/WorkspaceContentPage';
 import Modals from 'renderer/Modals';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { Header, SearchHeader} from 'renderer/Header';
+import { treeStore } from 'renderer/data';
 import { GlobalStyles, AppContainer, CentralArea } from './styles';
+
+configure({ enforceActions: "observed" });
 
 interface AppState {
   pageKey: string;
@@ -91,17 +96,19 @@ class App extends Component<{}, AppState> {
   render() {
     const { pageKey } = this.state;
     return (
-      <AppContainer>
-        <GlobalStyles />
-        <Sidebar pageKey={pageKey} />
-        <CentralArea>
-          {this.renderHeader()} 
-          <MyPhotosPage key={PageKey.MyPhotos} show={pageKey === PageKey.MyPhotos} />
-          {this.renderMainContent()}
-        </CentralArea>
-        <ImageViewer />
-        <Modals />
-      </AppContainer>
+      <Provider treeStore={treeStore}>
+        <AppContainer>
+          <GlobalStyles />
+          <Sidebar pageKey={pageKey} />
+          <CentralArea>
+            {this.renderHeader()} 
+            <MyPhotosPage key={PageKey.MyPhotos} show={pageKey === PageKey.MyPhotos} />
+            {this.renderMainContent()}
+          </CentralArea>
+          <ImageViewer />
+          <Modals />
+        </AppContainer>
+      </Provider>
     );
   }
 

@@ -10,6 +10,7 @@ import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
 import { isUndefined } from 'lodash';
 import { ThumbnailType } from 'protos/ipc_pb';
+import { ContextMenuType } from 'common/menu';
 
 interface WorkspaceThumbnailPadProps {
   imageSrc?: string;
@@ -98,6 +99,14 @@ class WorkspaceItem extends React.PureComponent<WorkspaceItemProps, State> {
     return result;
   }
 
+  private handleContextMenu = async (e: React.MouseEvent) => {
+    const { data } = this.props;
+    const workspaceId = data.id;
+    await ipcRenderer.invoke(ClientMessageType.ShowContextMenu, ContextMenuType.WorkspaceItem, {
+      workspaceId,
+    });
+  }
+
   render() {
     const { name } = this.props.data;
     const { isMouseEntered } = this.state;
@@ -106,6 +115,7 @@ class WorkspaceItem extends React.PureComponent<WorkspaceItemProps, State> {
         onClick={this.handleClicked}
         onMouseEnter={this.handleMouseEntered}
         onMouseLeave={this.handleMouseLeave}
+        onContextMenu={this.handleContextMenu}
       >
         <WorkspaceThumbnail isHover={isMouseEntered}>
           <LineDivider direction="vertical" />

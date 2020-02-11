@@ -6,7 +6,6 @@ import { ContextMenuType } from 'common/menu';
 import { eventBus, RendererEvents } from 'renderer/events';
 import ImageItem from './ImageItem';
 import GridViewLayout from './GridViewLayout';
-import { produce } from 'immer';
 
 interface GridViewProps {
   selectedIds: Set<number>;
@@ -56,10 +55,8 @@ class GridView extends Component<GridViewProps, GridViewState> {
     if (!this.props.onSelectedIdsChanged) {
       return;
     }
-    const newSet = produce(this.props.selectedIds, (draft: Set<number>) => {
-      draft.clear();
-      draft.add(imageId);
-    });
+    const newSet: Set<number> = new Set();
+    newSet.add(imageId);
     this.props.onSelectedIdsChanged(newSet);
   }
 
@@ -88,10 +85,12 @@ class GridView extends Component<GridViewProps, GridViewState> {
         if (!this.props.onSelectedIdsChanged) {
           return;
         }
-        const newSet = produce(this.props.selectedIds, (draft: Set<number>) => {
-          draft.clear();
-          draft.add(dataId);
-        });
+        // const newSet = produce(this.props.selectedIds, (draft: Set<number>) => {
+        //   draft.clear();
+        //   draft.add(dataId);
+        // });
+        const newSet: Set<number> = new Set();
+        newSet.add(dataId);
         this.props.onSelectedIdsChanged(newSet);
         return;
       }
