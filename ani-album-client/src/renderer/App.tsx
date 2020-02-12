@@ -11,7 +11,7 @@ import WorkspaceContentPage from 'renderer/WorkspaceContentPage';
 import Modals from 'renderer/Modals';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { Header, SearchHeader} from 'renderer/Header';
-import { treeStore } from 'renderer/data';
+import { treeStore, viewDataStore } from 'renderer/data';
 import { GlobalStyles, AppContainer, CentralArea } from './styles';
 
 configure({ enforceActions: "observed" });
@@ -96,7 +96,10 @@ class App extends Component<{}, AppState> {
   render() {
     const { pageKey } = this.state;
     return (
-      <Provider treeStore={treeStore}>
+      <Provider
+        treeStore={treeStore}
+        viewDataStore={viewDataStore}
+      >
         <AppContainer>
           <GlobalStyles />
           <Sidebar pageKey={pageKey} />

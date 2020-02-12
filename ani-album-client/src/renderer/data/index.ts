@@ -1,3 +1,4 @@
 import treeStore from './tree';
+import viewDataStore from './viewData';
 
-export { treeStore }
+export { treeStore, viewDataStore }

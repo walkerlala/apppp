@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { action } from 'mobx';
+import { observer, inject } from 'mobx-react';
+import { ViewData } from 'renderer/data/viewData';
 import Slider from 'renderer/Slider';
 import { SearchBox } from 'renderer/Search';
 import { eventBus, RendererEvents } from 'renderer/events';
@@ -26,22 +29,23 @@ import { ModalTypes } from 'renderer/Modals';
 
 interface HeaderProps {
   pageKey: string;
+  viewDataStore?: ViewData;
 }
 
 interface HeaderState {
-  isScaledToFit: boolean;
   isMouseEntered: boolean;
   albumData: Album | null;
   workspaceData: Workspace | null;
   addButtonOpen: boolean;
 }
 
+@inject('viewDataStore')
+@observer
 class Header extends React.Component<HeaderProps, HeaderState> {
 
   constructor(props: HeaderProps) {
     super(props);
     this.state = {
-      isScaledToFit: true,
       isMouseEntered: false,
       albumData: null,
       workspaceData: null,
@@ -64,17 +68,16 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     eventBus.removeListener(RendererEvents.NavigatePage, this.handlePageNavigation);
   }
 
-  onScaleToButtonClick = debounce((e: React.MouseEvent) => {
-    this.setState({
-      isScaledToFit: !this.state.isScaledToFit,
-    });
-    eventBus.emit(RendererEvents.ToggleScaleToFit);
-  }, 100, {
+  onScaleToButtonClick = debounce(action((e: React.MouseEvent) => {
+    const { viewDataStore } = this.props;
+    viewDataStore.scaleToFit = !viewDataStore.scaleToFit
+  }), 100, {
     leading: true,
   })
 
   renderZoomButton() {
-    if (this.state.isScaledToFit) {
+    const { viewDataStore } = this.props;
+    if (viewDataStore.scaleToFit) {
       return <ZoomButton />;
     }
     return <ZoomButton2 />;

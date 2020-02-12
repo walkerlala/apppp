@@ -5,7 +5,6 @@ export enum RendererEvents {
   PhotoItemDoubleClicked = 'PhotoItemDoubleClicked',
   ShowModal = 'ShowModal',
   CloseModal = 'CloseModal',
-  ToggleScaleToFit = 'ToggleScaleToFit',
   NavigatePage = 'NavigatePage',
   NavigateToPrevPage = 'NavigateToPrevPage',
   AlbumInfoUpdated = 'AlbumInfoUpdated',
