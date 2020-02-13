@@ -9,6 +9,7 @@ import { Album } from 'common/album';
 import { ClientMessageType } from 'common/message';
 import { Workspace } from 'common/workspace';
 import { IDisposable } from 'common/disposable';
+import AlbumIcon from './AlbumIcon.svg';
 import { isUndefined } from 'util';
 
 export enum AddIconOption {
@@ -45,7 +46,7 @@ export class TreeData implements IDisposable {
     this.dataMap.set(PageKey.Albums, {
       key: PageKey.Albums,
       label: 'Albums',
-      icon: <FolderIcon label="Albums" />,
+      icon: <AlbumIcon />,
       addIconOption: AddIconOption.ShowOnHoverSidebar,
       hasChildren: true,
     });
@@ -90,6 +91,7 @@ export class TreeData implements IDisposable {
         const data: TreeItem = {
           parentKey: PageKey.Albums,
           key,
+          icon: <AlbumIcon />,
           label: album.name,
           album,
         };
