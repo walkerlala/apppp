@@ -25,6 +25,7 @@ export interface TreeItem {
   addIconOption?: AddIconOption;
   hasChildren?: boolean;
   workspace?: Workspace;
+  album?: Album;
 }
 
 export class TreeData implements IDisposable {
@@ -90,6 +91,7 @@ export class TreeData implements IDisposable {
           parentKey: PageKey.Albums,
           key,
           label: album.name,
+          album,
         };
         this.dataMap.set(key, data);
         childrenKey.push(key);

@@ -30,16 +30,6 @@ class SidebarTree extends React.Component<SidebarTreeProps> {
     super(props);
   }
 
-  componentDidMount() {
-    eventBus.addListener(RendererEvents.AlbumInfoUpdated, this.handleAlbumInfoUpdated);
-    eventBus.addListener(RendererEvents.WorkspaceInfoUpdated, this.handleWorkspaceInfoUpdated);
-  }
-
-  componentWillUnmount() {
-    eventBus.removeListener(RendererEvents.AlbumInfoUpdated, this.handleAlbumInfoUpdated);
-    eventBus.removeListener(RendererEvents.WorkspaceInfoUpdated, this.handleWorkspaceInfoUpdated);
-  }
-
   @action
   private addExpandedKeys = async (key: string) => {
     this.expandedKeys.add(key);
@@ -67,23 +57,6 @@ class SidebarTree extends React.Component<SidebarTreeProps> {
           return this.handleAddWorkspace(key);
         }
 
-    }
-  }
-
-  private handleWorkspaceInfoUpdated = async (workspaceId: number) => {
-    try {
-      const workspaceInfo: Workspace = await ipcRenderer.invoke(ClientMessageType.GetWorkspaceById, workspaceId);
-      await this.props.treeStore.fetchWorkspaces(WorkspacePrefix + workspaceInfo.parentId);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  private handleAlbumInfoUpdated = async (albumId: number) => {
-    try {
-      await this.props.treeStore.fetchAllAlbums();
-    } catch (err) {
-      console.error(err);
     }
   }
 

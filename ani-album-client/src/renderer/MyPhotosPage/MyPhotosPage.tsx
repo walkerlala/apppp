@@ -1,8 +1,8 @@
 import * as React from 'react';
+import { action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { ViewData } from 'renderer/data/viewData';
 import { Container } from './styles';
-import { eventBus, RendererEvents } from 'renderer/events';
 import GridView from 'renderer/components/GridView';
 
 export interface MyPhotosPageProps {
@@ -25,8 +25,13 @@ class MyPhotosPage extends React.Component<MyPhotosPageProps, MyPhotosPageState>
     };
   }
 
+  @action
   private handleImageDoubleClicked = (imageId: number, thumbnailPath: string) => {
-    eventBus.emit(RendererEvents.PhotoItemDoubleClicked, imageId, thumbnailPath);
+    const { viewDataStore } = this.props;
+    viewDataStore.imageViewerData = {
+      imageId,
+      thumbnailPath,
+    };
   }
 
   private handleSelectedIdsUpdate = (newSet: Set<number>) => {

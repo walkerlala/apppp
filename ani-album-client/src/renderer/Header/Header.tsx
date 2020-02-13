@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { action } from 'mobx';
+import { action, runInAction } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { ViewData } from 'renderer/data/viewData';
+import { TreeData, TreeItem } from 'renderer/data/tree';
 import Slider from 'renderer/Slider';
 import { SearchBox } from 'renderer/Search';
 import { eventBus, RendererEvents } from 'renderer/events';
 import { debounce } from 'lodash';
-import { PageKey, isAAlbum, getAlbumToken, isAWorkspace, getWorkspaceToken, WorkspacePrefix } from 'renderer/pageKey';
+import { PageKey, isAAlbum, isAWorkspace, getWorkspaceToken, WorkspacePrefix } from 'renderer/pageKey';
 import { Album } from 'common/album';
 import { Workspace } from 'common/workspace';
 import { ipcRenderer } from 'electron';
@@ -16,7 +17,6 @@ import Button from 'renderer/components/Button';
 import Popup from 'renderer/components/Popup';
 import Menu, { MenuItem } from 'renderer/components/Menu';
 import { HeaderContainer, HeaderButtonGroup, EditableTitleContainer } from './styles';
-import { treeStore } from 'renderer/data';
 import { isUndefined } from 'lodash';
 
 import Tooltip from 'renderer/components/Tooltip';
@@ -30,16 +30,15 @@ import { ModalTypes } from 'renderer/Modals';
 interface HeaderProps {
   pageKey: string;
   viewDataStore?: ViewData;
+  treeStore?: TreeData;
 }
 
 interface HeaderState {
   isMouseEntered: boolean;
-  albumData: Album | null;
-  workspaceData: Workspace | null;
   addButtonOpen: boolean;
 }
 
-@inject('viewDataStore')
+@inject('viewDataStore', 'treeStore')
 @observer
 class Header extends React.Component<HeaderProps, HeaderState> {
 
@@ -47,25 +46,8 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     super(props);
     this.state = {
       isMouseEntered: false,
-      albumData: null,
-      workspaceData: null,
       addButtonOpen: false,
     };
-  }
-
-  componentDidMount() {
-    eventBus.addListener(RendererEvents.NavigatePage, this.handlePageNavigation);
-
-    const { pageKey } = this.props;
-    if (isAAlbum(pageKey)) {
-      this.fetchAlbumData(Number(getAlbumToken(pageKey)));
-    } else if (isAWorkspace(pageKey)) {
-      this.fetchWorkspaceData(Number(getWorkspaceToken(pageKey)));
-    }
-  }
-
-  componentWillUnmount() {
-    eventBus.removeListener(RendererEvents.NavigatePage, this.handlePageNavigation);
   }
 
   onScaleToButtonClick = debounce(action((e: React.MouseEvent) => {
@@ -83,101 +65,82 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     return <ZoomButton2 />;
   }
 
-  private handlePageNavigation = (pageKey: string) => {
-    if (isAAlbum(pageKey)) {
-      this.fetchAlbumData(Number(getAlbumToken(pageKey)));
-    } else if (isAWorkspace(pageKey)) {
-      this.fetchWorkspaceData(Number(getWorkspaceToken(pageKey)));
-    }
-  }
-
   private searchBoxClicked = (e: React.MouseEvent) => {
     eventBus.emit(RendererEvents.NavigatePage, PageKey.Search);
   }
 
-  private async fetchAlbumData(albumId: number) {
-    try {
-      const albumData = await ipcRenderer.invoke(ClientMessageType.GetAlbumById, albumId);
-      if (isUndefined(albumData)) {
-        return;
-      }
-      this.setState({
-        albumData,
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  private async fetchWorkspaceData(wpId: number) {
-    try {
-      const wpData = await ipcRenderer.invoke(ClientMessageType.GetWorkspaceById, wpId);
-      if (isUndefined(wpData)) {
-        return;
-      }
-      this.setState({
-        workspaceData: wpData,
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
   private handleTitleContentChanged = async (content: string) => {
+    const { treeStore } = this.props;
     if (isAAlbum(this.props.pageKey)) {
-      if (!this.state.albumData) {
+      const treeItem: TreeItem | undefined = treeStore.dataMap.get(this.props.pageKey);
+      if (isUndefined(treeItem)) {
         return;
       }
       try {
         const albumData: Album = {
-          ...this.state.albumData,
+          ...treeItem.album,
           name: content,
         };
         await ipcRenderer.invoke(ClientMessageType.UpdateAlbumById, albumData);
-        this.setState({
-          albumData,
+        runInAction(() => {
+          treeItem.label = content;
+          treeItem.album = albumData;
         });
-        eventBus.emit(RendererEvents.AlbumInfoUpdated, albumData.id);
+        // this.setState({
+        //   albumData,
+        // });
+        // eventBus.emit(RendererEvents.AlbumInfoUpdated, albumData.id);
       } catch (err) {
         console.error(err);
       }
     } else if (isAWorkspace(this.props.pageKey)) {
-      if (!this.state.workspaceData) {
+      const treeItem: TreeItem | undefined = treeStore.dataMap.get(this.props.pageKey);
+      if (isUndefined(treeItem)) {
         return;
       }
       const wpData: Workspace = {
-        ...this.state.workspaceData,
+        ...treeItem.workspace,
         name: content,
       };
       await ipcRenderer.invoke(ClientMessageType.UpdateWorkspaceById, wpData);
-      this.setState({
-        workspaceData: wpData,
+      runInAction(() => {
+        treeItem.label = wpData.name;
+        treeItem.workspace = wpData;
       });
-      eventBus.emit(RendererEvents.WorkspaceInfoUpdated, wpData.id);
+      // this.setState({
+      //   workspaceData: wpData,
+      // });
+      // eventBus.emit(RendererEvents.WorkspaceInfoUpdated, wpData.id);
     }
   }
 
   private renderBidHeaderContent() {
-    const { pageKey } = this.props;
-    const { albumData, isMouseEntered, workspaceData } = this.state;
+    const { pageKey, treeStore } = this.props;
+    const { isMouseEntered } = this.state;
     let content = '2019 年 1 月 30 日';
     let canEdit: boolean = false;
 
     if (pageKey === PageKey.Albums) {
       content = 'Albums';
     } else if (isAAlbum(pageKey)) {
-      if (albumData) {
-        canEdit = true;
-        content = albumData.name;
-      } else {
+      const treeItem: TreeItem | undefined = treeStore.dataMap.get(pageKey);
+      if (isUndefined(treeItem)) {
         content = '';
+      } else if (isUndefined(treeItem.album)) {
+        content = 'Album';
+      } else {
+        canEdit = true;
+        content = treeItem.album.name;
       }
     } else if (isAWorkspace(pageKey)) {
-      if (workspaceData) {
-        canEdit = true;
-        content = workspaceData.name;
-      } else {
+      const treeItem: TreeItem | undefined = treeStore.dataMap.get(pageKey);
+      if (isUndefined(treeItem)) {
         content = '';
+      } else if (isUndefined(treeItem.workspace)) {
+        content = 'Workspace';
+      } else {
+        canEdit = true;
+        content = treeItem.workspace.name;
       }
     }
 
@@ -249,7 +212,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     try {
       const data: Workspace = await ipcRenderer.invoke(ClientMessageType.CreateWorkspace, parentToken);
 
-      await treeStore.fetchWorkspaces(this.props.pageKey);
+      await this.props.treeStore.fetchWorkspaces(this.props.pageKey);
 
       eventBus.emit(RendererEvents.NavigatePage, WorkspacePrefix + data.id.toString());
     } catch (err) {

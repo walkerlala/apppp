@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { ImageWithThumbnails } from 'common/image';
-import { eventBus, RendererEvents } from 'renderer/events';
+import { observe, IReactionDisposer, IValueDidChange, action } from 'mobx';
+import { viewDataStore } from 'renderer/data';
 import { ImageViewerCanvas } from './ImageViewerCanvas';
 import CloseButton from './CloseButton';
 import './ImageViewer.scss';
+import { ImageViewerData } from 'renderer/data/viewData';
 
 interface ImageViewerState {
   enable: boolean;
@@ -11,6 +12,7 @@ interface ImageViewerState {
 
 class ImageViewer extends Component<{}, ImageViewerState> {
 
+  private __observeDisposer: IReactionDisposer | null = null;
   private __imageViewerCanvas: ImageViewerCanvas | null = null;
   private __imgContainerRef: React.RefObject<HTMLDivElement>;
 
@@ -23,15 +25,43 @@ class ImageViewer extends Component<{}, ImageViewerState> {
   }
 
   componentDidMount() {
-    eventBus.addListener(RendererEvents.PhotoItemDoubleClicked, this.handleImageItemDoubleClicked);
+    // eventBus.addListener(RendererEvents.PhotoItemDoubleClicked, this.handleImageItemDoubleClicked);
+    observe<'imageViewerData', ImageViewerData>(viewDataStore as any, 'imageViewerData', this.handleViewDataChanged);
   }
 
   componentWillUnmount() {
-    eventBus.removeListener(RendererEvents.PhotoItemDoubleClicked, this.handleImageItemDoubleClicked);
+    // eventBus.removeListener(RendererEvents.PhotoItemDoubleClicked, this.handleImageItemDoubleClicked);
+
+    if (this.__observeDisposer) {
+      this.__observeDisposer();
+    }
 
     if (this.__imageViewerCanvas) {
       this.__imageViewerCanvas.dispose();
     }
+  }
+
+  private handleViewDataChanged = (change: IValueDidChange<ImageViewerData>) => {
+    if (change.newValue === null) {
+      this.setState({
+        enable: false,
+      });
+      this.setViewerCanvas(null);
+      return;
+    }
+
+    this.setState({
+      enable: true,
+    }, () => {
+      const { imageId, thumbnailPath } = change.newValue;
+
+      const viewer = new ImageViewerCanvas(
+        this.__imgContainerRef.current,
+        imageId,
+        thumbnailPath,
+      );
+      this.setViewerCanvas(viewer);
+    });
   }
 
   private setViewerCanvas(canvas: ImageViewerCanvas | null) {
@@ -54,14 +84,11 @@ class ImageViewer extends Component<{}, ImageViewerState> {
     });
   }
 
+  @action
   private handleCloseButtonClicked = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
 
-    this.setState({
-      enable: false,
-    });
-
-    this.setViewerCanvas(null);
+    viewDataStore.imageViewerData = null;
   }
 
   // private getStylesOfImg(): React.CSSProperties {
