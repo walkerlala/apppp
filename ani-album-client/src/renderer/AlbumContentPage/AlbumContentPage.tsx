@@ -11,13 +11,14 @@ import GridViewLayout from 'renderer/components/GridView/GridViewLayout';
 import GridViewImageItem from 'renderer/components/GridView/ImageItem';
 import { GridViewContainer } from './styles';
 import { ContextMenuType } from 'common/menu';
+import { isUndefined } from 'lodash';
 
 export interface AlbumContentPageProps {
   pageKey: string;
 }
 
 interface State {
-  images: ImageWithThumbnails[];
+  images: ImageWithThumbnails[] | undefined;
 }
 
 class AlbumContentPage extends React.Component<AlbumContentPageProps, State> {
@@ -27,7 +28,7 @@ class AlbumContentPage extends React.Component<AlbumContentPageProps, State> {
   constructor(props: AlbumContentPageProps) {
     super(props);
     this.state = {
-      images: [],
+      images: undefined,
     };
   }
 
@@ -106,6 +107,11 @@ class AlbumContentPage extends React.Component<AlbumContentPageProps, State> {
 
   render() {
     const { images } = this.state;
+
+    if (isUndefined(images)) {
+      return null;
+    }
+
     if (images.length <= 0) {
       return (
         <MainContentContainer>

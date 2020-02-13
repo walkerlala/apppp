@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { observable, action, runInAction } from 'mobx';
 import { PageKey, AlbumPrefix, isAWorkspace, getWorkspaceToken, WorkspacePrefix } from 'renderer/pageKey';
-import FolderIcon from '@atlaskit/icon/glyph/folder';
 import MediaServicesScaleLargeIcon from '@atlaskit/icon/glyph/media-services/scale-large';
 import DashboardIcon from '@atlaskit/icon/glyph/dashboard';
 import { ipcRenderer } from 'electron';

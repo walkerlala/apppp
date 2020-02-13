@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { Workspace } from 'common/workspace';
+import { Album } from 'common/album';
 import { ImageWithThumbnails } from 'common/image';
 import { ipcRenderer } from 'electron';
 import { ClientMessageType } from 'common/message';
-import { ContextMenuType } from 'common/menu';
 import PhotosCollectionItem from 'renderer/components/PhotosCollectionItem';
 
-export interface WorkspaceItemProps {
-  data: Workspace;
+export interface AlbumItemProps {
+  data: Album;
   onClick?: (id: number) => void;
 }
 
@@ -15,9 +14,9 @@ interface State {
   images: ImageWithThumbnails[];
 }
 
-class WorkspaceItem extends React.Component<WorkspaceItemProps, State> {
+class AlbumItem extends React.Component<AlbumItemProps, State> {
 
-  constructor(props: WorkspaceItemProps) {
+  constructor(props: AlbumItemProps) {
     super(props);
     this.state = {
       images: [],
@@ -31,7 +30,7 @@ class WorkspaceItem extends React.Component<WorkspaceItemProps, State> {
   private async fetchThumbnails() {
     try {
       const { id } = this.props.data;
-      const images: ImageWithThumbnails[] = await ipcRenderer.invoke(ClientMessageType.GetImagesByWorkspaceId, id);
+      const images: ImageWithThumbnails[] = await ipcRenderer.invoke(ClientMessageType.GetImagesByAlbumId, id);
       this.setState({ images });
     } catch (err) {
       console.error(err);
@@ -44,16 +43,17 @@ class WorkspaceItem extends React.Component<WorkspaceItemProps, State> {
   }
 
   private handleContextMenu = async (e: React.MouseEvent) => {
-    const { data } = this.props;
-    const workspaceId = data.id;
-    await ipcRenderer.invoke(ClientMessageType.ShowContextMenu, ContextMenuType.WorkspaceItem, {
-      workspaceId,
-    });
+    // const { data } = this.props;
+    // const workspaceId = data.id;
+    // await ipcRenderer.invoke(ClientMessageType.ShowContextMenu, ContextMenuType.WorkspaceItem, {
+    //   workspaceId,
+    // });
   }
 
   render() {
     const { name } = this.props.data;
     const { images } = this.state;
+
     return (
       <PhotosCollectionItem
         name={name}
@@ -63,7 +63,7 @@ class WorkspaceItem extends React.Component<WorkspaceItemProps, State> {
       />
     );
   }
-
+  
 }
 
-export default WorkspaceItem;
+export default AlbumItem;

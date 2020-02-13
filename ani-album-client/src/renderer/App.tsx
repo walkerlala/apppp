@@ -7,6 +7,7 @@ import MyPhotosPage from 'renderer/MyPhotosPage';
 import ImageViewer from 'renderer/ImageViewer';
 import { PageKey, isAAlbum, isAWorkspace } from 'renderer/pageKey';
 import AlbumContentPage from 'renderer/AlbumContentPage';
+import AlbumSummayPage from 'renderer/AlbumSummaryPage';
 import WorkspaceContentPage from 'renderer/WorkspaceContentPage';
 import Modals from 'renderer/Modals';
 import { eventBus, RendererEvents } from 'renderer/events';
@@ -84,7 +85,9 @@ class App extends Component<{}, AppState> {
   private renderMainContent() {
     const { pageKey } = this.state;
 
-    if (isAAlbum(pageKey)) {
+    if (pageKey === PageKey.Albums) {
+      return <AlbumSummayPage pageKey={pageKey} />
+    } else if (isAAlbum(pageKey)) {
       return <AlbumContentPage pageKey={pageKey} />;
     } else if (isAWorkspace(pageKey)) {
       return <WorkspaceContentPage pageKey={pageKey} />;
