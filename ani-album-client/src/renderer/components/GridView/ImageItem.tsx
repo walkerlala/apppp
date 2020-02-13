@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { ImageWithThumbnails } from 'common/image';
 import { ThumbnailType } from 'protos/ipc_pb';
-import { eventBus, RendererEvents } from 'renderer/events';
 import { isUndefined } from 'lodash';
 
 export interface ImageItemProps {
   data: ImageWithThumbnails;
   isSelected: boolean;
   scaleToFit: boolean;
+  onImageClicked?: (imageId: number) => void;
   onImageDoubleClicked?: (imageId: number, thumbnailPath: string) => void;
 }
 
@@ -16,7 +16,9 @@ class ImageItem extends Component<ImageItemProps> {
   private handleImageClicked = (e: React.MouseEvent<HTMLImageElement>) => {
     e.preventDefault();
     const { id } = this.props.data;
-    eventBus.emit(RendererEvents.PhotoItemClicked, id);
+    if (this.props.onImageClicked) {
+      this.props.onImageClicked(id);
+    }
   }
 
   private handleImageDoubleClicked = (e: React.MouseEvent<HTMLImageElement>) => {

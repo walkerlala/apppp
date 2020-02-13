@@ -39,7 +39,6 @@ class GridView extends Component<GridViewProps, GridViewState> {
     ipcRenderer.addListener(ClientMessageType.PhotoImported, this.handlePhotoImported);
     ipcRenderer.addListener(ClientMessageType.PhotoDeleted, this.handlePhotoDeleted);
     window.addEventListener('contextmenu', this.handleContextMenu);
-    eventBus.addListener(RendererEvents.PhotoItemClicked, this.handlePhotoItemClicked);
 
     this.fetchInitialImages();
   }
@@ -48,7 +47,6 @@ class GridView extends Component<GridViewProps, GridViewState> {
     ipcRenderer.removeListener(ClientMessageType.PhotoImported, this.handlePhotoImported);
     ipcRenderer.removeListener(ClientMessageType.PhotoDeleted, this.handlePhotoDeleted);
     window.removeEventListener('contextmenu', this.handleContextMenu);
-    eventBus.removeListener(RendererEvents.PhotoItemClicked, this.handlePhotoItemClicked);
   }
 
   private handlePhotoItemClicked = (imageId: number) => {
@@ -124,6 +122,7 @@ class GridView extends Component<GridViewProps, GridViewState> {
           isSelected={selectedIds.has(data.id)}
           scaleToFit={scaleToFit}
           onImageDoubleClicked={onImageDoubleClicked}
+          onImageClicked={this.handlePhotoItemClicked}
         />
       );
     });

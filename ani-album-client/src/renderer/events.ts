@@ -1,7 +1,6 @@
 import * as EventEmitter from 'eventemitter3';
 
 export enum RendererEvents {
-  PhotoItemClicked = 'PhotoItemClicked',
   ShowModal = 'ShowModal',
   CloseModal = 'CloseModal',
   NavigatePage = 'NavigatePage',
