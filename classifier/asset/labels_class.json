@@ -1,0 +1,113 @@
+[
+    {
+        "id": 0,
+        "name": "food",
+        "name_chinese": "食物",
+        "children": []
+    },
+    {
+        "id": 1,
+        "name": "scenery",
+        "name_chinese": "风景",
+        "children": [
+            {
+                "id": 10,
+                "name": "building",
+                "name_chinese": "建筑",
+                "children": []
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "animal",
+        "name_chinese": "动物",
+        "children": [
+            {
+                "id": 30,
+                "name": "fish",
+                "name_chinese": "鱼",
+                "children": []
+            },
+            {
+                "id": 31,
+                "name": "dog",
+                "name_chinese": "狗",
+                "children": []
+            },
+            {
+                "id": 32,
+                "name": "cat",
+                "name_chinese": "猫",
+                "children": []
+            },
+            {
+                "id": 33,
+                "name": "bird",
+                "name_chinese": "鸟",
+                "children": []
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "name": "plant",
+        "name_chinese": "植物",
+        "children": [
+            {
+                "id": 40,
+                "name": "flower",
+                "name_chinese": "花",
+                "children": []
+            },
+            {
+                "id": 41,
+                "name": "tree",
+                "name_chinese": "树木",
+                "children": []
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "name": "character",
+        "name_chinese": "人物",
+        "children": []
+    },
+    {
+        "id": 6,
+        "name": "dressing",
+        "name_chinese": "服饰",
+        "children": []
+    },
+    {
+        "id": 7,
+        "name": "sport",
+        "name_chinese": "运动",
+        "children": []
+    },
+    {
+        "id": 8,
+        "name": "music",
+        "name_chinese": "音乐",
+        "children": []
+    },
+    {
+        "id": 9,
+        "name": "transportation",
+        "name_chinese": "运输工具",
+        "children": []
+    },
+    {
+        "id": 10,
+        "name": "utilities",
+        "name_chinese": "工具",
+        "children": []
+    },
+    {
+        "id": 11,
+        "name": "misc",
+        "name_chinese": "杂物",
+        "children": []
+    }
+]
