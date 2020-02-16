@@ -46,5 +46,6 @@ target_link_libraries(classifier ${FMT_LIB})
 # install necessary asset files to bin
 install(FILES asset/classifier.conf
               asset/labels.txt
-              asset/model_pretrained.pth
+              asset/reset18_cpu.pth
+              asset/mobilenet_v2_cpu.pth
         DESTINATION ${CMAKE_BINARY_DIR}/bin/classifier_asset)
